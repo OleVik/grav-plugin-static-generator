@@ -1,0 +1,22 @@
+{
+  "name": "olevik/grav-plugin-static-generator",
+  "description": "StaticGenerator generation of Page Index and Page(s) as HTML.",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ole Vik",
+      "email": "git@olevik.net"
+    }
+  ],
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "Grav\\Plugin\\StaticGenerator\\API\\": "classes/",
+      "Grav\\Framework\\Cache\\Adapter\\": "classes/"
+    }
+  },
+  "require": {
+    "symfony/filesystem": "^4.3"
+  }
+}
