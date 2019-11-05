@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'Symfony\\Component\\Filesystem\\' => array($vendorDir . '/symfony/filesystem'),
+    'Grav\\Theme\\Scholar\\' => array($baseDir . '/addons'),
     'Grav\\Plugin\\StaticGenerator\\API\\' => array($baseDir . '/classes'),
     'Grav\\Framework\\Cache\\Adapter\\' => array($baseDir . '/classes'),
 );

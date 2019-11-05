@@ -18,7 +18,8 @@ class ComposerStaticInite2f4a2b75e1df9085b6021d6d25a7526
         ),
         'G' => 
         array (
-            'Grav\\Plugin\\StaticGenerator\\API\\' => 22,
+            'Grav\\Theme\\Scholar\\' => 19,
+            'Grav\\Plugin\\StaticGenerator\\API\\' => 32,
             'Grav\\Framework\\Cache\\Adapter\\' => 29,
         ),
     );
@@ -31,6 +32,10 @@ class ComposerStaticInite2f4a2b75e1df9085b6021d6d25a7526
         'Symfony\\Component\\Filesystem\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/filesystem',
+        ),
+        'Grav\\Theme\\Scholar\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/addons',
         ),
         'Grav\\Plugin\\StaticGenerator\\API\\' => 
         array (

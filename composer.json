@@ -13,7 +13,8 @@
   "autoload": {
     "psr-4": {
       "Grav\\Plugin\\StaticGenerator\\API\\": "classes/",
-      "Grav\\Framework\\Cache\\Adapter\\": "classes/"
+      "Grav\\Framework\\Cache\\Adapter\\": "classes/",
+      "Grav\\Theme\\Scholar\\": "addons/"
     }
   },
   "require": {

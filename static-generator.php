@@ -36,8 +36,10 @@ class StaticGeneratorPlugin extends Plugin
      */
     public static function getSubscribedEvents()
     {
+        include __DIR__ . '/vendor/autoload.php';
         return [
-            'onPluginsInitialized' => ['onPluginsInitialized', 0]
+            'onPluginsInitialized' => ['onPluginsInitialized', 0],
+            'onThemeInitialized' => ['onThemeInitialized', 0]
         ];
     }
 
@@ -51,5 +53,11 @@ class StaticGeneratorPlugin extends Plugin
         if ($this->isAdmin()) {
             return;
         }
+    }
+    public function onThemeInitialized()
+    {
+        // dump(\Grav\Theme\Scholar::getComposerClasses());
+        // $classMap = array_keys(require('vendor/composer/autoload_classmap.php'));
+        // dump($classMap);
     }
 }
