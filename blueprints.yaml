@@ -1,5 +1,5 @@
 name: Static Generator
-version: 0.1.0
+version: 1.0.0
 description: Static generation of Page(s) and Index.
 icon: plug
 author:
@@ -17,14 +17,52 @@ form:
     enabled:
       type: toggle
       label: PLUGIN_ADMIN.PLUGIN_STATUS
-      highlight: 1
-      default: 0
       options:
         1: PLUGIN_ADMIN.ENABLED
         0: PLUGIN_ADMIN.DISABLED
       validate:
         type: bool
-    text_var:
-      type: text
-      label: PLUGIN_STATIC_GENERATOR.TEXT_VARIABLE
-      help: PLUGIN_STATIC_GENERATOR.TEXT_VARIABLE_HELP
+    index:
+      type: toggle
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.INDEX
+      description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.INDEX
+      highlight: native
+      default: native
+      options:
+        native: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.NATIVE
+        persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
+        transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
+      validate:
+        type: bool
+    content:
+      type: toggle
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.CONTENT
+      description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.CONTENT
+      highlight: native
+      default: native
+      options:
+        native: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.NATIVE
+        persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
+        transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
+      validate:
+        type: bool
+    test:
+      type: spacer
+      text: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.ADDENDUM
+    content_max_length:
+      type: number
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.CONTENT_MAX_LENGTH
+      description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CONTENT_MAX_LENGTH
+      validate:
+        min: 0
+        step: 10000
+        max: 1000000
+    js:
+      type: toggle
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.JS
+      description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.JS
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool

@@ -19,7 +19,7 @@ class ComposerStaticInite2f4a2b75e1df9085b6021d6d25a7526
         'G' => 
         array (
             'Grav\\Theme\\Scholar\\' => 19,
-            'Grav\\Plugin\\StaticGenerator\\API\\' => 32,
+            'Grav\\Plugin\\StaticGenerator\\' => 28,
             'Grav\\Framework\\Cache\\Adapter\\' => 29,
         ),
     );
@@ -37,7 +37,7 @@ class ComposerStaticInite2f4a2b75e1df9085b6021d6d25a7526
         array (
             0 => __DIR__ . '/../..' . '/addons',
         ),
-        'Grav\\Plugin\\StaticGenerator\\API\\' => 
+        'Grav\\Plugin\\StaticGenerator\\' => 
         array (
             0 => __DIR__ . '/../..' . '/classes',
         ),

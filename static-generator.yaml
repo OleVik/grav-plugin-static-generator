@@ -2,3 +2,4 @@ enabled: true
 index: "persist"
 content: "persist"
 content_max_length: 100000
+js: true

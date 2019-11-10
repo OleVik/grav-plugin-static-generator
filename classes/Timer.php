@@ -1,28 +1,26 @@
 <?php
 /**
- * StaticGenerator Plugin, Generic Timer
+ * Static Generator Plugin, Generic Timer
  *
  * PHP version 7
  *
- * @category   API
- * @package    Grav\Plugin\StaticGenerator
- * @subpackage Grav\Plugin\StaticGenerator\API
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-theme-scholar
+ * @category API
+ * @package  Grav\Plugin\StaticGenerator
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
 
-namespace Grav\Plugin\StaticGenerator\API;
+namespace Grav\Plugin\StaticGenerator;
 
 /**
  * Class Generic Timer
  *
- * @category   API
- * @package    Grav\Plugin\StaticGenerator
- * @subpackage Grav\Plugin\StaticGenerator\API
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-theme-scholar
+ * @category API
+ * @package  Grav\Plugin\StaticGenerator\Timer
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-theme-scholar
  */
 class Timer
 {

@@ -1,4 +1,22 @@
 en:
   PLUGIN_STATIC_GENERATOR:
-    TEXT_VARIABLE: Text Variable
-    TEXT_VARIABLE_HELP: Text to add to the top of a page
+    ADMIN:
+      TITLE: Static Generator Options
+      SEARCH_FILE: Search File
+      STORAGE:
+        INDEX: Index Location
+        CONTENT: Content Location
+        OPTIONS:
+          PERSIST: Persist
+          TRANSIENT: Transient
+          NATIVE: Native
+      CONTENT_MAX_LENGTH: Content Max Length
+      JS: Admin JS
+      DESCRIPTION:
+        SEARCH_FILE: File to use for searching.
+        STORAGE:
+          INDEX: Where to store generated index.
+          CONTENT: Where to store generated content.
+          ADDENDUM: Native for /user/plugins/static-generator/data, Persist for /user/data/persist, Transient for /cache/transient.
+        CONTENT_MAX_LENGTH: Maximum characters in Page when generating content. If the Page contains more, it will not be stored.
+        JS: Use plugin's JavaScript in Admin.

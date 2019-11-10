@@ -1,6 +1,6 @@
 <?php
 /**
- * StaticGenerator Plugin, FileStorage Adapter
+ * Static Generator Plugin, FileStorage Adapter
  *
  * PHP version 7
  *
@@ -23,12 +23,11 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 /**
  * FileStorage Adapter
  *
- * @category   API
- * @package    Grav\Framework\Cache
- * @subpackage Grav\Framework\Cache\Adapter
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-theme-scholar
+ * @category API
+ * @package  Grav\Framework\Cache\Adapter
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-theme-scholar
  */
 class FileStorage extends AbstractCache
 {

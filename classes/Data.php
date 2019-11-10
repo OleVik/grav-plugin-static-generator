@@ -1,17 +1,16 @@
 <?php
 /**
- * StaticGenerator Plugin, Data Builder
+ * Static Generator Plugin, Data Builder
  *
  * PHP version 7
  *
- * @category   API
- * @package    Grav\Plugin\StaticGeneratorPlugin
- * @subpackage Grav\Plugin\StaticGeneratorPlugin\API
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-plugin-StaticGenerator
+ * @category API
+ * @package  Grav\Plugin\StaticGenerator
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
-namespace Grav\Plugin\StaticGenerator\API;
+namespace Grav\Plugin\StaticGenerator;
 
 use Grav\Common\Grav;
 use Grav\Common\Plugin;
@@ -24,12 +23,11 @@ use Symfony\Component\Console\Helper\ProgressBar;
 /**
  * Data Builder
  *
- * @category   API
- * @package    Grav\Plugin\StaticGeneratorPlugin
- * @subpackage Grav\Plugin\StaticGeneratorPlugin\API
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-plugin-StaticGenerator
+ * @category API
+ * @package  Grav\Plugin\StaticGeneratorPlugin\Data
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
 class Data
 {

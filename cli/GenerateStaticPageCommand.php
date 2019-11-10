@@ -1,15 +1,14 @@
 <?php
 /**
- * StaticGenerator Plugin, Page Builder
+ * Static Generator Plugin, Page Builder
  *
  * PHP version 7
  *
- * @category   API
- * @package    Grav\Plugin\StaticGenerator
- * @subpackage Grav\Plugin\StaticGenerator\API
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-theme-scholar
+ * @category API
+ * @package  Grav\Plugin\Console
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-theme-scholar
  */
 
 namespace Grav\Plugin\Console;
@@ -19,19 +18,18 @@ use Grav\Common\Utils;
 use Grav\Console\ConsoleCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Grav\Plugin\StaticGenerator\API\Collection;
+use Grav\Plugin\StaticGenerator\Collection;
 
 /**
  * StaticGenerator Page Builder
  *
- * API for storing Pages data as HTML
+ * Command line utility for storing Pages data as HTML
  *
- * @category   API
- * @package    Grav\Plugin\StaticGenerator
- * @subpackage Grav\Plugin\StaticGenerator\API
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-theme-scholar
+ * @category API
+ * @package  Grav\Plugin\Console\GenerateStaticPageCommand
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-theme-scholar
  */
 class GenerateStaticPageCommand extends ConsoleCommand
 {

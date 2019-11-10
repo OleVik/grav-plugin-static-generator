@@ -4,12 +4,11 @@
  *
  * PHP version 7
  *
- * @category   API
- * @package    Grav\Plugin\StaticGenerator
- * @subpackage Grav\Plugin\StaticGenerator\API
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-theme-scholar
+ * @category API
+ * @package  Grav\Plugin\Console
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-theme-scholar
  */
 
 namespace Grav\Plugin\Console;
@@ -20,20 +19,19 @@ use Grav\Console\ConsoleCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Grav\Framework\Cache\Adapter\FileStorage;
-use Grav\Plugin\StaticGenerator\API\Data;
-use Grav\Plugin\StaticGenerator\API\Timer;
+use Grav\Plugin\StaticGenerator\Data;
+use Grav\Plugin\StaticGenerator\Timer;
 
 /**
  * Data Index Builder
  *
- * API for storing Pages data as JSON
+ * Command line utility for storing Pages data as JSON
  *
- * @category   API
- * @package    Grav\Plugin\StaticGenerator
- * @subpackage Grav\Plugin\StaticGenerator\API
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-theme-scholar
+ * @category API
+ * @package  Grav\Plugin\Console\GenerateStaticIndexCommand
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-theme-scholar
  */
 class GenerateStaticIndexCommand extends ConsoleCommand
 {

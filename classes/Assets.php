@@ -1,17 +1,16 @@
 <?php
 /**
- * StaticGenerator Plugin, Assets Builder
+ * Static Generator Plugin, Assets Builder
  *
  * PHP version 7
  *
- * @category   API
- * @package    Grav\Plugin\StaticGenerator
- * @subpackage Grav\Plugin\StaticGenerator\API
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-plugin-StaticGenerator
+ * @category API
+ * @package  Grav\Plugin\StaticGenerator
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
-namespace Grav\Plugin\StaticGenerator\API;
+namespace Grav\Plugin\StaticGenerator;
 
 use Grav\Common\Grav;
 use Grav\Common\Plugin;
@@ -29,12 +28,11 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 /**
  * Assets Builder
  *
- * @category   API
- * @package    Grav\Plugin\StaticGenerator
- * @subpackage Grav\Plugin\StaticGenerator\API
- * @author     Ole Vik <git@olevik.net>
- * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @link       https://github.com/OleVik/grav-plugin-StaticGenerator
+ * @category API
+ * @package  Grav\Plugin\StaticGenerator\Assets
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
 class Assets
 {
@@ -46,7 +44,7 @@ class Assets
      *
      * @param ConsoleOutput $handle     Instance of Symfony\Component\Console\ConsoleOutput.
      * @param Filesystem    $Filesystem Symfony\Component\Filesystem\Filesystem.
-     * @param Timer         $Timer      Instance of Grav\Plugin\StaticGenerator\API\Timer.
+     * @param Timer         $Timer      Instance of Grav\Plugin\StaticGenerator\Timer.
      */
     public function __construct(ConsoleOutput $handle, Filesystem $Filesystem, Timer $Timer)
     {
