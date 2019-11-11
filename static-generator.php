@@ -16,10 +16,10 @@ namespace Grav\Plugin;
 use Grav\Common\Grav;
 use Grav\Common\Plugin;
 use RocketTheme\Toolbox\Event\Event;
-use Grav\Plugin\StaticGeneratorPlugin\Utilities;
 use Grav\Framework\Cache\Adapter\FileStorage;
 use Grav\Plugin\StaticGenerator\Data;
 use Grav\Plugin\StaticGenerator\Timer;
+use Grav\Plugin\StaticGenerator\Utilities;
 
 /**
  * Persist Data and Pages from Grav
@@ -84,7 +84,7 @@ class StaticGeneratorPlugin extends Plugin
         $options = [
             'authorize' => 'taskIndexSearch',
             'hint' => 'Index Search Data',
-            'class' => 'search-index',
+            'class' => 'grav-plugin-static-generator-search-index',
             'icon' => 'fa-search-plus'
         ];
         $this->grav['twig']->plugins_quick_tray['Search'] = $options;
@@ -92,32 +92,30 @@ class StaticGeneratorPlugin extends Plugin
 
     public function onAdminTaskExecute(Event $event)
     {
+        dump($event);
         // print_r
         if ($event['method'] == 'taskIndexSearch') {
             echo 'taskIndexSearch';
+            // header('Content-type: application/json');
+
+            // if (!$controller->authorizeTask('reindexTNTSearch', ['admin.configuration', 'admin.super'])) {
+            //     $json_response = [
+            //         'status'  => 'error',
+            //         'message' => '<i class="fa fa-warning"></i> Index not created',
+            //         'details' => 'Insufficient permissions to reindex the search engine database.'
+            //     ];
+            //     echo json_encode($json_response);
+            //     exit;
+            // }
+
+            // error_reporting(1);
+            // set_time_limit(0);
+            // $response = [
+            //     'status'  => 'success',
+            //     'message' => 'Hello Msg'
+            // ];
+            // echo json_encode($response);
             exit;
-            /* $controller = $e['controller'];
-            header('Content-type: application/json');
-            if (!$controller->authorizeTask('reindexTNTSearch', ['admin.configuration', 'admin.super'])) {
-                $json_response = [
-                    'status'  => 'error',
-                    'message' => '<i class="fa fa-warning"></i> Index not created',
-                    'details' => 'Insufficient permissions to reindex the search engine database.'
-                ];
-                echo json_encode($json_response);
-                exit;
-            }
-            // disable warnings
-            error_reporting(1);
-            // disable execution time
-            set_time_limit(0);
-            list($status, $msg, $output) = $this->indexJob();
-            $json_response = [
-                'status'  => $status ? 'success' : 'error',
-                'message' => $msg
-            ];
-            echo json_encode($json_response);
-            exit; */
         }
     }
 
@@ -133,51 +131,33 @@ class StaticGeneratorPlugin extends Plugin
         }
     }
 
-    public static function storeIndex(string $mode)
+    public static function storeIndex(string $mode, string $route, string $slug)
     {
         $config = Grav::instance()['config']->get('plugins.static-generator');
-        $target = $config[$mode];
+        $location = $config[$mode];
         try {
-            $target = $config[$mode];
-            if ($target == 'persist') {
-                $target = 'user://data/persist';
-            } elseif ($target == 'transient') {
-                $target = 'cache://transient';
+            $timer = new Timer();
+            if ($location == 'persist') {
+                $location = 'user://data/persist';
+            } elseif ($location == 'transient') {
+                $location = 'cache://transient';
+            } else {
+                return;
             }
-            $Data = new Data($content, $maxLength, $this->output);
+            $Data = new Data(false, $config['maxLength']);
             $Data->setup($route);
             $Data->buildIndex($route);
             $Data->teardown();
-            if ($echo) {
-                echo json_encode($Data->data, JSON_PRETTY_PRINT);
-            } else {
-                $extension = '.json';
-                if ($content) {
-                    $basename = $basename . '.full';
-                }
-                if ($wrap) {
-                    $extension = '.js';
-                }
-                $Storage = new FileStorage($location);
-                $file = $basename . $extension;
-                if ($force && $Storage->doHas($file)) {
-                    $Storage->doDelete($file);
-                }
-                if ($wrap && !$content) {
-                    $Storage->doSet($file, 'const GravMetadataIndex = ' . json_encode($Data->data) . ';', 0);
-                } elseif ($wrap && $content) {
-                    $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($Data->data) . ';', 0);
-                } else {
-                    $Storage->doSet($file, json_encode($Data->data));
-                }
-                $this->output->writeln('');
-                $this->output->writeln(
-                    '<info>Saved <white>' . count($Data->data)
-                    . ' items</white> to <cyan>'
-                    . $location . '/' . $file . '</cyan> in <magenta>'
-                    . Timer::format($timer->getTime()) . '</magenta>.</info>'
-                );
+            $Storage = new FileStorage($location);
+            $file = $slug . '.js';
+            if ($Storage->doHas($file)) {
+                $Storage->doDelete($file);
             }
+            $Storage->doSet($file, 'const GravMetadataIndex = ' . json_encode($Data->data) . ';', 0);
+            return [
+                'stored' => $location . '/' . $file,
+                'time' => Timer::format($timer->getTime())
+            ];
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

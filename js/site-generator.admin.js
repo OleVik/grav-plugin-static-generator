@@ -1,39 +1,50 @@
-async function store(url, indexButton) {
+async function store(url, indexButton, StateColors, Toastr) {
+  Toastr.info("Indexing Page ...");
   let response = await fetch(url);
   if (response.ok) {
     console.log(response);
-    indexButton.style.color = stateColors.success;
+    const json = await response.json();
+    console.log("Success:", JSON.stringify(json));
+    Toastr.success("Indexed Page");
+    indexButton.style.color = StateColors.success;
     setTimeout(function() {
       indexButton.style.removeProperty("color");
     }, 2500);
   } else {
-    indexButton.style.color = stateColors.error;
+    Toastr.error("Fail to index Page");
+    indexButton.style.color = StateColors.error;
     console.error("HTTP-Error: " + response.status);
   }
 }
 
-const stateColors = {
-  waiting: "#df8a13",
-  error: "#b52b27",
-  success: "#3d8b3d"
-};
-
 window.addEventListener(
   "load",
   function(event) {
-    var indexButton = document.querySelector(".search-index");
+    var indexButton = document.querySelector(
+      ".grav-plugin-static-generator-search-index"
+    );
     if (indexButton) {
+      const StateColors = {
+        waiting: "#df8a13",
+        error: "#b52b27",
+        success: "#3d8b3d"
+      };
+      const Toastr = Grav.default.Utils.toastr;
       indexButton.addEventListener(
         "click",
         function(event) {
-          indexButton.style.color = stateColors.waiting;
+          indexButton.style.color = StateColors.waiting;
           console.debug("Executing taskIndexSearch");
           store(
             GravAdmin.config.base_url_relative +
               ".json/task" +
               GravAdmin.config.param_sep +
-              "taskIndexSearch",
-            indexButton
+              "taskIndexSearch/admin-nonce" +
+              GravAdmin.config.param_sep +
+              GravAdmin.config.admin_nonce,
+            indexButton,
+            StateColors,
+            Toastr
           );
           event.preventDefault();
         },
@@ -44,9 +55,10 @@ window.addEventListener(
       GravAdmin.config.base_url_relative +
         ".json/task" +
         GravAdmin.config.param_sep +
-        "taskIndexSearch"
+        "taskIndexSearch/admin-nonce" +
+        GravAdmin.config.param_sep +
+        GravAdmin.config.admin_nonce
     );
-    console.log(GravAdmin.config.admin_nonce);
   },
   false
 );
