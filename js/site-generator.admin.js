@@ -1,10 +1,20 @@
 async function store(url, indexButton, StateColors, Toastr) {
   Toastr.info("Indexing Page ...");
   let response = await fetch(url);
+  const reader = response.body.getReader();
+  console.log(reader);
+  const decoder = new TextDecoder("utf-8");
+  reader.read().then(({ value, done }) => {
+    console.log(decoder.decode(value));
+    if (done) {
+      console.log(done);
+    }
+  });
+
   if (response.ok) {
     console.log(response);
-    const json = await response.json();
-    console.log("Success:", JSON.stringify(json));
+    // const json = await response.json();
+    // console.log("Success:", JSON.stringify(json));
     Toastr.success("Indexed Page");
     indexButton.style.color = StateColors.success;
     setTimeout(function() {
@@ -34,12 +44,12 @@ window.addEventListener(
         "click",
         function(event) {
           indexButton.style.color = StateColors.waiting;
-          console.debug("Executing taskIndexSearch");
+          console.debug("Executing task indexSearch");
           store(
             GravAdmin.config.base_url_relative +
               ".json/task" +
               GravAdmin.config.param_sep +
-              "taskIndexSearch/admin-nonce" +
+              "indexSearch/admin-nonce" +
               GravAdmin.config.param_sep +
               GravAdmin.config.admin_nonce,
             indexButton,
@@ -55,7 +65,7 @@ window.addEventListener(
       GravAdmin.config.base_url_relative +
         ".json/task" +
         GravAdmin.config.param_sep +
-        "taskIndexSearch/admin-nonce" +
+        "indexSearch/admin-nonce" +
         GravAdmin.config.param_sep +
         GravAdmin.config.admin_nonce
     );

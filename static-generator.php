@@ -92,11 +92,11 @@ class StaticGeneratorPlugin extends Plugin
 
     public function onAdminTaskExecute(Event $event)
     {
-        dump($event);
+        // dump($event['method']);
         // print_r
         if ($event['method'] == 'taskIndexSearch') {
-            echo 'taskIndexSearch';
-            // header('Content-type: application/json');
+            // echo 'taskIndexSearch';
+            header('Content-type: application/json');
 
             // if (!$controller->authorizeTask('reindexTNTSearch', ['admin.configuration', 'admin.super'])) {
             //     $json_response = [
@@ -108,13 +108,13 @@ class StaticGeneratorPlugin extends Plugin
             //     exit;
             // }
 
-            // error_reporting(1);
-            // set_time_limit(0);
-            // $response = [
-            //     'status'  => 'success',
-            //     'message' => 'Hello Msg'
-            // ];
-            // echo json_encode($response);
+            error_reporting(1);
+            set_time_limit(0);
+            $response = [
+                'status'  => 'success',
+                'message' => 'Hello Msg'
+            ];
+            echo json_encode($response);
             exit;
         }
     }
