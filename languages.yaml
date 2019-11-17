@@ -1,6 +1,10 @@
 en:
   PLUGIN_STATIC_GENERATOR:
     ADMIN:
+      GENERIC:
+        STORED: stored
+        ITEMS: items
+        IN: in
       TITLE: Static Generator Options
       SEARCH_FILE: Search File
       STORAGE:
@@ -12,6 +16,12 @@ en:
           NATIVE: Native
       CONTENT_MAX_LENGTH: Content Max Length
       JS: Admin JS
+      INDEX:
+        HINT: Index Search Data
+        WAITING: Waiting for Indexer ...
+        ONGOING: Indexing Search Data ...
+        SUCCESS: Stored indexed Search Data
+        ERROR: Failed to index Search Data
       DESCRIPTION:
         SEARCH_FILE: File to use for searching.
         STORAGE:

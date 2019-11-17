@@ -18,6 +18,7 @@ form:
               fields:
                 header.search:
                   type: select
+                  id: static-generator-search-files-select
                   label: PLUGIN_STATIC_GENERATOR.ADMIN.SEARCH_FILE
                   description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.SEARCH_FILE
                   data-options@:

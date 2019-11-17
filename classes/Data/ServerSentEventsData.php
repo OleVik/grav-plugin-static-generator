@@ -1,0 +1,196 @@
+<?php
+/**
+ * Static Generator Plugin, Server Sent Events Data Builder
+ *
+ * PHP version 7
+ *
+ * @category   API
+ * @package    Grav\Plugin\StaticGenerator
+ * @subpackage Grav\Plugin\StaticGenerator\Data
+ * @author     Ole Vik <git@olevik.net>
+ * @license    http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link       https://github.com/OleVik/grav-plugin-static-generator
+ */
+namespace Grav\Plugin\StaticGenerator\Data;
+
+use Grav\Common\Grav;
+use Grav\Framework\Cache\Adapter\FileStorage;
+use Grav\Plugin\StaticGenerator\Timer;
+use Grav\Plugin\StaticGenerator\Data\AbstractData;
+
+/**
+ * Server Sent Events Data Builder
+ *
+ * @category API
+ * @package  Grav\Plugin\StaticGeneratorPlugin\Data\ServerSentEventsData
+ * @author   Ole Vik <git@olevik.net>
+ * @license  http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link     https://github.com/OleVik/grav-plugin-static-generator
+ */
+class ServerSentEventsData extends AbstractData
+{
+    /**
+     * Initialize headers
+     *
+     * @return void
+     */
+    public function bootstrap()
+    {
+        error_reporting(0);
+        set_time_limit(0);
+        header('Content-Type: text/event-stream');
+        header('Access-Control-Allow-Origin: *');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
+        echo 'event: update' . "\n\n";
+        echo 'data: ' . json_encode(
+            [
+                'datetime' => date(DATE_ISO8601),
+                'total' => $this->count
+            ]
+        ) . "\n\n";
+    }
+    
+    /**
+     * Finish and cleanup
+     *
+     * @param string $location Stream to storage-folder.
+     * @param string $slug     Hyphenized Page-route.
+     * @param array  $data     Data to store.
+     * @param Timer  $Timer    Instance of Grav\Plugin\StaticGenerator\Timer.
+     *
+     * @return void
+     */
+    public function teardown(string $location, string $slug, array $data, Timer $Timer): void
+    {
+        $file = $slug . '.full.js';
+        $Storage = new FileStorage(
+            Grav::instance()['locator']->findResource($location)
+        );
+        if ($Storage->doHas($file)) {
+            $Storage->doDelete($file);
+        }
+        $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($data) . ';', 0);
+        $message = ucfirst(
+            $this->grav['language']->translate(
+                ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.STORED']
+            )
+        ) . ' ' . $this->count . ' ' .
+        $this->grav['language']->translate(
+            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.ITEMS']
+        ) . ' ' .
+        $this->grav['language']->translate(
+            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
+        ) . ' ' . $location . '/' . $file . ' ' .
+        $this->grav['language']->translate(
+            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
+        ) . ' ' . Timer::format($Timer->getTime()) . '.';
+        echo 'event: update' . "\n\n";
+        echo 'data: ' . json_encode(
+            [
+                'datetime' => date(DATE_ISO8601),
+                'content' => $message,
+                'text' => $file,
+                'value' => $location . '/' . $file
+            ]
+        ) . "\n\n";
+        Grav::instance()['log']->info($message);
+        echo 'event: close' . "\n\n";
+        echo 'data: ' . json_encode(
+            [
+                'datetime' => date(DATE_ISO8601),
+                'content' => 'END-OF-STREAM'
+            ]
+        ) . "\n\n";
+        exit();
+    }
+
+    /**
+     * Create data-structure recursively
+     *
+     * @param string  $route Route to page.
+     * @param string  $mode  Placeholder for operation-mode, private.
+     * @param integer $depth Placeholder for recursion depth, private.
+     *
+     * @return mixed Index of Pages with FrontMatter
+     */
+    public function buildIndex($route, $mode = false, $depth = 0)
+    {
+        $depth++;
+        $mode = '@page.self';
+        if ($route == '/') {
+            $mode = '@root.children';
+        }
+        if ($depth > 1) {
+            $mode = '@page.children';
+        }
+        $pages = $this->grav['page']->evaluate([$mode => $route]);
+        $pages = $pages->published()->order($this->orderBy, $this->orderDir);
+        foreach ($pages as $page) {
+            $route = $page->rawRoute();
+            $item = array(
+                'title' => $page->title(),
+                'date' => \DateTime::createFromFormat('U', $page->date())->format('c'),
+                'url' => $page->url(true, true, true),
+                'taxonomy' => array(
+                    'categories' => array(),
+                    'tags' => array()
+                )
+            );
+            if (isset($page->taxonomy()['category'])) {
+                $item['taxonomy']['categories'] = array_merge(
+                    $item['taxonomy']['categories'],
+                    $page->taxonomy()['category']
+                );
+            }
+            if (isset($page->taxonomy()['categories'])) {
+                $item['taxonomy']['categories'] = array_merge(
+                    $item['taxonomy']['categories'],
+                    $page->taxonomy()['categories']
+                );
+            }
+            if (isset($page->taxonomy()['tags'])) {
+                $item['taxonomy']['tags'] = array_merge(
+                    $item['taxonomy']['tags'],
+                    $page->taxonomy()['tags']
+                );
+            }
+            if (!empty($page->media()->all())) {
+                $item['media'] = array_keys($page->media()->all());
+            }
+            if (!$this->content) {
+                $item['taxonomy']['categories'] = implode(' ', $item['taxonomy']['categories']);
+                $item['taxonomy']['tags'] = implode(' ', $item['taxonomy']['tags']);
+                $item['media'] = implode(' ', $item['media']);
+            }
+            if ($this->content && !empty($page->content()) && strlen($page->content()) <= $this->maxLength) {
+                $item['content'] = $page->content();
+            }
+            $this->progress++;
+            echo 'event: update' . "\n\n";
+            echo 'data: ' . json_encode(
+                [
+                    'datetime' => date(DATE_ISO8601),
+                    'progress' => $this->progress,
+                    'content' => $page->title()
+                ]
+            ) . "\n\n";
+            if (count($page->children()) > 0) {
+                $this->buildIndex($route, $mode, $depth);
+            }
+            // sleep(2);
+            $this->data[] = (object) $item;
+            // if ($this->progress == $this->count) {
+            //     self::teardown();
+            // }
+            while (ob_get_level() > 0) {
+                ob_end_flush();
+            }
+            flush();
+            if (connection_aborted()) {
+                exit();
+            }
+        }
+    }
+}

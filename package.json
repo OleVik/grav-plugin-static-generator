@@ -1,0 +1,22 @@
+{
+  "name": "grav-plugin-static-generator",
+  "version": "1.0.0",
+  "description": "Static generation of Page(s) and Index for Grav CMS.",
+  "main": "js/site-generator.admin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OleVik/grav-plugin-static-generator.git"
+  },
+  "author": "Ole Vik <git@olevik.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OleVik/grav-plugin-static-generator/issues"
+  },
+  "homepage": "https://github.com/OleVik/grav-plugin-static-generator#readme",
+  "dependencies": {
+    "eventsource": "^1.0.7"
+  }
+}

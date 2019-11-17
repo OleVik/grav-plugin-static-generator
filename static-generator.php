@@ -15,11 +15,16 @@ namespace Grav\Plugin;
 
 use Grav\Common\Grav;
 use Grav\Common\Plugin;
+use Grav\Common\Utils;
+use Grav\Common\Inflector;
+use Grav\Common\Page\Pages;
+use Grav\Framework\File\YamlFile;
+use Grav\Framework\File\Formatter\YamlFormatter;
 use RocketTheme\Toolbox\Event\Event;
-use Grav\Framework\Cache\Adapter\FileStorage;
 use Grav\Plugin\StaticGenerator\Data;
 use Grav\Plugin\StaticGenerator\Timer;
 use Grav\Plugin\StaticGenerator\Utilities;
+use Grav\Plugin\StaticGenerator\Data\ServerSentEventsData;
 
 /**
  * Persist Data and Pages from Grav
@@ -64,7 +69,7 @@ class StaticGeneratorPlugin extends Plugin
             );
         }
     }
-    
+
     /**
      * Register Page blueprints
      *
@@ -83,7 +88,9 @@ class StaticGeneratorPlugin extends Plugin
     {
         $options = [
             'authorize' => 'taskIndexSearch',
-            'hint' => 'Index Search Data',
+            'hint' => $this->grav['language']->translate(
+                ['PLUGIN_STATIC_GENERATOR.ADMIN.INDEX.HINT']
+            ),
             'class' => 'grav-plugin-static-generator-search-index',
             'icon' => 'fa-search-plus'
         ];
@@ -92,51 +99,37 @@ class StaticGeneratorPlugin extends Plugin
 
     public function onAdminTaskExecute(Event $event)
     {
-        // dump($event['method']);
-        // print_r
         if ($event['method'] == 'taskIndexSearch') {
-            // echo 'taskIndexSearch';
-            header('Content-type: application/json');
-
-            // if (!$controller->authorizeTask('reindexTNTSearch', ['admin.configuration', 'admin.super'])) {
-            //     $json_response = [
-            //         'status'  => 'error',
-            //         'message' => '<i class="fa fa-warning"></i> Index not created',
-            //         'details' => 'Insufficient permissions to reindex the search engine database.'
-            //     ];
-            //     echo json_encode($json_response);
-            //     exit;
-            // }
-
-            error_reporting(1);
-            set_time_limit(0);
-            $response = [
-                'status'  => 'success',
-                'message' => 'Hello Msg'
-            ];
-            echo json_encode($response);
-            exit;
-        }
-    }
-
-    public function onTwigSiteVariables()
-    {
-        // $twig = $this->grav['twig'];
-        // if ($this->query) {
-        //     $twig->twig_vars['query'] = $this->query;
-        //     $twig->twig_vars['tntsearch_results'] = $this->results;
-        // }
-        if ($this->config->get('plugins.static-generator.js')) {
-            $this->grav['assets']->addJs('plugin://static-generator/js/site-generator.admin.js');
+            $mode = filter_input(
+                INPUT_GET,
+                'mode',
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS
+            );
+            $route = filter_input(
+                INPUT_GET,
+                'route',
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS
+            );
+            if (!$event['controller']->authorizeTask('indexSearch', ['admin.maintenance', 'admin.super'])) {
+                header('HTTP/1.0 403 Forbidden');
+                echo '403 Forbidden';
+                exit;
+            }
+            self::storeIndex(
+                urldecode($mode),
+                '/' . urldecode($route),
+                Inflector::hyphenize($route)
+            );
         }
     }
 
     public static function storeIndex(string $mode, string $route, string $slug)
     {
+        include __DIR__ . '/vendor/autoload.php';
         $config = Grav::instance()['config']->get('plugins.static-generator');
         $location = $config[$mode];
         try {
-            $timer = new Timer();
+            $Timer = new Timer();
             if ($location == 'persist') {
                 $location = 'user://data/persist';
             } elseif ($location == 'transient') {
@@ -144,22 +137,45 @@ class StaticGeneratorPlugin extends Plugin
             } else {
                 return;
             }
-            $Data = new Data(false, $config['maxLength']);
+            $Data = new ServerSentEventsData(true, $config['content_max_length']);
             $Data->setup($route);
+            $Data->bootstrap();
             $Data->buildIndex($route);
-            $Data->teardown();
-            $Storage = new FileStorage($location);
-            $file = $slug . '.js';
-            if ($Storage->doHas($file)) {
-                $Storage->doDelete($file);
-            }
-            $Storage->doSet($file, 'const GravMetadataIndex = ' . json_encode($Data->data) . ';', 0);
-            return [
-                'stored' => $location . '/' . $file,
-                'time' => Timer::format($timer->getTime())
-            ];
+            $Data->teardown($location, $slug, $Data->data, $Timer);
         } catch (\Exception $e) {
             throw new \Exception($e);
+        }
+    }
+
+    public function onTwigSiteVariables()
+    {
+        $formatter = new YamlFormatter;
+        $file = new YamlFile(
+            $this->grav['locator']->findResource(
+                'plugin://' . $this->name . '/languages.yaml',
+                true,
+                true
+            ),
+            $formatter
+        );
+        $translation = array();
+        foreach (array_keys(Utils::arrayFlattenDotNotation($file->load())) as $key) {
+            $key = str_replace('en.', '', $key);
+            $translation[$key] = $this->grav['language']->translate([$key]);
+        }
+        $this->grav['assets']->addInlineJs(
+            'const StaticGeneratorTranslation = ' . json_encode(
+                Utils::arrayUnflattenDotNotation($translation)['PLUGIN_STATIC_GENERATOR']
+            ) . ';'
+        );
+
+        if ($this->config->get('plugins.static-generator.js')) {
+            $this->grav['assets']->addJs(
+                'plugin://static-generator/node_modules/eventsource/example/eventsource-polyfill.js'
+            );
+            $this->grav['assets']->addJs(
+                'plugin://static-generator/js/site-generator.admin.js'
+            );
         }
     }
 

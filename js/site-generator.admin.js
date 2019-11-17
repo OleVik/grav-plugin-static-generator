@@ -1,74 +1,122 @@
-async function store(url, indexButton, StateColors, Toastr) {
-  Toastr.info("Indexing Page ...");
-  let response = await fetch(url);
-  const reader = response.body.getReader();
-  console.log(reader);
-  const decoder = new TextDecoder("utf-8");
-  reader.read().then(({ value, done }) => {
-    console.log(decoder.decode(value));
-    if (done) {
-      console.log(done);
+function staticGeneratorUpdateProgress(progress, total, message) {
+  const toastMessage = document.querySelector(".toast-message");
+  const status = `[${progress}/${total}] ${message}`;
+  toastMessage.textContent = status;
+}
+
+function staticGeneratorStore(url, indexButton, StateColors, Toastr) {
+  let indexEvent = new window.EventSource(url);
+  const persist = {
+    timeOut: 0,
+    extendedTimeOut: 0
+  };
+  Toastr.info(StaticGeneratorTranslation.ADMIN.INDEX.WAITING, null, persist);
+  indexButton.disabled = true;
+  indexEvent.addEventListener("open", event => {
+    console.debug("Executing task indexSearch");
+    Toastr.clear();
+    Toastr.info(
+      "[0/0]",
+      StaticGeneratorTranslation.ADMIN.INDEX.ONGOING,
+      persist
+    );
+  });
+  indexEvent.addEventListener("error", event => {
+    console.error("Failed to execute task indexSearch");
+    indexButton.style.color = StateColors.error;
+    indexButton.disabled = false;
+    Toastr.error(StaticGeneratorTranslation.ADMIN.INDEX.ERROR, null, persist);
+    indexEvent.close();
+    setTimeout(function() {
+      Toastr.clear();
+    }, 2500);
+  });
+  var total = 0;
+  indexEvent.addEventListener("message", event => {
+    const data = JSON.parse(event.data);
+    if (data.total) {
+      total = data.total;
+    }
+    if (data.content != "END-OF-STREAM") {
+      if (data.progress) {
+        staticGeneratorUpdateProgress(data.progress, total, data.content);
+      }
+      if (!data.progress && !data.total) {
+        Toastr.clear();
+        indexButton.style.color = StateColors.success;
+        Toastr.success(
+          data.content,
+          StaticGeneratorTranslation.ADMIN.INDEX.SUCCESS,
+          persist
+        );
+        if (data.text && data.value) {
+          staticGeneratorUpdateSelectField(data.text, data.value);
+        }
+        setTimeout(function() {
+          indexButton.style.removeProperty("color");
+          indexButton.disabled = false;
+          Toastr.clear();
+        }, 5000);
+      }
+    } else {
+      indexEvent.close();
+      console.debug("Executed task indexSearch");
     }
   });
+}
 
-  if (response.ok) {
-    console.log(response);
-    // const json = await response.json();
-    // console.log("Success:", JSON.stringify(json));
-    Toastr.success("Indexed Page");
-    indexButton.style.color = StateColors.success;
-    setTimeout(function() {
-      indexButton.style.removeProperty("color");
-    }, 2500);
-  } else {
-    Toastr.error("Fail to index Page");
-    indexButton.style.color = StateColors.error;
-    console.error("HTTP-Error: " + response.status);
+function staticGeneratorUpdateSelectField(text, value) {
+  const staticGeneratorSelectField = document.querySelector(
+    "#static-generator-search-files-select"
+  );
+  if (staticGeneratorSelectField) {
+    staticGeneratorSelectField.selectize.addOption({
+      text: text,
+      value: value
+    });
+    staticGeneratorSelectField.selectize.setValue(value);
   }
 }
 
 window.addEventListener(
   "load",
   function(event) {
-    var indexButton = document.querySelector(
+    const staticGeneratorIndexButton = document.querySelector(
       ".grav-plugin-static-generator-search-index"
     );
-    if (indexButton) {
-      const StateColors = {
+    const staticGeneratorPageRoute = encodeURIComponent(GravAdmin.config.route);
+    const staticGeneratorindexSearchRoute =
+      GravAdmin.config.base_url_relative +
+      ".json/task" +
+      GravAdmin.config.param_sep +
+      "indexSearch/admin-nonce" +
+      GravAdmin.config.param_sep +
+      GravAdmin.config.admin_nonce +
+      "?mode=content" +
+      "&route=" +
+      staticGeneratorPageRoute;
+    if (staticGeneratorIndexButton) {
+      const staticGeneratorStateColors = {
         waiting: "#df8a13",
         error: "#b52b27",
         success: "#3d8b3d"
       };
-      const Toastr = Grav.default.Utils.toastr;
-      indexButton.addEventListener(
+      staticGeneratorIndexButton.addEventListener(
         "click",
         function(event) {
-          indexButton.style.color = StateColors.waiting;
-          console.debug("Executing task indexSearch");
-          store(
-            GravAdmin.config.base_url_relative +
-              ".json/task" +
-              GravAdmin.config.param_sep +
-              "indexSearch/admin-nonce" +
-              GravAdmin.config.param_sep +
-              GravAdmin.config.admin_nonce,
-            indexButton,
-            StateColors,
-            Toastr
+          staticGeneratorIndexButton.style.color =
+            staticGeneratorStateColors.waiting;
+          staticGeneratorStore(
+            staticGeneratorindexSearchRoute,
+            staticGeneratorIndexButton,
+            staticGeneratorStateColors,
+            Grav.default.Utils.toastr
           );
           event.preventDefault();
         },
         false
       );
     }
-    console.log(
-      GravAdmin.config.base_url_relative +
-        ".json/task" +
-        GravAdmin.config.param_sep +
-        "indexSearch/admin-nonce" +
-        GravAdmin.config.param_sep +
-        GravAdmin.config.admin_nonce
-    );
   },
   false
 );

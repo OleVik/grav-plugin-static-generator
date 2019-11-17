@@ -1,92 +1,49 @@
 <?php
 /**
- * Static Generator Plugin, Data Builder
+ * Static Generator Plugin, CLI Data Builder
  *
  * PHP version 7
  *
- * @category API
- * @package  Grav\Plugin\StaticGenerator
- * @author   Ole Vik <git@olevik.net>
- * @license  http://www.opensource.org/licenses/mit-license.html MIT License
- * @link     https://github.com/OleVik/grav-plugin-static-generator
+ * @category   API
+ * @package    Grav\Plugin\StaticGenerator
+ * @subpackage Grav\Plugin\StaticGenerator\Data
+ * @author     Ole Vik <git@olevik.net>
+ * @license    http://www.opensource.org/licenses/mit-license.html MIT License
+ * @link       https://github.com/OleVik/grav-plugin-static-generator
  */
-namespace Grav\Plugin\StaticGenerator;
+namespace Grav\Plugin\StaticGenerator\Data;
 
 use Grav\Common\Grav;
-use Grav\Common\Plugin;
-use Grav\Common\Page\Page;
-use Grav\Common\Page\Media;
-use Grav\Common\Page\Header;
-use RocketTheme\Toolbox\Event\Event;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Grav\Plugin\StaticGenerator\Data\AbstractData;
 
 /**
- * Data Builder
+ * CLI Data Builder
  *
  * @category API
- * @package  Grav\Plugin\StaticGeneratorPlugin\Data
+ * @package  Grav\Plugin\StaticGeneratorPlugin\Data\CommandLineData
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
-class Data
+class CommandLineData extends AbstractData
 {
-    public $data;
-
     /**
-     * Initialize class
+     * Initialize
      *
-     * @param boolean $content   Whether to include content.
-     * @param int     $maxLength Maximum character-length of content.
-     * @param \Output $handle    Instance of Symfony\Component\Console\Output.
-     * @param string  $orderBy   Property to order by.
-     * @param string  $orderDir  Direction to order.
-     */
-    public function __construct($content = false, $maxLength = false, $handle = false, $orderBy = 'date', $orderDir = 'desc')
-    {
-        $this->data = array();
-        $this->content = $content;
-        $this->maxLength = $maxLength;
-        $this->handle = $handle;
-        $this->orderBy = $orderBy;
-        $this->orderDir = $orderDir;
-    }
-
-    /**
-     * Initialize progress-counter
-     *
-     * @param string $route Route to page.
+     * @param string $route  Route to page.
+     * @param string $handle Instance of Symfony\Component\Console\Output.
      *
      * @return void
      */
-    public function setup($route)
+    public function setup($route, $handle)
     {
-        $this->progressBar = new ProgressBar($this->handle, $this->count($route));
-    }
-
-    /**
-     * Finish progress-counter
-     *
-     * @return void
-     */
-    public function teardown()
-    {
-        $this->progressBar->finish();
-    }
-
-    /**
-     * Count items
-     *
-     * @param string $route Route to page.
-     *
-     * @return int
-     */
-    public function count($route): int
-    {
-        $grav = Grav::instance();
-        $grav['pages']->init();
-        $pages = $grav['page']->evaluate(['@page.descendants' => $route]);
-        return count($pages) + 1;
+        $this->grav = Grav::instance();
+        $this->grav['pages']->init();
+        $this->grav['twig']->init();
+        $this->pages = $this->grav['page']->evaluate(['@page.descendants' => $route]);
+        $this->count = $this->count();
+        $this->progress = new ProgressBar($handle, $this->count);
     }
 
     /**
@@ -96,13 +53,10 @@ class Data
      * @param string  $mode  Placeholder for operation-mode, private.
      * @param integer $depth Placeholder for recursion depth, private.
      *
-     * @return array Index of Pages with FrontMatter
+     * @return mixed Index of Pages with FrontMatter
      */
     public function buildIndex($route, $mode = false, $depth = 0)
     {
-        $grav = Grav::instance();
-        $grav['pages']->init();
-        $grav['twig']->init();
         $depth++;
         $mode = '@page.self';
         if ($route == '/') {
@@ -111,7 +65,7 @@ class Data
         if ($depth > 1) {
             $mode = '@page.children';
         }
-        $pages = $grav['page']->evaluate([$mode => $route]);
+        $pages = $this->grav['page']->evaluate([$mode => $route]);
         $pages = $pages->published()->order($this->orderBy, $this->orderDir);
         foreach ($pages as $page) {
             $route = $page->rawRoute();
@@ -157,7 +111,7 @@ class Data
                 $this->buildIndex($route, $mode, $depth);
             }
             $this->data[] = (object) $item;
-            $this->progressBar->advance();
+            $this->progress->advance();
         }
     }
 }

@@ -1,0 +1,35 @@
+dependencies:
+  eventsource: 1.0.7
+lockfileVersion: 5.1
+packages:
+  /eventsource/1.0.7:
+    dependencies:
+      original: 1.0.2
+    dev: false
+    engines:
+      node: '>=0.12.0'
+    resolution:
+      integrity: sha512-4Ln17+vVT0k8aWq+t/bF5arcS3EpT9gYtW66EPacdj/mAFevznsnyoHLPy2BA8gbIQeIHoPsvwmfBftfcG//BQ==
+  /original/1.0.2:
+    dependencies:
+      url-parse: 1.4.7
+    dev: false
+    resolution:
+      integrity: sha512-hyBVl6iqqUOJ8FqRe+l/gS8H+kKYjrEndd5Pm1MfBtsEKA038HkkdbAl/72EAXGyonD/PFsvmVG+EvcIpliMBg==
+  /querystringify/2.1.1:
+    dev: false
+    resolution:
+      integrity: sha512-w7fLxIRCRT7U8Qu53jQnJyPkYZIaR4n5151KMfcJlO/A9397Wxb1amJvROTK6TOnp7PfoAmg/qXiNHI+08jRfA==
+  /requires-port/1.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
+  /url-parse/1.4.7:
+    dependencies:
+      querystringify: 2.1.1
+      requires-port: 1.0.0
+    dev: false
+    resolution:
+      integrity: sha512-d3uaVyzDB9tQoSXFvuSUNFibTd9zxd2bkVrDRvF5TmvWWQwqE4lgYJ5m+x1DbecWkw+LK4RNl2CU1hHuOKPVlg==
+specifiers:
+  eventsource: ^1.0.7

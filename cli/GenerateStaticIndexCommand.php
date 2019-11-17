@@ -19,7 +19,7 @@ use Grav\Console\ConsoleCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Grav\Framework\Cache\Adapter\FileStorage;
-use Grav\Plugin\StaticGenerator\Data;
+use Grav\Plugin\StaticGenerator\Data\CommandLineData;
 use Grav\Plugin\StaticGenerator\Timer;
 
 /**
@@ -129,10 +129,10 @@ class GenerateStaticIndexCommand extends ConsoleCommand
                 }
                 return;
             }
-            $Data = new Data($content, $maxLength, $this->output);
-            $Data->setup($route);
+            $Data = new CommandLineData($content, $maxLength);
+            $Data->setup($route, $this->output);
             $Data->buildIndex($route);
-            $Data->teardown();
+            $Data->progress->finish();
             if ($echo) {
                 echo json_encode($Data->data, JSON_PRETTY_PRINT);
             } else {
