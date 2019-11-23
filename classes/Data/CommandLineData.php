@@ -41,21 +41,35 @@ class CommandLineData extends AbstractData
         $this->grav = Grav::instance();
         $this->grav['pages']->init();
         $this->grav['twig']->init();
-        $this->pages = $this->grav['page']->evaluate(['@page.descendants' => $route]);
+        if ($route == '/') {
+            $this->pages = $this->grav['page']->evaluate(['@root.descendants']);
+        } else {
+            $this->pages = $this->grav['page']->evaluate(['@page.descendants' => $route]);
+        }
         $this->count = $this->count();
         $this->progress = new ProgressBar($handle, $this->count);
     }
 
     /**
+     * Increase counter
+     *
+     * @return void
+     */
+    public function progress(): void
+    {
+        $this->progress->advance();
+    }
+
+    /**
      * Create data-structure recursively
      *
-     * @param string  $route Route to page.
-     * @param string  $mode  Placeholder for operation-mode, private.
-     * @param integer $depth Placeholder for recursion depth, private.
+     * @param string $route Route to page.
+     * @param string $mode  Placeholder for operation-mode, private.
+     * @param int    $depth Placeholder for recursion depth, private.
      *
      * @return mixed Index of Pages with FrontMatter
      */
-    public function buildIndex($route, $mode = false, $depth = 0)
+    public function index(string $route, string $mode = '', int $depth = 0)
     {
         $depth++;
         $mode = '@page.self';
@@ -103,15 +117,21 @@ class CommandLineData extends AbstractData
                 $item['taxonomy']['categories'] = implode(' ', $item['taxonomy']['categories']);
                 $item['taxonomy']['tags'] = implode(' ', $item['taxonomy']['tags']);
                 $item['media'] = implode(' ', $item['media']);
-            }
-            if ($this->content && !empty($page->content()) && strlen($page->content()) <= $this->maxLength) {
-                $item['content'] = $page->content();
+            } else {
+                try {
+                    $pageContent = $this->content($page);
+                    if (!empty($pageContent) && strlen($pageContent) <= $this->maxLength) {
+                        $item['content'] = $pageContent;
+                    }
+                } catch (Exception $error) {
+                    throw new Exception($error);
+                }
             }
             if (count($page->children()) > 0) {
-                $this->buildIndex($route, $mode, $depth);
+                $this->index($route, $mode, $depth);
             }
             $this->data[] = (object) $item;
-            $this->progress->advance();
+            $this->progress();
         }
     }
 }

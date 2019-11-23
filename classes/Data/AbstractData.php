@@ -14,11 +14,7 @@
 namespace Grav\Plugin\StaticGenerator\Data;
 
 use Grav\Common\Grav;
-// use Grav\Common\Plugin;
-// use Grav\Common\Page\Page;
-// use Grav\Common\Page\Media;
-// use Grav\Common\Page\Header;
-// use RocketTheme\Toolbox\Event\Event;
+use Grav\Common\Page\Page;
 use Grav\Plugin\StaticGenerator\Data\DataInterface;
 
 /**
@@ -41,12 +37,12 @@ abstract class AbstractData implements DataInterface
     /**
      * Instantiate class
      *
-     * @param boolean $content   Whether to include content.
-     * @param int     $maxLength Maximum character-length of content.
-     * @param string  $orderBy   Property to order by.
-     * @param string  $orderDir  Direction to order.
+     * @param bool   $content   Whether to include content.
+     * @param int    $maxLength Maximum character-length of content.
+     * @param string $orderBy   Property to order by.
+     * @param string $orderDir  Direction to order.
      */
-    public function __construct($content = false, $maxLength = false, $orderBy = 'date', $orderDir = 'desc')
+    public function __construct(bool $content = false, int $maxLength = null, string $orderBy = 'date', string $orderDir = 'desc')
     {
         $this->data = array();
         $this->content = $content;
@@ -72,9 +68,13 @@ abstract class AbstractData implements DataInterface
         $this->grav = Grav::instance();
         $this->grav['pages']->init();
         $this->grav['twig']->init();
-        $this->pages = $this->grav['page']->evaluate(['@page.descendants' => $route]);
-        $this->progress = 0;
-        $this->count = $this->count($route);
+        if ($route == '/') {
+            $this->pages = $this->grav['page']->evaluate(['@root.descendants']);
+        } else {
+            $this->pages = $this->grav['page']->evaluate(['@page.descendants' => $route]);
+        }
+        $this->progress = 1;
+        $this->count = $this->count();
     }
 
     /**
@@ -84,17 +84,39 @@ abstract class AbstractData implements DataInterface
      */
     public function count(): int
     {
-        return count($this->pages) + 1;
+        return count($this->pages);
+    }
+
+    /**
+     * Increase counter
+     *
+     * @return void
+     */
+    public function progress(): void
+    {
+        $this->progress++;
+    }
+
+    /**
+     * Parse Page content
+     *
+     * @param Page $page Instance of Grav\Common\Page\Page.
+     *
+     * @return string content
+     */
+    public function content(Page $page): string
+    {
+        return $page->rawMarkdown() ?? '';
     }
 
     /**
      * Create data-structure recursively
      *
-     * @param string  $route Route to page.
-     * @param string  $mode  Placeholder for operation-mode, private.
-     * @param integer $depth Placeholder for recursion depth, private.
+     * @param string $route Route to page.
+     * @param string $mode  Placeholder for operation-mode, private.
+     * @param int    $depth Placeholder for recursion depth, private.
      *
      * @return mixed Index of Pages with FrontMatter
      */
-    abstract public function buildIndex($route, $mode = false, $depth = 0);
+    abstract public function index(string $route, string $mode = '', int $depth = 0);
 }

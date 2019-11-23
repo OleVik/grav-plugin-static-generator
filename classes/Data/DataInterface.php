@@ -13,6 +13,8 @@
  */
 namespace Grav\Plugin\StaticGenerator\Data;
 
+use Grav\Common\Page\Page;
+
 /**
  * Data Interface
  *
@@ -27,12 +29,12 @@ interface DataInterface
     /**
      * Instantiate class
      *
-     * @param boolean $content   Whether to include content.
-     * @param int     $maxLength Maximum character-length of content.
-     * @param string  $orderBy   Property to order by.
-     * @param string  $orderDir  Direction to order.
+     * @param bool   $content   Whether to include content.
+     * @param int    $maxLength Maximum character-length of content.
+     * @param string $orderBy   Property to order by.
+     * @param string $orderDir  Direction to order.
      */
-    public function __construct($content = false, $maxLength = false, $orderBy = 'date', $orderDir = 'desc');
+    public function __construct(bool $content = false, int $maxLength = null, string $orderBy = 'date', string $orderDir = 'desc');
 
     /**
      * Count items
@@ -42,13 +44,29 @@ interface DataInterface
     public function count(): int;
 
     /**
+     * Increase counter
+     *
+     * @return void
+     */
+    public function progress(): void;
+
+    /**
      * Create data-structure recursively
      *
-     * @param string  $route Route to page.
-     * @param string  $mode  Placeholder for operation-mode, private.
-     * @param integer $depth Placeholder for recursion depth, private.
+     * @param string $route Route to page.
+     * @param string $mode  Placeholder for operation-mode, private.
+     * @param int    $depth Placeholder for recursion depth, private.
      *
      * @return mixed Index of Pages with FrontMatter
      */
-    public function buildIndex($route, $mode = false, $depth = 0);
+    public function index(string $route, string $mode = '', int $depth = 0);
+
+    /**
+     * Parse Page content
+     *
+     * @param Page $page Instance of Grav\Common\Page\Page.
+     *
+     * @return string content
+     */
+    public function content(Page $page): string;
 }

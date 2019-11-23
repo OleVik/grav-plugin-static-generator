@@ -84,18 +84,20 @@ window.addEventListener(
     const staticGeneratorIndexButton = document.querySelector(
       ".grav-plugin-static-generator-search-index"
     );
-    const staticGeneratorPageRoute = encodeURIComponent(GravAdmin.config.route);
-    const staticGeneratorindexSearchRoute =
-      GravAdmin.config.base_url_relative +
-      ".json/task" +
-      GravAdmin.config.param_sep +
-      "indexSearch/admin-nonce" +
-      GravAdmin.config.param_sep +
-      GravAdmin.config.admin_nonce +
-      "?mode=content" +
-      "&route=" +
-      staticGeneratorPageRoute;
     if (staticGeneratorIndexButton) {
+      const staticGeneratorPageRoute = encodeURIComponent(
+        GravAdmin.config.route
+      );
+      const staticGeneratorindexSearchRoute =
+        GravAdmin.config.base_url_relative +
+        ".json/task" +
+        GravAdmin.config.param_sep +
+        "indexSearch/admin-nonce" +
+        GravAdmin.config.param_sep +
+        GravAdmin.config.admin_nonce +
+        "?mode=content" +
+        "&route=" +
+        staticGeneratorPageRoute;
       const staticGeneratorStateColors = {
         waiting: "#df8a13",
         error: "#b52b27",

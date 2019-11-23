@@ -1,6 +1,6 @@
 <?php
 /**
- * Static Generator Plugin, Server Sent Events Data Builder
+ * Static Generator Plugin, CLI Data Tester
  *
  * PHP version 7
  *
@@ -14,98 +14,19 @@
 namespace Grav\Plugin\StaticGenerator\Data;
 
 use Grav\Common\Grav;
-use Grav\Framework\Cache\Adapter\FileStorage;
-use Grav\Plugin\StaticGenerator\Timer;
 use Grav\Plugin\StaticGenerator\Data\AbstractData;
 
 /**
- * Server Sent Events Data Builder
+ * CLI Data Tester
  *
  * @category API
- * @package  Grav\Plugin\StaticGeneratorPlugin\Data\ServerSentEventsData
+ * @package  Grav\Plugin\StaticGeneratorPlugin\Data\TestData
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
-class ServerSentEventsData extends AbstractData
+class TestData extends AbstractData
 {
-    /**
-     * Initialize headers
-     *
-     * @return void
-     */
-    public function bootstrap()
-    {
-        error_reporting(0);
-        set_time_limit(0);
-        header('Content-Type: text/event-stream');
-        header('Access-Control-Allow-Origin: *');
-        header('Cache-Control: no-store, no-cache, must-revalidate');
-        header('Cache-Control: post-check=0, pre-check=0', false);
-        header('Pragma: no-cache');
-        echo 'event: update' . "\n\n";
-        echo 'data: ' . json_encode(
-            [
-                'datetime' => date(DATE_ISO8601),
-                'total' => $this->count
-            ]
-        ) . "\n\n";
-    }
-    
-    /**
-     * Finish and cleanup
-     *
-     * @param string $location Stream to storage-folder.
-     * @param string $slug     Hyphenized Page-route.
-     * @param array  $data     Data to store.
-     * @param Timer  $Timer    Instance of Grav\Plugin\StaticGenerator\Timer.
-     *
-     * @return void
-     */
-    public function teardown(string $location, string $slug, array $data, Timer $Timer): void
-    {
-        $file = $slug . '.full.js';
-        $Storage = new FileStorage(
-            Grav::instance()['locator']->findResource($location)
-        );
-        if ($Storage->doHas($file)) {
-            $Storage->doDelete($file);
-        }
-        $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($data) . ';', 0);
-        $message = ucfirst(
-            $this->grav['language']->translate(
-                ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.STORED']
-            )
-        ) . ' ' . $this->count . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.ITEMS']
-        ) . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
-        ) . ' ' . $location . '/' . $file . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
-        ) . ' ' . Timer::format($Timer->getTime()) . '.';
-        echo 'event: update' . "\n\n";
-        echo 'data: ' . json_encode(
-            [
-                'datetime' => date(DATE_ISO8601),
-                'content' => $message,
-                'text' => $file,
-                'value' => $location . '/' . $file
-            ]
-        ) . "\n\n";
-        Grav::instance()['log']->info($message);
-        echo 'event: close' . "\n\n";
-        echo 'data: ' . json_encode(
-            [
-                'datetime' => date(DATE_ISO8601),
-                'content' => 'END-OF-STREAM'
-            ]
-        ) . "\n\n";
-        exit();
-    }
-
     /**
      * Create data-structure recursively
      *
@@ -166,6 +87,8 @@ class ServerSentEventsData extends AbstractData
             } else {
                 try {
                     $pageContent = $this->content($page);
+                    echo '[' . $this->progress . '/' . $this->count . '] ' .
+                        $item['title'] . ' (' . strlen($pageContent) . ")\n";
                     if (!empty($pageContent) && strlen($pageContent) <= $this->maxLength) {
                         $item['content'] = $pageContent;
                     }
@@ -173,26 +96,12 @@ class ServerSentEventsData extends AbstractData
                     throw new Exception($error);
                 }
             }
-            $this->progress();
-            echo 'event: update' . "\n\n";
-            echo 'data: ' . json_encode(
-                [
-                    'datetime' => date(DATE_ISO8601),
-                    'progress' => $this->progress,
-                    'content' => $page->title()
-                ]
-            ) . "\n\n";
+
             if (count($page->children()) > 0) {
                 $this->index($route, $mode, $depth);
             }
             $this->data[] = (object) $item;
-            while (ob_get_level() > 0) {
-                ob_end_flush();
-            }
-            flush();
-            if (connection_aborted()) {
-                exit();
-            }
+            $this->progress();
         }
     }
 }

@@ -19,7 +19,7 @@ use Grav\Console\ConsoleCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Grav\Framework\Cache\Adapter\FileStorage;
-use Grav\Plugin\StaticGenerator\Data\CommandLineData;
+use Grav\Plugin\StaticGenerator\Data\TestData;
 use Grav\Plugin\StaticGenerator\Timer;
 
 /**
@@ -28,12 +28,12 @@ use Grav\Plugin\StaticGenerator\Timer;
  * Command line utility for storing Pages data as JSON
  *
  * @category API
- * @package  Grav\Plugin\Console\GenerateStaticIndexCommand
+ * @package  Grav\Plugin\Console\TestStaticDataCommand
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-theme-scholar
  */
-class GenerateStaticIndexCommand extends ConsoleCommand
+class TestStaticDataCommand extends ConsoleCommand
 {
     /**
      * Command definitions
@@ -43,9 +43,9 @@ class GenerateStaticIndexCommand extends ConsoleCommand
     protected function configure()
     {
         $this
-            ->setName("index")
-            ->setDescription("Generates and stores Pages index.")
-            ->setHelp('The <info>index</info>-command generates and stores Pages index.')
+            ->setName("test")
+            ->setDescription("Tests generation and storage of Pages index.")
+            ->setHelp('The <info>test</info>-command tests generation and storage of Pages index.')
             ->addArgument(
                 'route',
                 InputArgument::REQUIRED,
@@ -111,58 +111,12 @@ class GenerateStaticIndexCommand extends ConsoleCommand
         $wrap = $this->input->getOption('wrap');
         $force = $this->input->getOption('force');
         $maxLength = $config['content_max_length'];
-        $this->output->writeln('<info>Generating data index</info>');
+        $this->output->writeln('<info>Testing data index</info>');
         try {
-            $targets = array(
-                'persist' => $locator->findResource('user://') . '/data/persist',
-                'transient' => $locator->findResource('cache://') . '/transient'
-            );
-            if (array_key_exists($target, $targets)) {
-                $location = $targets[$target];
-            } elseif (Utils::contains($target, '://')) {
-                $scheme = parse_url($target, PHP_URL_SCHEME);
-                $location = $locator->findResource($scheme . '://') . str_replace($scheme . '://', '/', $target);
-            } else {
-                $this->output->writeln('<error>Target must be a valid stream resource, prefixing one of:</error>');
-                foreach ($locator->getSchemes() as $scheme) {
-                    $this->output->writeln($scheme . '://');
-                }
-                return;
-            }
-            $Data = new CommandLineData($content, $maxLength);
+            $Data = new TestData($content, $maxLength);
             $Data->setup($route, $this->output);
+            $this->output->writeln('<info>Count: ' . $Data->count . '</info>');
             $Data->index($route);
-            $Data->progress->finish();
-            if ($echo) {
-                echo json_encode($Data->data, JSON_PRETTY_PRINT);
-            } else {
-                $extension = '.json';
-                if ($content) {
-                    $basename = $basename . '.full';
-                }
-                if ($wrap) {
-                    $extension = '.js';
-                }
-                $Storage = new FileStorage($location);
-                $file = $basename . $extension;
-                if ($force && $Storage->doHas($file)) {
-                    $Storage->doDelete($file);
-                }
-                if ($wrap && !$content) {
-                    $Storage->doSet($file, 'const GravMetadataIndex = ' . json_encode($Data->data) . ';', 0);
-                } elseif ($wrap && $content) {
-                    $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($Data->data) . ';', 0);
-                } else {
-                    $Storage->doSet($file, json_encode($Data->data));
-                }
-                $this->output->writeln('');
-                $this->output->writeln(
-                    '<info>Saved <white>' . count($Data->data)
-                    . ' items</white> to <cyan>'
-                    . $location . '/' . $file . '</cyan> in <magenta>'
-                    . Timer::format($timer->getTime()) . '</magenta>.</info>'
-                );
-            }
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

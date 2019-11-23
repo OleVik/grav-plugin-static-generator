@@ -58,7 +58,7 @@ class StaticGeneratorPlugin extends Plugin
      */
     public function onPluginsInitialized()
     {
-        if ($this->isAdmin()) {
+        if ($this->isAdmin() && $this->config->get('plugins.static-generator.enabled_admin')) {
             $this->enable(
                 [
                     'onGetPageTemplates' => ['onGetPageTemplates', 0],
@@ -73,7 +73,7 @@ class StaticGeneratorPlugin extends Plugin
     /**
      * Register Page blueprints
      *
-     * @param Event $event RocketTheme\Toolbox\Event\Event
+     * @param Event $event Instance of RocketTheme\Toolbox\Event\Event.
      *
      * @return void
      */
@@ -84,6 +84,11 @@ class StaticGeneratorPlugin extends Plugin
         );
     }
 
+    /**
+     * Register button in Admin Quick Tray
+     *
+     * @return void
+     */
     public function onAdminMenu()
     {
         $options = [
@@ -97,6 +102,13 @@ class StaticGeneratorPlugin extends Plugin
         $this->grav['twig']->plugins_quick_tray['Search'] = $options;
     }
 
+    /**
+     * Handle Task-call from Admin
+     *
+     * @param Event $event Instance of RocketTheme\Toolbox\Event\Event.
+     *
+     * @return void
+     */
     public function onAdminTaskExecute(Event $event)
     {
         if ($event['method'] == 'taskIndexSearch') {
@@ -110,6 +122,10 @@ class StaticGeneratorPlugin extends Plugin
                 'route',
                 FILTER_SANITIZE_FULL_SPECIAL_CHARS
             );
+            $slug = Inflector::hyphenize($route);
+            if (empty($slug)) {
+                $slug = 'index';
+            }
             if (!$event['controller']->authorizeTask('indexSearch', ['admin.maintenance', 'admin.super'])) {
                 header('HTTP/1.0 403 Forbidden');
                 echo '403 Forbidden';
@@ -118,11 +134,20 @@ class StaticGeneratorPlugin extends Plugin
             self::storeIndex(
                 urldecode($mode),
                 '/' . urldecode($route),
-                Inflector::hyphenize($route)
+                $slug
             );
         }
     }
 
+    /**
+     * Create and store Data Index
+     *
+     * @param string $mode  Mode of operation
+     * @param string $route Route to Page
+     * @param string $slug  Slug of Page
+     *
+     * @return void
+     */
     public static function storeIndex(string $mode, string $route, string $slug)
     {
         include __DIR__ . '/vendor/autoload.php';
@@ -140,13 +165,18 @@ class StaticGeneratorPlugin extends Plugin
             $Data = new ServerSentEventsData(true, $config['content_max_length']);
             $Data->setup($route);
             $Data->bootstrap();
-            $Data->buildIndex($route);
+            $Data->index($route);
             $Data->teardown($location, $slug, $Data->data, $Timer);
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
     }
 
+    /**
+     * Register assets
+     *
+     * @return void
+     */
     public function onTwigSiteVariables()
     {
         $formatter = new YamlFormatter;
