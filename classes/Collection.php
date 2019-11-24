@@ -71,6 +71,7 @@ class Collection
         $this->grav['assets']->init();
         $this->grav['pages']->init();
         $this->grav->fireEvent('onAssetsInitialized');
+        $this->grav->fireEvent('onPageContent');
         $this->Filesystem = new Filesystem();
         $this->Timer = new Timer();
         $this->Assets = new Assets($this->handle, $this->Filesystem, $this->Timer);
@@ -105,17 +106,22 @@ class Collection
             count($pages)
         );
         foreach ($pages as $Page) {
+            try {
+                $this->store($Page);
+            } catch (Exception $error) {
+                throw new Exception($error);
+            }
             $this->store($Page);
             $this->progressBar->advance();
         }
-        foreach ($this->grav['assets']['assets_css'] as $cssAsset) {
-            if (!in_array($cssAsset['asset'], $this->assets)) {
-                $this->assets[] = $cssAsset['asset'];
+        foreach ($this->grav['assets']['assets_css'] as $key => $Asset) {
+            if (!in_array($Asset['asset'], $this->assets) && get_class($Asset) == 'Grav\Common\Assets\Css') {
+                $this->assets[] = $Asset['asset'];
             }
         }
-        foreach ($this->grav['assets']['assets_js'] as $jsAsset) {
-            if (!in_array($jsAsset['asset'], $this->assets)) {
-                $this->assets[] = $jsAsset['asset'];
+        foreach ($this->grav['assets']['assets_js'] as $key => $Asset) {
+            if (!in_array($Asset['asset'], $this->assets) && get_class($Asset) == 'Grav\Common\Assets\Js') {
+                $this->assets[] = $Asset['asset'];
             }
         }
     }

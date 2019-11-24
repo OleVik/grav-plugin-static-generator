@@ -19,9 +19,7 @@ use Grav\Common\Utils;
 use Grav\Console\ConsoleCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Grav\Framework\Cache\Adapter\FileStorage;
-use Grav\Plugin\StaticGenerator\API\Data;
-use Grav\Plugin\StaticGenerator\API\Timer;
+use Grav\Plugin\StaticGenerator\Timer;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
@@ -58,7 +56,7 @@ class ClearStaticDataCommand extends ConsoleCommand
     }
 
     /**
-     * Build and save data index
+     * Clear Data Index
      *
      * @return void
      */

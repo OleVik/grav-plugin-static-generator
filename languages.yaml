@@ -14,13 +14,14 @@ en:
           PERSIST: Persist
           TRANSIENT: Transient
           NATIVE: Native
+      EMPTY: Found no lower-level Pages
       CONTENT_MAX_LENGTH: Content Max Length
       JS: Admin JS
       INDEX:
         HINT: Index Search Data
         WAITING: Waiting for Indexer ...
         ONGOING: Indexing Search Data ...
-        SUCCESS: Stored indexed Search Data
+        SUCCESS: Finished indexing Search Data
         ERROR: Failed to index Search Data
       DESCRIPTION:
         SEARCH_FILE: File to use for searching.

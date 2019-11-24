@@ -163,8 +163,9 @@ class StaticGeneratorPlugin extends Plugin
                 return;
             }
             $Data = new ServerSentEventsData(true, $config['content_max_length']);
+            $Data->headers();
             $Data->setup($route);
-            $Data->bootstrap();
+            $Data->verify();
             $Data->index($route);
             $Data->teardown($location, $slug, $Data->data, $Timer);
         } catch (\Exception $e) {
@@ -229,7 +230,7 @@ class StaticGeneratorPlugin extends Plugin
         $files = Utilities::filesFinder($target, ['js']);
         $searchFiles = array('' => 'None');
         foreach ($files as $file) {
-            $name = $file->getBasename();
+            $name = $file->getFilename();
             $searchFiles[$target . '/' . $name] = $name;
         }
         return $searchFiles;

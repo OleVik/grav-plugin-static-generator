@@ -13,7 +13,7 @@ function staticGeneratorStore(url, indexButton, StateColors, Toastr) {
   Toastr.info(StaticGeneratorTranslation.ADMIN.INDEX.WAITING, null, persist);
   indexButton.disabled = true;
   indexEvent.addEventListener("open", event => {
-    console.debug("Executing task indexSearch");
+    console.debug(`Executing task indexSearch: ${url}`);
     Toastr.clear();
     Toastr.info(
       "[0/0]",
@@ -22,7 +22,7 @@ function staticGeneratorStore(url, indexButton, StateColors, Toastr) {
     );
   });
   indexEvent.addEventListener("error", event => {
-    console.error("Failed to execute task indexSearch");
+    console.error("Failed to execute task indexSearch", event);
     indexButton.style.color = StateColors.error;
     indexButton.disabled = false;
     Toastr.error(StaticGeneratorTranslation.ADMIN.INDEX.ERROR, null, persist);
@@ -60,7 +60,7 @@ function staticGeneratorStore(url, indexButton, StateColors, Toastr) {
       }
     } else {
       indexEvent.close();
-      console.debug("Executed task indexSearch");
+      console.debug(`Executed task indexSearch: ${total} items stored`);
     }
   });
 }

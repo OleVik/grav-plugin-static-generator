@@ -73,22 +73,21 @@ class Utilities
      */
     public static function filesFinder(string $directory, array $types): array
     {
-        $iterator = new \RecursiveDirectoryIterator(
+        $files = [];
+        if (!is_dir($directory)) {
+            return $files;
+        }
+        $iterator = new \FilesystemIterator(
             $directory,
-            \RecursiveDirectoryIterator::SKIP_DOTS
+            \FilesystemIterator::SKIP_DOTS
         );
-        $iterator = new \RecursiveIteratorIterator($iterator);
         $files = [];
         foreach ($iterator as $file) {
             if (in_array(pathinfo($file, PATHINFO_EXTENSION), $types)) {
                 $files[] = $file;
             }
         }
-        if (count($files) > 0) {
-            return $files;
-        } else {
-            return [];
-        }
+        return $files;
     }
 
     /**

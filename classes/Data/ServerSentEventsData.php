@@ -30,26 +30,39 @@ use Grav\Plugin\StaticGenerator\Data\AbstractData;
 class ServerSentEventsData extends AbstractData
 {
     /**
-     * Initialize headers
+     * Check count before progressing
      *
      * @return void
      */
-    public function bootstrap()
+    public function verify()
     {
-        error_reporting(0);
-        set_time_limit(0);
-        header('Content-Type: text/event-stream');
-        header('Access-Control-Allow-Origin: *');
-        header('Cache-Control: no-store, no-cache, must-revalidate');
-        header('Cache-Control: post-check=0, pre-check=0', false);
-        header('Pragma: no-cache');
-        echo 'event: update' . "\n\n";
-        echo 'data: ' . json_encode(
-            [
-                'datetime' => date(DATE_ISO8601),
-                'total' => $this->count
-            ]
-        ) . "\n\n";
+        if ($this->count > 0) {
+            echo 'event: update' . "\n\n";
+            echo 'data: ' . json_encode(
+                [
+                    'datetime' => date(DATE_ISO8601),
+                    'total' => $this->count
+                ]
+            ) . "\n\n";
+        } else {
+            echo 'event: update' . "\n\n";
+            echo 'data: ' . json_encode(
+                [
+                    'datetime' => date(DATE_ISO8601),
+                    'content' => Grav::instance()['language']->translate(
+                        ['PLUGIN_STATIC_GENERATOR.ADMIN.EMPTY']
+                    ) . '.'
+                ]
+            ) . "\n\n";
+            echo 'event: close' . "\n\n";
+            echo 'data: ' . json_encode(
+                [
+                    'datetime' => date(DATE_ISO8601),
+                    'content' => 'END-OF-STREAM'
+                ]
+            ) . "\n\n";
+            exit();
+        }
     }
     
     /**

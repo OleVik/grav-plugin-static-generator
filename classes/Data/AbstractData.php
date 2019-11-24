@@ -52,7 +52,23 @@ abstract class AbstractData implements DataInterface
     }
 
     /**
-     * Initialize
+     * Declare headers
+     *
+     * @return void
+     */
+    public function headers()
+    {
+        error_reporting(0);
+        set_time_limit(0);
+        header('Content-Type: text/event-stream');
+        header('Access-Control-Allow-Origin: *');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
+    }
+
+    /**
+     * Bootstrap data
      *
      * @param string $route Route to page.
      *

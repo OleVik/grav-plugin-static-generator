@@ -1,14 +1,14 @@
 name: Static Generator
 version: 1.0.0
 description: Static generation of Page(s) and Index.
-icon: plug
+icon: search-plus
 author:
   name: Ole Vik
   email: git@olevik.net
-homepage: https://github.com/ole-vik/grav-plugin-static-generator
+homepage: https://github.com/OleVik/grav-plugin-static-generator
 keywords: grav, plugin, static, index, search, data, json, html
-bugs: https://github.com/ole-vik/grav-plugin-static-generator/issues
-docs: https://github.com/ole-vik/grav-plugin-static-generator/blob/develop/README.md
+bugs: https://github.com/OleVik/grav-plugin-static-generator/issues
+docs: https://github.com/OleVik/grav-plugin-static-generator/blob/develop/README.md
 license: MIT
 
 form:
