@@ -2,5 +2,5 @@ enabled: true
 index: "persist"
 content: "persist"
 content_max_length: 100000
+admin: true
 js: true
-enabled_admin: true

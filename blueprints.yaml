@@ -1,7 +1,7 @@
 name: Static Generator
 version: 1.0.0
 description: Static generation of Page(s) and Index.
-icon: search-plus
+icon: bolt
 author:
   name: Ole Vik
   email: git@olevik.net
@@ -46,7 +46,7 @@ form:
         transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
       validate:
         type: bool
-    test:
+    addendum:
       type: spacer
       text: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.ADDENDUM
     content_max_length:
@@ -56,7 +56,16 @@ form:
       validate:
         min: 0
         step: 10000
-        max: 1000000
+        max: 10000000
+    admin:
+      type: toggle
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.ADMIN
+      description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.ADMIN
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
     js:
       type: toggle
       label: PLUGIN_STATIC_GENERATOR.ADMIN.JS

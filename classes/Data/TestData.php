@@ -28,6 +28,27 @@ use Grav\Plugin\StaticGenerator\Data\AbstractData;
 class TestData extends AbstractData
 {
     /**
+     * Initialize
+     *
+     * @param string $route  Route to page.
+     * @param string $handle Instance of Symfony\Component\Console\Output.
+     *
+     * @return void
+     */
+    public function setup($route, $handle)
+    {
+        parent::setup();
+        $this->grav['pages']->init();
+        $this->grav['twig']->init();
+        if ($route == '/') {
+            $this->pages = $this->grav['page']->evaluate(['@root.descendants']);
+        } else {
+            $this->pages = $this->grav['page']->evaluate(['@page.descendants' => $route]);
+        }
+        $this->count = $this->count();
+    }
+
+    /**
      * Create data-structure recursively
      *
      * @param string $route Route to page.
@@ -80,6 +101,8 @@ class TestData extends AbstractData
             if (!empty($page->media()->all())) {
                 $item['media'] = array_keys($page->media()->all());
             }
+            echo '[' . $this->progress . '/' . $this->count . '] ' .
+                $item['title'] . ' (' . strlen($pageContent) . ")\n";
             if (!$this->content) {
                 $item['taxonomy']['categories'] = implode(' ', $item['taxonomy']['categories']);
                 $item['taxonomy']['tags'] = implode(' ', $item['taxonomy']['tags']);
@@ -87,8 +110,6 @@ class TestData extends AbstractData
             } else {
                 try {
                     $pageContent = $this->content($page);
-                    echo '[' . $this->progress . '/' . $this->count . '] ' .
-                        $item['title'] . ' (' . strlen($pageContent) . ")\n";
                     if (!empty($pageContent) && strlen($pageContent) <= $this->maxLength) {
                         $item['content'] = $pageContent;
                     }

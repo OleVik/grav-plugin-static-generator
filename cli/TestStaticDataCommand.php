@@ -44,8 +44,8 @@ class TestStaticDataCommand extends ConsoleCommand
     {
         $this
             ->setName("test")
-            ->setDescription("Tests generation and storage of Pages index.")
-            ->setHelp('The <info>test</info>-command tests generation and storage of Pages index.')
+            ->setDescription("Tests Page iteration.")
+            ->setHelp('The <info>test</info>-command tests Page iteration.')
             ->addArgument(
                 'route',
                 InputArgument::REQUIRED,

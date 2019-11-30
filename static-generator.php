@@ -58,7 +58,7 @@ class StaticGeneratorPlugin extends Plugin
      */
     public function onPluginsInitialized()
     {
-        if ($this->isAdmin() && $this->config->get('plugins.static-generator.enabled_admin')) {
+        if ($this->isAdmin() && $this->config->get('plugins.static-generator.admin')) {
             $this->enable(
                 [
                     'onGetPageTemplates' => ['onGetPageTemplates', 0],
@@ -97,7 +97,7 @@ class StaticGeneratorPlugin extends Plugin
                 ['PLUGIN_STATIC_GENERATOR.ADMIN.INDEX.HINT']
             ),
             'class' => 'grav-plugin-static-generator-search-index',
-            'icon' => 'fa-search-plus'
+            'icon' => 'fa-bolt'
         ];
         $this->grav['twig']->plugins_quick_tray['Search'] = $options;
     }

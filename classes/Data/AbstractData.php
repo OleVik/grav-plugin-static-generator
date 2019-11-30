@@ -70,11 +70,9 @@ abstract class AbstractData implements DataInterface
     /**
      * Bootstrap data
      *
-     * @param string $route Route to page.
-     *
      * @return void
      */
-    public function setup($route)
+    public function setup()
     {
         if (isset(Grav::instance()['admin'])) {
             if (method_exists(Grav::instance()['admin'], 'enablePages')) {
@@ -82,15 +80,6 @@ abstract class AbstractData implements DataInterface
             }
         }
         $this->grav = Grav::instance();
-        $this->grav['pages']->init();
-        $this->grav['twig']->init();
-        if ($route == '/') {
-            $this->pages = $this->grav['page']->evaluate(['@root.descendants']);
-        } else {
-            $this->pages = $this->grav['page']->evaluate(['@page.descendants' => $route]);
-        }
-        $this->progress = 1;
-        $this->count = $this->count();
     }
 
     /**

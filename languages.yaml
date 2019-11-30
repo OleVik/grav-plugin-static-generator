@@ -16,6 +16,7 @@ en:
           NATIVE: Native
       EMPTY: Found no lower-level Pages
       CONTENT_MAX_LENGTH: Content Max Length
+      ADMIN: Admin
       JS: Admin JS
       INDEX:
         HINT: Index Search Data
@@ -30,4 +31,5 @@ en:
           CONTENT: Where to store generated content.
           ADDENDUM: Native for /user/plugins/static-generator/data, Persist for /user/data/persist, Transient for /cache/transient.
         CONTENT_MAX_LENGTH: Maximum characters in Page when generating content. If the Page contains more, it will not be stored.
+        ADMIN: Enable plugin in Admin.
         JS: Use plugin's JavaScript in Admin.
