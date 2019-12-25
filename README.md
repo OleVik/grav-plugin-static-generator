@@ -1,6 +1,5 @@
 # Static Generator Plugin
 
-
 The **Static Generator** Plugin is made for the [Grav CMS](http://github.com/getgrav/grav), and facilitates indexing and static generation of Pages.
 
 
@@ -172,3 +171,7 @@ The `php bin/plugin static-generator clear` command will delete the preset folde
 ### Debugging
 
 The `php bin/plugin static-generator test` command attempts to iterate Page(s) in the samme manner that the `index` and `page` commands do, to verify that the indices and static content can be generated.
+
+## TODO
+
+- [ ] Static Generator: Simplify options, add Page button
