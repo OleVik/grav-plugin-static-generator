@@ -23,7 +23,7 @@ form:
       validate:
         type: bool
     index:
-      type: toggle
+      type: select
       label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.INDEX
       description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.INDEX
       highlight: native
@@ -33,9 +33,9 @@ form:
         persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
         transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
       validate:
-        type: bool
+        required: true
     content:
-      type: toggle
+      type: select
       label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.CONTENT
       description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.CONTENT
       highlight: native
@@ -45,7 +45,7 @@ form:
         persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
         transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
       validate:
-        type: bool
+        required: true
     addendum:
       type: spacer
       text: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.ADDENDUM
