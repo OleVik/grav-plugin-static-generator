@@ -1,0 +1,11 @@
+{% extends "forms/field.html.twig" %}
+
+{% block contents %}
+    <div class="button-bar" style="margin:0;padding:0;text-align:left;background:0;z-index:2;">
+        {%- if field.fields -%}
+            {% for child in field.fields %}
+                <a class="button {{ child.class }}" href="{{ child.url }}">{{ child.name|t }}</a>
+            {% endfor %}
+        {%- endif -%}
+    </div>
+{% endblock %}

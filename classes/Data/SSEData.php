@@ -22,103 +22,13 @@ use Grav\Plugin\StaticGenerator\Data\AbstractData;
  * Server Sent Events Data Builder
  *
  * @category API
- * @package  Grav\Plugin\StaticGeneratorPlugin\Data\ServerSentEventsData
+ * @package  Grav\Plugin\StaticGenerator\Data\SSEData
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
-class ServerSentEventsData extends AbstractData
+class SSEData extends AbstractData
 {
-    /**
-     * Check count before progressing
-     *
-     * @return void
-     */
-    public function verify()
-    {
-        if ($this->count > 0) {
-            echo 'event: update' . "\n\n";
-            echo 'data: ' . json_encode(
-                [
-                    'datetime' => date(DATE_ISO8601),
-                    'total' => $this->count
-                ]
-            ) . "\n\n";
-        } else {
-            echo 'event: update' . "\n\n";
-            echo 'data: ' . json_encode(
-                [
-                    'datetime' => date(DATE_ISO8601),
-                    'content' => Grav::instance()['language']->translate(
-                        ['PLUGIN_STATIC_GENERATOR.ADMIN.EMPTY']
-                    ) . '.'
-                ]
-            ) . "\n\n";
-            echo 'event: close' . "\n\n";
-            echo 'data: ' . json_encode(
-                [
-                    'datetime' => date(DATE_ISO8601),
-                    'content' => 'END-OF-STREAM'
-                ]
-            ) . "\n\n";
-            exit();
-        }
-    }
-    
-    /**
-     * Finish and cleanup
-     *
-     * @param string $location Stream to storage-folder.
-     * @param string $slug     Hyphenized Page-route.
-     * @param array  $data     Data to store.
-     * @param Timer  $Timer    Instance of Grav\Plugin\StaticGenerator\Timer.
-     *
-     * @return void
-     */
-    public function teardown(string $location, string $slug, array $data, Timer $Timer): void
-    {
-        $file = $slug . '.full.js';
-        $Storage = new FileStorage(
-            Grav::instance()['locator']->findResource($location)
-        );
-        if ($Storage->doHas($file)) {
-            $Storage->doDelete($file);
-        }
-        $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($data) . ';', 0);
-        $message = ucfirst(
-            $this->grav['language']->translate(
-                ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.STORED']
-            )
-        ) . ' ' . $this->count . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.ITEMS']
-        ) . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
-        ) . ' ' . $location . '/' . $file . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
-        ) . ' ' . Timer::format($Timer->getTime()) . '.';
-        echo 'event: update' . "\n\n";
-        echo 'data: ' . json_encode(
-            [
-                'datetime' => date(DATE_ISO8601),
-                'content' => $message,
-                'text' => $file,
-                'value' => $location . '/' . $file
-            ]
-        ) . "\n\n";
-        Grav::instance()['log']->info($message);
-        echo 'event: close' . "\n\n";
-        echo 'data: ' . json_encode(
-            [
-                'datetime' => date(DATE_ISO8601),
-                'content' => 'END-OF-STREAM'
-            ]
-        ) . "\n\n";
-        exit();
-    }
-
     /**
      * Create data-structure recursively
      *
@@ -138,9 +48,9 @@ class ServerSentEventsData extends AbstractData
         if ($depth > 1) {
             $mode = '@page.children';
         }
-        $pages = $this->grav['page']->evaluate([$mode => $route]);
-        $pages = $pages->published()->order($this->orderBy, $this->orderDir);
-        foreach ($pages as $page) {
+        $this->pages = $this->grav['page']->evaluate([$mode => $route]);
+        $this->pages = $this->pages->order($this->orderBy, $this->orderDir);
+        foreach ($this->pages as $page) {
             $route = $page->rawRoute();
             $item = array(
                 'title' => $page->title(),
@@ -207,5 +117,122 @@ class ServerSentEventsData extends AbstractData
                 exit();
             }
         }
+    }
+
+    /**
+     * Check count before progressing
+     *
+     * @param string $route Route to page.
+     *
+     * @return string
+     */
+    public function verify($route): string
+    {
+        $mode = '@page.descendants';
+        if ($route == '/') {
+            $mode = '@root.children';
+        }
+        $this->pages = $this->grav['page']->evaluate([$mode => $route]);
+        if ($this->count() < 1) {
+            $route = '/';
+            $this->pages = $this->grav['page']->evaluate(['@root.children' => '/']);
+        }
+        // var_export($route);
+        // var_export($this->count());
+        // exit();
+        if ($this->count() > 0) {
+            echo 'event: update' . "\n\n";
+            echo 'data: ' . json_encode(
+                [
+                    'datetime' => date(DATE_ISO8601),
+                    'total' => $this->count()
+                ]
+            ) . "\n\n";
+        } else {
+            echo 'event: update' . "\n\n";
+            echo 'data: ' . json_encode(
+                [
+                    'datetime' => date(DATE_ISO8601),
+                    'content' => Grav::instance()['language']->translate(
+                        ['PLUGIN_STATIC_GENERATOR.ADMIN.EMPTY']
+                    ) . '.'
+                ]
+            ) . "\n\n";
+            echo 'event: close' . "\n\n";
+            echo 'data: ' . json_encode(
+                [
+                    'datetime' => date(DATE_ISO8601),
+                    'content' => 'END-OF-STREAM'
+                ]
+            ) . "\n\n";
+            // exit();
+        }
+        return $route;
+    }
+    
+    /**
+     * Cleanup
+     *
+     * @param string $location Stream to storage-folder.
+     * @param string $slug     Hyphenized Page-route.
+     * @param array  $data     Data to store.
+     * @param Timer  $Timer    Instance of Grav\Plugin\StaticGenerator\Timer.
+     *
+     * @return void
+     */
+    public function teardown(string $location, string $slug, array $data, Timer $Timer): void
+    {
+        if (empty($slug)) {
+            $slug = 'index';
+        }
+        $file = $slug . '.full.js';
+        $Storage = new FileStorage(
+            Grav::instance()['locator']->findResource($location)
+        );
+        if ($Storage->doHas($file)) {
+            $Storage->doDelete($file);
+        }
+        $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($data) . ';', 0);
+        $message = ucfirst(
+            $this->grav['language']->translate(
+                ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.STORED']
+            )
+        ) . ' ' . $this->count() . ' ' .
+        $this->grav['language']->translate(
+            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.ITEMS']
+        ) . ' ' .
+        $this->grav['language']->translate(
+            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
+        ) . ' ' . $location . '/' . $file . ' ' .
+        $this->grav['language']->translate(
+            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
+        ) . ' ' . Timer::format($Timer->getTime()) . '.';
+        echo 'event: update' . "\n\n";
+        echo 'data: ' . json_encode(
+            [
+                'datetime' => date(DATE_ISO8601),
+                'content' => $message,
+                'text' => $file,
+                'value' => $location . '/' . $file
+            ]
+        ) . "\n\n";
+        Grav::instance()['log']->info($message);
+    }
+
+    /**
+     * Finish stream
+     *
+     * @return void
+     */
+    public static function finish(): void
+    {
+        echo 'event: close' . "\n\n";
+        echo 'data: ' . json_encode(
+            [
+                'datetime' => date(DATE_ISO8601),
+                'content' => 'END-OF-STREAM'
+            ]
+        ) . "\n\n";
+        exit();
     }
 }

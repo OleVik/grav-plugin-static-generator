@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "60e7f5861bcf9ea3606fe54868682569",
+    "content-hash": "ef32ed51e00ac7f90de7e9d28d165503",
     "packages": [
         {
             "name": "symfony/filesystem",

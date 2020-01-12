@@ -66,12 +66,38 @@ class Collection
     public function setup(): void
     {
         $this->grav = Grav::instance();
-        $this->grav['twig']->init();
-        $this->grav['themes']->init();
-        $this->grav['assets']->init();
-        $this->grav['pages']->init();
+        // $this->grav->setup();
+        // $this->grav->process();
+
+        $this->grav->fireEvent('onPluginsInitialized');
+        $this->grav->fireEvent('onThemeInitialized');
         $this->grav->fireEvent('onAssetsInitialized');
-        $this->grav->fireEvent('onPageContent');
+        $this->grav['twig']->init();
+        $this->grav['pages']->init();
+        $this->grav['config']->init();
+        $this->grav['uri']->init();
+        $this->grav['plugins']->init();
+        $this->grav['themes']->init();
+        // $this->grav['streams'];
+        $this->grav['assets']->init();
+        // $this->grav->fireEvent('onTwigTemplatePaths');
+        // $this->grav->fireEvent('onTwigInitialized');
+        // $this->grav->fireEvent('onTwigExtensions');
+        // $this->grav->fireEvent('onPagesInitialized');
+        // $this->grav->fireEvent('onPageInitialized');
+        // $this->grav->fireEvent('onPageContentRaw');
+        // $this->grav->fireEvent('onMarkdownInitialized');
+        // $this->grav->fireEvent('onPageContentProcessed');
+        // $this->grav->fireEvent('onPageContent');
+        // $this->grav->fireEvent('onTwigPageVariables');
+        // $this->grav->fireEvent('onHttpPostFilter');
+        // $this->grav->fireEvent('onTwigSiteVariables');
+        // $this->grav->fireEvent('onCollectionProcessed');
+        // $this->grav->fireEvent('onOutputGenerated');
+        // $this->grav->fireEvent('onOutputRendered');
+        // $this->grav->fireEvent('onShortcodeHandlers');
+        // dump($this->grav['twig']->twig_paths);
+        // exit();
         $this->Filesystem = new Filesystem();
         $this->Timer = new Timer();
         $this->Assets = new Assets($this->handle, $this->Filesystem, $this->Timer);
@@ -147,6 +173,23 @@ class Collection
             $this->result,
             $this->progressBar,
             $this->force
+        );
+    }
+
+    public function mirrorImages(): void
+    {
+        $this->handle->writeln('<white>Processing Images</white>');
+        // $this->handle->writeln('Location: ' . GRAV_ROOT . '/images');
+        // $this->handle->writeln('Target: ' . $this->location);
+        $this->Filesystem->mirror(
+            GRAV_ROOT . '/images',
+            $this->location . '/images',
+            null,
+            [
+                'override' => true,
+                'copy_on_windows' => true,
+                'delete' => true
+            ]
         );
     }
 

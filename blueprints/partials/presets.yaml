@@ -1,0 +1,37 @@
+section:
+  type: section
+  text: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ADDENDUM
+  underline: true
+presets:
+  type: list
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ADDENDUM
+  style: vertical
+  classes: static-generator-presets
+  fields:
+    .name:
+      type: text
+      label: PLUGIN_ADMIN.NAME
+      placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.NAME
+      validate:
+        required: true
+    .route:
+      type: text
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.ROUTE
+      placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.ROUTE
+    .target:
+      type: text
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.TARGET
+      placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.STORAGE.TARGET
+    .parameters:
+      type: array
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.PARAMETERS.TITLE
+      help: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.PARAMETERS
+      placeholder_key: PLUGIN_ADMIN.METADATA_KEY
+      placeholder_value: PLUGIN_ADMIN.METADATA_VALUE
+    .links:
+      type: preset_buttons
+      fields:
+        - class: static-generator-copy-preset
+          name: PLUGIN_ADMIN.COPY
+        - class: static-generator-preset-generate
+          name: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE

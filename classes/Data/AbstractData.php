@@ -1,6 +1,6 @@
 <?php
 /**
- * Static Generator Plugin, Data Builder
+ * Static Generator Plugin, Abstract Data Builder
  *
  * PHP version 7
  *
@@ -18,10 +18,10 @@ use Grav\Common\Page\Page;
 use Grav\Plugin\StaticGenerator\Data\DataInterface;
 
 /**
- * Data Builder
+ * Abstract Data Builder
  *
  * @category API
- * @package  Grav\Plugin\StaticGeneratorPlugin\Data\AbstractData
+ * @package  Grav\Plugin\StaticGenerator\Data\AbstractData
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
@@ -56,7 +56,7 @@ abstract class AbstractData implements DataInterface
      *
      * @return void
      */
-    public function headers()
+    public static function headers()
     {
         error_reporting(0);
         set_time_limit(0);

@@ -22,7 +22,4 @@ form:
                   label: PLUGIN_STATIC_GENERATOR.ADMIN.SEARCH_FILE
                   description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.SEARCH_FILE
                   data-options@:
-                    [
-                      '\Grav\Plugin\StaticGeneratorPlugin::getSearchFiles',
-                      "index",
-                    ]
+                    ['\Grav\Plugin\StaticGenerator::getSearchFiles', "index"]

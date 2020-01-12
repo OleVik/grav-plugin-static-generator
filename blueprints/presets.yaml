@@ -1,0 +1,13 @@
+title: Gallery
+form:
+  fields:
+    tabs:
+      type: tabs
+      fields:
+        gallery:
+          type: tab
+          title: Gallery
+          fields:
+            header.a_text_field:
+              type: text
+              label: TextField

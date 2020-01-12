@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, Page Builder
  *
@@ -18,7 +19,8 @@ use Grav\Common\Utils;
 use Grav\Console\ConsoleCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Grav\Plugin\StaticGenerator\Collection;
+use Grav\Plugin\StaticGenerator\Collection\CommandLineCollection;
+use Grav\Plugin\StaticGenerator\Timer;
 
 /**
  * StaticGenerator Page Builder
@@ -60,8 +62,38 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 'Override target-option or set a custom destination'
             )
             ->addOption(
-                'force',
+                'preset',
+                'p',
+                InputOption::VALUE_OPTIONAL,
+                'Name of Config preset'
+            )
+            ->addOption(
+                'assets',
+                'a',
+                InputOption::VALUE_NONE,
+                'Include assets'
+            )
+            ->addOption(
+                'static-assets',
+                's',
+                InputOption::VALUE_NONE,
+                'Include static assets'
+            )
+            ->addOption(
+                'images',
+                'i',
+                InputOption::VALUE_NONE,
+                'Include Images'
+            )
+            ->addOption(
+                'filter',
                 'f',
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'Parameters for filtering'
+            )
+            ->addOption(
+                'force',
+                null,
                 InputOption::VALUE_NONE,
                 'Forcefully save data'
             );
@@ -83,16 +115,15 @@ class GenerateStaticPageCommand extends ConsoleCommand
         if ($target === null) {
             $target = $config['content'];
         }
+        $preset = $this->input->getOption('preset') ?? '';
+        $assets = $this->input->getOption('assets');
+        $mirrorAssets = $this->input->getOption('static-assets');
+        $mirrorImages = $this->input->getOption('images');
+        $filters = $this->input->getOption('filter');
         $force = $this->input->getOption('force');
         $maxLength = $config['content_max_length'];
         try {
-            $targets = array(
-                'persist' => $locator->findResource('user://') . '/data/persist',
-                'transient' => $locator->findResource('cache://') . '/transient'
-            );
-            if (array_key_exists($target, $targets)) {
-                $location = $targets[$target];
-            } elseif (Utils::contains($target, '://')) {
+            if (Utils::contains($target, '://')) {
                 $scheme = parse_url($target, PHP_URL_SCHEME);
                 $location = $locator->findResource($scheme . '://') . str_replace($scheme . '://', '/', $target);
             } else {
@@ -103,12 +134,19 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 return;
             }
             $location = $location . DS . 'static';
-            $Collection = new Collection($this->output, $collection, $route, $location, $force);
-            $Collection->setup();
-            $Collection->buildCollection();
-            $Collection->teardown();
-            $Collection->buildAssets();
-            $Collection->teardown();
+            $Collection = new CommandLineCollection($collection, $route, $location, $force, $filters);
+            $Collection->handler($this->output);
+            $Collection->setup($preset);
+            $Collection->collection();
+            if ($assets) {
+                $Collection->assets();
+            }
+            if ($mirrorAssets) {
+                $Collection->staticAssets();
+            }
+            if ($mirrorImages) {
+                $Collection->images();
+            }
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

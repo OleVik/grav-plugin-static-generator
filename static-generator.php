@@ -1,4 +1,5 @@
 <?php
+
 /**
  * StaticGenerator Plugin
  *
@@ -6,11 +7,12 @@
  *
  * @category   Extensions
  * @package    Grav
- * @subpackage StaticGenerator
+ * @subpackage StaticGeneratorPlugin
  * @author     Ole Vik <git@olevik.net>
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @link       https://github.com/OleVik/grav-plugin-static-generator
  */
+
 namespace Grav\Plugin;
 
 use Grav\Common\Grav;
@@ -18,13 +20,15 @@ use Grav\Common\Plugin;
 use Grav\Common\Utils;
 use Grav\Common\Inflector;
 use Grav\Common\Page\Pages;
+use Grav\Common\Page\Page;
 use Grav\Framework\File\YamlFile;
 use Grav\Framework\File\Formatter\YamlFormatter;
 use RocketTheme\Toolbox\Event\Event;
 use Grav\Plugin\StaticGenerator\Data;
 use Grav\Plugin\StaticGenerator\Timer;
 use Grav\Plugin\StaticGenerator\Utilities;
-use Grav\Plugin\StaticGenerator\Data\ServerSentEventsData;
+use Grav\Plugin\StaticGenerator\Data\SSEData;
+use Grav\Plugin\StaticGenerator\Config\SSEConfig;
 
 /**
  * Persist Data and Pages from Grav
@@ -32,13 +36,20 @@ use Grav\Plugin\StaticGenerator\Data\ServerSentEventsData;
  * PHP version 7
  *
  * @category Extensions
- * @package  Grav\Plugin
+ * @package  Grav\Plugin\StaticGeneratorPlugin
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
 class StaticGeneratorPlugin extends Plugin
 {
+    /**
+     * Path for Presets Page
+     *
+     * @var string
+     */
+    protected $route = 'presets';
+
     /**
      * Register intial event and libraries
      *
@@ -47,7 +58,8 @@ class StaticGeneratorPlugin extends Plugin
     public static function getSubscribedEvents()
     {
         return [
-            'onPluginsInitialized' => ['onPluginsInitialized', 0]
+            'onPluginsInitialized' => ['onPluginsInitialized', 0],
+            'onGetPageBlueprints' => ['onGetPageBlueprints', 0]
         ];
     }
 
@@ -61,7 +73,10 @@ class StaticGeneratorPlugin extends Plugin
         if ($this->isAdmin() && $this->config->get('plugins.static-generator.admin')) {
             $this->enable(
                 [
-                    'onGetPageTemplates' => ['onGetPageTemplates', 0],
+                    'onPageInitialized' => ['onPageInitialized', 0],
+                    // 'onGetPageBlueprints' => ['onGetPageBlueprints', 0],
+                    // 'onGetPageTemplates' => ['onGetPageTemplates', 0],
+                    'onTwigTemplatePaths' => ['onTwigAdminTemplatePaths', 0],
                     'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
                     'onAdminMenu' => ['onAdminMenu', 0],
                     'onAdminTaskExecute' => ['onAdminTaskExecute', 0]
@@ -70,8 +85,53 @@ class StaticGeneratorPlugin extends Plugin
         }
     }
 
+    public function onPageInitialized()
+    {
+        // if (strpos($this->grav['uri']->path(), $this->config->get('plugins.admin.route') . '/' . $this->route) === false) {
+        //     return;
+        // }
+        // if ($this->grav['uri']->path() === $this->config->get('plugins.admin.route') . '/' . $this->route) {
+        //     $page = $this->grav['pages']->dispatch($this->route);
+        //     if (!$page) {
+        //         $file = $this->grav['locator']->findResource(
+        //             'plugin://' . $this->name . '/admin/pages/presets.md',
+        //             true,
+        //             true
+        //         );
+        //         $page = new Page();
+        //         $page->init(
+        //             new \SplFileInfo($file)
+        //         );
+        //     }
+        //     $this->grav['page'] = $page;
+        // }
+    }
+
+    public function onTwigAdminTemplatePaths()
+    {
+        // $this->grav['twig']->twig_paths[] = $this->grav['locator']->findResource(
+        //     'plugin://' . $this->name . '/admin/templates'
+        // );
+        // dump('plugin://' . $this->name . '/blueprints');
+        $this->grav['twig']->twig_paths[] = __DIR__ . '/templates';
+    }
+
     /**
-     * Register Page blueprints
+     * Register blueprints
+     *
+     * @param Event $event Instance of RocketTheme\Toolbox\Event\Event.
+     *
+     * @return void
+     */
+    public function onGetPageBlueprints(Event $event)
+    {
+        $types = $event->types;
+        $types->scanBlueprints('plugins://' . $this->name . '/blueprints');
+        // dump($event->types);
+    }
+
+    /**
+     * Register templates
      *
      * @param Event $event Instance of RocketTheme\Toolbox\Event\Event.
      *
@@ -79,9 +139,28 @@ class StaticGeneratorPlugin extends Plugin
      */
     public function onGetPageTemplates(Event $event)
     {
-        $event->types->scanBlueprints(
-            $this->grav['locator']->findResource('plugin://' . $this->name . '/blueprints')
-        );
+    //     dump('plugin://' . $this->name . '/blueprints');
+    //     dump('plugin://' . $this->name . '/admin/templates');
+    //     $event->types->scanTemplates('plugin://' . $this->name . '/admin/templates');
+        // $event->types->scanBlueprints('plugin://' . $this->name . '/blueprints');
+    //     // $event->types->register('admin/pages/presets');
+        
+        // $types = $event->types;
+        // $locator = Grav::instance()['locator'];
+        // $types->scanBlueprints($locator->findResource('plugin://' . $this->name . '/blueprints'));
+        // $types->scanTemplates($locator->findResource('plugin://' . $this->name . '/templates'));
+        // dump($event->types);
+
+        // $event->types->scanTemplates(
+        //     Grav::instance()['locator']->findResource(
+        //         'plugin://' . $this->name . '/admin/templates'
+        //     )
+        // );
+        // $event->types->scanBlueprints(
+        //     Grav::instance()['locator']->findResource(
+        //         'plugin://' . $this->name . '/blueprints'
+        //     )
+        // );
     }
 
     /**
@@ -91,15 +170,32 @@ class StaticGeneratorPlugin extends Plugin
      */
     public function onAdminMenu()
     {
-        $options = [
-            'authorize' => 'taskIndexSearch',
-            'hint' => $this->grav['language']->translate(
-                ['PLUGIN_STATIC_GENERATOR.ADMIN.INDEX.HINT']
-            ),
-            'class' => 'grav-plugin-static-generator-search-index',
-            'icon' => 'fa-bolt'
-        ];
-        $this->grav['twig']->plugins_quick_tray['Search'] = $options;
+        if ($this->config->get('plugins.static-generator.presets_page')) {
+            $options = [
+                'authorize' => 'taskIndexSearch',
+                'hint' => $this->grav['language']->translate(
+                    ['PLUGIN_STATIC_GENERATOR.ADMIN.INDEX.HINT']
+                ),
+                'class' => 'static-generator-search-index',
+                'icon' => 'fa-bolt'
+            ];
+            $this->grav['twig']->plugins_quick_tray[
+                $this->grav['language']->translate(
+                    ['PLUGIN_STATIC_GENERATOR.ADMIN.SEARCH']
+                )
+            ] = $options;
+        }
+        if ($this->config->get('plugins.static-generator.presets_page')) {
+            $this->grav['twig']->plugins_hooked_nav[
+                $this->grav['language']->translate(
+                    ['PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS']
+                )
+            ] = [
+                'route' => $this->route,
+                'icon' => 'fa-th-list',
+                'authorize' => 'admin.configuration'
+            ];
+        }
     }
 
     /**
@@ -112,6 +208,11 @@ class StaticGeneratorPlugin extends Plugin
     public function onAdminTaskExecute(Event $event)
     {
         if ($event['method'] == 'taskIndexSearch') {
+            if (!$event['controller']->authorizeTask('indexSearch', ['admin.maintenance', 'admin.super'])) {
+                header('HTTP/1.0 403 Forbidden');
+                echo '403 Forbidden';
+                exit;
+            }
             $mode = filter_input(
                 INPUT_GET,
                 'mode',
@@ -126,48 +227,89 @@ class StaticGeneratorPlugin extends Plugin
             if (empty($slug)) {
                 $slug = 'index';
             }
-            if (!$event['controller']->authorizeTask('indexSearch', ['admin.maintenance', 'admin.super'])) {
+            self::storeIndex(
+                urldecode($mode),
+                '/' . urldecode($route)
+            );
+        } elseif ($event['method'] == 'taskCopyPreset') {
+            if (!$event['controller']->authorizeTask('copyPreset', ['admin.maintenance', 'admin.super'])) {
                 header('HTTP/1.0 403 Forbidden');
                 echo '403 Forbidden';
                 exit;
             }
-            self::storeIndex(
-                urldecode($mode),
-                '/' . urldecode($route),
-                $slug
+            $preset = filter_input(
+                INPUT_GET,
+                'preset',
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS
             );
+            self::copyPreset(
+                $preset,
+                $this->grav['locator']->findResource(
+                    $this->grav['config']->get('plugins.static-generator.content')
+                    . '/presets/' . $preset
+                ),
+                $this->grav['locator']->findResource('config://')
+            );
+        }
+    }
+
+    /**
+     * Mirror Config
+     *
+     * @param string  $name     Preset name.
+     * @param string  $location Location to store Config in.
+     * @param string  $source   Source to copy from.
+     * @param boolean $force    Forcefully save.
+     *
+     * @return void
+     */
+    public static function copyPreset(
+        string $name,
+        string $location,
+        string $source,
+        bool $force = true
+    ): void {
+        include __DIR__ . '/vendor/autoload.php';
+        try {
+            SSEConfig::headers();
+            $Timer = new Timer();
+            $Data = new SSEConfig();
+            $Data->mirror(
+                $name,
+                $location,
+                $source,
+                $Timer,
+                $force
+            );
+            SSEConfig::finish();
+        } catch (\Exception $e) {
+            throw new \Exception($e);
         }
     }
 
     /**
      * Create and store Data Index
      *
-     * @param string $mode  Mode of operation
-     * @param string $route Route to Page
-     * @param string $slug  Slug of Page
+     * @param string $mode  Mode of operation.
+     * @param string $route Route to Page.
      *
      * @return void
      */
-    public static function storeIndex(string $mode, string $route, string $slug)
+    public static function storeIndex(string $mode, string $route)
     {
         include __DIR__ . '/vendor/autoload.php';
         $config = Grav::instance()['config']->get('plugins.static-generator');
         $location = $config[$mode];
         try {
+            SSEData::headers();
             $Timer = new Timer();
-            if ($location == 'persist') {
-                $location = 'user://data/persist';
-            } elseif ($location == 'transient') {
-                $location = 'cache://transient';
-            } else {
-                return;
-            }
-            $Data = new ServerSentEventsData(true, $config['content_max_length']);
-            $Data->headers();
-            $Data->setup($route);
-            $Data->verify();
+            $Data = new SSEData(true, $config['content_max_length']);
+            $Data->setup();
+            $route = $Data->verify($route);
             $Data->index($route);
+            $slug = Inflector::hyphenize($route);
             $Data->teardown($location, $slug, $Data->data, $Timer);
+            SSEData::finish();
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -222,11 +364,6 @@ class StaticGeneratorPlugin extends Plugin
         include __DIR__ . '/vendor/autoload.php';
         $config = Grav::instance()['config']->get('plugins.static-generator');
         $target = $config[$mode];
-        if ($target == 'persist') {
-            $target = 'user://data/persist';
-        } elseif ($target == 'transient') {
-            $target = 'cache://transient';
-        }
         $files = Utilities::filesFinder($target, ['js']);
         $searchFiles = array('' => 'None');
         foreach ($files as $file) {
@@ -234,5 +371,51 @@ class StaticGeneratorPlugin extends Plugin
             $searchFiles[$target . '/' . $name] = $name;
         }
         return $searchFiles;
+    }
+
+
+    /**
+     * Get Blueprint fields
+     *
+     * @param string $path   Path to blueprint
+     * @param string $prefix Optional key-prefix
+     *
+     * @return array Associative, nested array of settings
+     */
+    public static function getBlueprintFields(string $path, string $prefix = ''): array
+    {
+        $config = Grav::instance()['config'];
+        $locator = Grav::instance()['locator'];
+        $formatter = new YamlFormatter;
+        $file = new YamlFile($locator->findResource($path, true, true), $formatter);
+        $return = array();
+        foreach ($file->load() as $name => $data) {
+            if (is_array($data)) {
+                foreach ($data as $key => $property) {
+                    if (Utils::contains($key, '@')) {
+                        $key = str_replace(['data-', '@'], '', $key);
+                        if (is_string($property)) {
+                            $data[$key] = call_user_func_array(
+                                $property,
+                                []
+                            );
+                        } elseif (is_array($property)) {
+                            $data[$key] = call_user_func_array(
+                                $property[0],
+                                array_slice($property, 1, count($property)-1, true)
+                            );
+                        }
+                    }
+                }
+            }
+            if (!isset($data['name'])) {
+                $data['name'] = $prefix . $name;
+            }
+            if (!isset($data['default']) && $config->get('theme.' . $name)) {
+                $data['default'] = $config->get('theme.' . $name);
+            }
+            $return [$prefix . $name] = $data;
+        }
+        return $return;
     }
 }
