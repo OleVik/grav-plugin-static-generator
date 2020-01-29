@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Static Generator Plugin, Collection Builder
+ * Static Generator Plugin, Abstract Collection Builder
  *
  * PHP version 7
  *
@@ -28,7 +28,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 /**
- * Collection Builder
+ * Abstract Collection Builder
  *
  * @category API
  * @package  Grav\Plugin\StaticGenerator\Collection\AbstractCollection
@@ -111,7 +111,7 @@ abstract class AbstractCollection implements CollectionInterface
         $this->pages = $this->filterCollection($this->pages, $this->filters);
         unset($this->grav['page']);
         $this->grav['page'] = $this->grav['pages']->dispatch($this->route);
-        $this->count = $this->count($this->pages, $this->filters);
+        $this->count = $this->count();
         $this->Filesystem = new Filesystem();
         $this->Timer = new Timer();
         $this->Assets = new Assets($this->Filesystem, $this->Timer);
@@ -275,7 +275,6 @@ abstract class AbstractCollection implements CollectionInterface
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
-        // exit();
         try {
             $file = 'index.' . $Page->templateFormat();
             if ($this->force) {

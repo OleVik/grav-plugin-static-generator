@@ -106,7 +106,7 @@ class CreatePresetCommand extends ConsoleCommand
         }
         $params = $this->input->getOption('parameters');
         $parameters = array();
-        if (is_array($params) && !empty($params)) {
+        if (\is_array($params) && !empty($params)) {
             foreach ($params as $param) {
                 $param = explode(':', $param);
                 $parameters[$param[0]] = $param[1];

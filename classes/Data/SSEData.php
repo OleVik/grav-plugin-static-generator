@@ -30,6 +30,22 @@ use Grav\Plugin\StaticGenerator\Data\AbstractData;
 class SSEData extends AbstractData
 {
     /**
+     * Declare headers
+     *
+     * @return void
+     */
+    public static function headers()
+    {
+        error_reporting(0);
+        set_time_limit(0);
+        header('Content-Type: text/event-stream');
+        header('Access-Control-Allow-Origin: *');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
+    }
+
+    /**
      * Create data-structure recursively
      *
      * @param string $route Route to page.
@@ -92,8 +108,8 @@ class SSEData extends AbstractData
                     if (!empty($pageContent) && strlen($pageContent) <= $this->maxLength) {
                         $item['content'] = $pageContent;
                     }
-                } catch (Exception $error) {
-                    throw new Exception($error);
+                } catch (\Exception $error) {
+                    throw new \Exception($error);
                 }
             }
             $this->progress();
@@ -137,9 +153,6 @@ class SSEData extends AbstractData
             $route = '/';
             $this->pages = $this->grav['page']->evaluate(['@root.children' => '/']);
         }
-        // var_export($route);
-        // var_export($this->count());
-        // exit();
         if ($this->count() > 0) {
             echo 'event: update' . "\n\n";
             echo 'data: ' . json_encode(
@@ -165,7 +178,6 @@ class SSEData extends AbstractData
                     'content' => 'END-OF-STREAM'
                 ]
             ) . "\n\n";
-            // exit();
         }
         return $route;
     }

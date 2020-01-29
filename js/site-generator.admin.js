@@ -131,14 +131,17 @@ window.addEventListener(
       "#blueprints ul.static-generator-presets li"
     );
     if (staticGeneratorPresets) {
-      const staticGeneratorCopyPresetRoute =
-        GravAdmin.config.base_url_relative +
-        ".json/task" +
-        GravAdmin.config.param_sep +
-        "copyPreset/admin-nonce" +
-        GravAdmin.config.param_sep +
-        GravAdmin.config.admin_nonce;
-
+      const staticGeneratorTaskRoute = function(task) {
+        return (
+          GravAdmin.config.base_url_relative +
+          ".json/task" +
+          GravAdmin.config.param_sep +
+          task +
+          "/admin-nonce" +
+          GravAdmin.config.param_sep +
+          GravAdmin.config.admin_nonce
+        );
+      };
       for (var preset of staticGeneratorPresets) {
         const copyButton = preset.querySelector(
           "a.static-generator-copy-preset"
@@ -151,10 +154,12 @@ window.addEventListener(
             "click",
             function(event) {
               const name = preset.querySelector('input[name$="[name]"]').value;
-              console.log(staticGeneratorCopyPresetRoute + "?preset=" + name);
+              console.log(
+                staticGeneratorTaskRoute("copyPreset") + "?preset=" + name
+              );
               staticGeneratorEventHandler(
                 "copyPreset",
-                staticGeneratorCopyPresetRoute + "?preset=" + name,
+                staticGeneratorTaskRoute("copyPreset") + "?preset=" + name,
                 copyButton,
                 Grav.default.Utils.toastr,
                 staticGeneratorStateColors,
@@ -165,7 +170,7 @@ window.addEventListener(
             false
           );
         }
-        /* if (generateButton) {
+        if (generateButton) {
           generateButton.addEventListener(
             "click",
             function(event) {
@@ -173,11 +178,15 @@ window.addEventListener(
               console.log(
                 event,
                 name,
-                staticGeneratorCopyPresetRoute + "?preset=" + name
+                staticGeneratorTaskRoute("generateFromPreset") +
+                  "?preset=" +
+                  name
               );
               staticGeneratorEventHandler(
                 "generateFromPreset",
-                staticGeneratorCopyPresetRoute + "?preset=" + name,
+                staticGeneratorTaskRoute("generateFromPreset") +
+                  "?preset=" +
+                  name,
                 generateButton,
                 Grav.default.Utils.toastr,
                 staticGeneratorStateColors,
@@ -187,7 +196,7 @@ window.addEventListener(
             },
             false
           );
-        } */
+        }
       }
     }
 
