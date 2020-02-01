@@ -127,7 +127,7 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 $scheme = parse_url($target, PHP_URL_SCHEME);
                 $location = $locator->findResource($scheme . '://') . str_replace($scheme . '://', '/', $target);
             } else {
-                $this->output->error('<error>Target must be a valid stream resource, prefixing one of:</error>');
+                $this->output->writeln('<error>Target must be a valid stream resource, prefixing one of:</error>');
                 foreach ($locator->getSchemes() as $scheme) {
                     $this->output->writeln($scheme . '://');
                 }

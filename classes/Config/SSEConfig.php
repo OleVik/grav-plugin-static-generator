@@ -65,6 +65,7 @@ class SSEConfig extends SSEData
         bool $force = true
     ): void {
         try {
+            $target = Grav::instance()['locator']->findResource($target, true, true);
             Config::mirror($target, $source, $force);
             $message = ucfirst(
                 Grav::instance()['language']->translate(

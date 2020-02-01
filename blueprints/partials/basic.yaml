@@ -17,7 +17,7 @@ index:
     persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
     transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
   validate:
-    type: bool
+    required: true
 content:
   type: text
   label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.CONTENT
@@ -29,7 +29,7 @@ content:
     persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
     transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
   validate:
-    type: bool
+    required: true
 addendum:
   type: spacer
   text: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.ADDENDUM

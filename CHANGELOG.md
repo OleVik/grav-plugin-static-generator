@@ -1,3 +1,16 @@
+# v2.0.0-alpha.1
+## 01-02-2020
+
+1. [](#new)
+   - API-refactor
+   - Presets
+2. [](#improved)
+   - Blueprints
+   - Asset- and media-handling
+   - Script in Admin
+3. [](#bugfix)
+   - Blueprints & CLI (@klonfish)
+
 # v1.0.0
 ## 30-11-2019
 

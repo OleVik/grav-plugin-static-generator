@@ -1,13 +1,10 @@
 enabled: true
 index: "user://data/persist"
-content: "user://data/persist/static"
+content: "user://data/persist"
 content_max_length: 100000
 admin: true
 js: true
 quick_tray: true
 presets_page: true
 presets:
-  - name: one
-    parameters:
-      one: two
-      three: four
+  - name: default

@@ -14,7 +14,7 @@ en:
         PARAMETERS:
           TITLE: Parameters
           VALUE: Value
-        ADDENDUM: Presets are sets of configurations for telling the plugin how Grav should behave when generating the static copy of the Page(s). After you have created a Preset and filled in the global options, click the "Copy"-button to save the site- and extension-settings. Once that completes, you can click the "Generate"-button to create a static copy from the Preset.
+        ADDENDUM: Presets are sets of configurations for telling the plugin how Grav should behave when generating the static copy of the Page(s). A preset only requires a name, parameters and a copy of the current settings are optional. When you click the "Copy"-button, Grav's site-, system- and extension-settings are stored, and will be used when generating from the preset.
       TITLE: Static Generator Options
       SEARCH_FILE: Search File
       STORAGE:

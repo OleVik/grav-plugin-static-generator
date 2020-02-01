@@ -182,10 +182,7 @@ class StaticGeneratorPlugin extends Plugin
             );
             self::copyPreset(
                 $preset,
-                $this->grav['locator']->findResource(
-                    $this->grav['config']->get('plugins.static-generator.content')
-                    . '/presets/' . $preset
-                ),
+                $this->grav['config']->get('plugins.static-generator.content'),
                 $this->grav['locator']->findResource('config://')
             );
         } elseif ($event['method'] == 'taskGenerateFromPreset') {
