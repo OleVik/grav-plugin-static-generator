@@ -46,6 +46,54 @@ class SSEData extends AbstractData
     }
 
     /**
+     * Check count before progressing
+     *
+     * @param string $route Route to page.
+     *
+     * @return string
+     */
+    public function verify(string $route): string
+    {
+        $mode = '@page.descendants';
+        if ($route == '/') {
+            $mode = '@root.descendants';
+        }
+        $this->pages = $this->grav['page']->evaluate([$mode => $route]);
+        if ($this->count() < 1) {
+            $route = '/';
+            $this->pages = $this->grav['page']->evaluate(['@root.descendants' => '/']);
+        }
+        if ($this->count() > 0) {
+            $this->total = $this->count();
+            echo 'event: update' . "\n\n";
+            echo 'data: ' . json_encode(
+                [
+                    'datetime' => date(DATE_ISO8601),
+                    'total' => $this->count()
+                ]
+            ) . "\n\n";
+        } else {
+            echo 'event: update' . "\n\n";
+            echo 'data: ' . json_encode(
+                [
+                    'datetime' => date(DATE_ISO8601),
+                    'content' => Grav::instance()['language']->translate(
+                        ['PLUGIN_STATIC_GENERATOR.ADMIN.EMPTY']
+                    ) . '.'
+                ]
+            ) . "\n\n";
+            echo 'event: close' . "\n\n";
+            echo 'data: ' . json_encode(
+                [
+                    'datetime' => date(DATE_ISO8601),
+                    'content' => 'END-OF-STREAM'
+                ]
+            ) . "\n\n";
+        }
+        return $route;
+    }
+
+    /**
      * Create data-structure recursively
      *
      * @param string $route Route to page.
@@ -112,7 +160,6 @@ class SSEData extends AbstractData
                     throw new \Exception($error);
                 }
             }
-            $this->progress();
             echo 'event: update' . "\n\n";
             echo 'data: ' . json_encode(
                 [
@@ -121,6 +168,7 @@ class SSEData extends AbstractData
                     'content' => $page->title()
                 ]
             ) . "\n\n";
+            $this->progress();
             if (count($page->children()) > 0) {
                 $this->index($route, $mode, $depth);
             }
@@ -135,53 +183,6 @@ class SSEData extends AbstractData
         }
     }
 
-    /**
-     * Check count before progressing
-     *
-     * @param string $route Route to page.
-     *
-     * @return string
-     */
-    public function verify($route): string
-    {
-        $mode = '@page.descendants';
-        if ($route == '/') {
-            $mode = '@root.children';
-        }
-        $this->pages = $this->grav['page']->evaluate([$mode => $route]);
-        if ($this->count() < 1) {
-            $route = '/';
-            $this->pages = $this->grav['page']->evaluate(['@root.children' => '/']);
-        }
-        if ($this->count() > 0) {
-            echo 'event: update' . "\n\n";
-            echo 'data: ' . json_encode(
-                [
-                    'datetime' => date(DATE_ISO8601),
-                    'total' => $this->count()
-                ]
-            ) . "\n\n";
-        } else {
-            echo 'event: update' . "\n\n";
-            echo 'data: ' . json_encode(
-                [
-                    'datetime' => date(DATE_ISO8601),
-                    'content' => Grav::instance()['language']->translate(
-                        ['PLUGIN_STATIC_GENERATOR.ADMIN.EMPTY']
-                    ) . '.'
-                ]
-            ) . "\n\n";
-            echo 'event: close' . "\n\n";
-            echo 'data: ' . json_encode(
-                [
-                    'datetime' => date(DATE_ISO8601),
-                    'content' => 'END-OF-STREAM'
-                ]
-            ) . "\n\n";
-        }
-        return $route;
-    }
-    
     /**
      * Cleanup
      *
@@ -209,7 +210,7 @@ class SSEData extends AbstractData
             $this->grav['language']->translate(
                 ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.STORED']
             )
-        ) . ' ' . $this->count() . ' ' .
+        ) . ' ' . $this->total . ' ' .
         $this->grav['language']->translate(
             ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.ITEMS']
         ) . ' ' .

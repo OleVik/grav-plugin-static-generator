@@ -33,5 +33,6 @@ presets:
       fields:
         - class: static-generator-copy-preset
           name: PLUGIN_ADMIN.COPY
-        - class: static-generator-preset-generate
+        - class: static-generator-preset-generate disabled
           name: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE
+          disabled: true

@@ -133,7 +133,6 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 }
                 return;
             }
-            $location = $location . DS . 'static';
             $Collection = new CommandLineCollection($collection, $route, $location, $force, $filters);
             $Collection->handler($this->output);
             $Collection->setup($preset);

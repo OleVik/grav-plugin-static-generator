@@ -101,23 +101,13 @@ class TestData extends AbstractData
             if (!empty($page->media()->all())) {
                 $item['media'] = array_keys($page->media()->all());
             }
+            try {
+                $pageContent = $this->content($page) ?? 0;
+            } catch (Exception $error) {
+                throw new Exception($error);
+            }
             echo '[' . $this->progress . '/' . $this->count . '] ' .
                 $item['title'] . ' (' . strlen($pageContent) . ")\n";
-            if (!$this->content) {
-                $item['taxonomy']['categories'] = implode(' ', $item['taxonomy']['categories']);
-                $item['taxonomy']['tags'] = implode(' ', $item['taxonomy']['tags']);
-                $item['media'] = implode(' ', $item['media']);
-            } else {
-                try {
-                    $pageContent = $this->content($page);
-                    if (!empty($pageContent) && strlen($pageContent) <= $this->maxLength) {
-                        $item['content'] = $pageContent;
-                    }
-                } catch (Exception $error) {
-                    throw new Exception($error);
-                }
-            }
-
             if (count($page->children()) > 0) {
                 $this->index($route, $mode, $depth);
             }

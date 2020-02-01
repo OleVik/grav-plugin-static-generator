@@ -1,6 +1,7 @@
 function staticGeneratorUpdateProgress(progress, total, message) {
   const toastMessage = document.querySelector(".toast-message");
   const status = `[${progress}/${total}] ${message}`;
+  console.debug(status);
   toastMessage.textContent = status;
 }
 
@@ -199,39 +200,6 @@ window.addEventListener(
         }
       }
     }
-
-    /* const staticGeneratorCopyButton = document.querySelector(
-      ".static-generator-copy-preset"
-    );
-    if (staticGeneratorCopyButton) {
-      // const staticGeneratorPageRoute = encodeURIComponent(
-      //   GravAdmin.config.route
-      // );
-      // const staticGeneratorIndexSearchRoute =
-      //   GravAdmin.config.base_url_relative +
-      //   ".json/task" +
-      //   GravAdmin.config.param_sep +
-      //   "indexSearch/admin-nonce" +
-      //   GravAdmin.config.param_sep +
-      //   GravAdmin.config.admin_nonce +
-      //   "?mode=content" +
-      //   "&route=" +
-      //   staticGeneratorPageRoute;
-      staticGeneratorCopyButton.addEventListener(
-        "click",
-        function(event) {
-          console.log(event);
-          // staticGeneratorStore(
-          //   staticGeneratorIndexSearchRoute,
-          //   staticGeneratorCopyButton,
-          //   staticGeneratorStateColors,
-          //   Grav.default.Utils.toastr
-          // );
-          event.preventDefault();
-        },
-        false
-      );
-    } */
   },
   false
 );

@@ -1,6 +1,6 @@
 enabled: true
 index: "user://data/persist"
-content: "user://data/persist"
+content: "user://data/persist/static"
 content_max_length: 100000
 admin: true
 js: true

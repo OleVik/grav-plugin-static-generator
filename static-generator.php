@@ -74,9 +74,6 @@ class StaticGeneratorPlugin extends Plugin
         if ($this->isAdmin() && $this->config->get('plugins.static-generator.admin')) {
             $this->enable(
                 [
-                    'onPageInitialized' => ['onPageInitialized', 0],
-                    // 'onGetPageBlueprints' => ['onGetPageBlueprints', 0],
-                    // 'onGetPageTemplates' => ['onGetPageTemplates', 0],
                     'onTwigTemplatePaths' => ['onTwigAdminTemplatePaths', 0],
                     'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
                     'onAdminMenu' => ['onAdminMenu', 0],
@@ -86,34 +83,8 @@ class StaticGeneratorPlugin extends Plugin
         }
     }
 
-    public function onPageInitialized()
-    {
-        // if (strpos($this->grav['uri']->path(), $this->config->get('plugins.admin.route') . '/' . $this->route) === false) {
-        //     return;
-        // }
-        // if ($this->grav['uri']->path() === $this->config->get('plugins.admin.route') . '/' . $this->route) {
-        //     $page = $this->grav['pages']->dispatch($this->route);
-        //     if (!$page) {
-        //         $file = $this->grav['locator']->findResource(
-        //             'plugin://' . $this->name . '/admin/pages/presets.md',
-        //             true,
-        //             true
-        //         );
-        //         $page = new Page();
-        //         $page->init(
-        //             new \SplFileInfo($file)
-        //         );
-        //     }
-        //     $this->grav['page'] = $page;
-        // }
-    }
-
     public function onTwigAdminTemplatePaths()
     {
-        // $this->grav['twig']->twig_paths[] = $this->grav['locator']->findResource(
-        //     'plugin://' . $this->name . '/admin/templates'
-        // );
-        // dump('plugin://' . $this->name . '/blueprints');
         $this->grav['twig']->twig_paths[] = __DIR__ . '/templates';
     }
 
@@ -128,40 +99,6 @@ class StaticGeneratorPlugin extends Plugin
     {
         $types = $event->types;
         $types->scanBlueprints('plugins://' . $this->name . '/blueprints');
-        // dump($event->types);
-    }
-
-    /**
-     * Register templates
-     *
-     * @param Event $event Instance of RocketTheme\Toolbox\Event\Event.
-     *
-     * @return void
-     */
-    public function onGetPageTemplates(Event $event)
-    {
-    //     dump('plugin://' . $this->name . '/blueprints');
-    //     dump('plugin://' . $this->name . '/admin/templates');
-    //     $event->types->scanTemplates('plugin://' . $this->name . '/admin/templates');
-        // $event->types->scanBlueprints('plugin://' . $this->name . '/blueprints');
-    //     // $event->types->register('admin/pages/presets');
-        
-        // $types = $event->types;
-        // $locator = Grav::instance()['locator'];
-        // $types->scanBlueprints($locator->findResource('plugin://' . $this->name . '/blueprints'));
-        // $types->scanTemplates($locator->findResource('plugin://' . $this->name . '/templates'));
-        // dump($event->types);
-
-        // $event->types->scanTemplates(
-        //     Grav::instance()['locator']->findResource(
-        //         'plugin://' . $this->name . '/admin/templates'
-        //     )
-        // );
-        // $event->types->scanBlueprints(
-        //     Grav::instance()['locator']->findResource(
-        //         'plugin://' . $this->name . '/blueprints'
-        //     )
-        // );
     }
 
     /**
@@ -252,124 +189,6 @@ class StaticGeneratorPlugin extends Plugin
                 $this->grav['locator']->findResource('config://')
             );
         } elseif ($event['method'] == 'taskGenerateFromPreset') {
-            if (isset($this->grav['admin'])) {
-                if (method_exists(Grav::instance()['admin'], 'enablePages')) {
-                    $this->grav['admin']->enablePages();
-                }
-            }
-
-            Grav::resetInstance();
-            $Grav = Grav::instance();
-            foreach (array_keys($Grav['setup']->getStreams()) as $stream) {
-                @stream_wrapper_unregister($stream);
-            }
-            $Grav->setup();
-            $Grav['config']->init();
-            $Grav['streams'];
-            $Grav['uri']->init();
-            $Grav['debugger']->init();
-            $Grav['assets']->init();
-            // $Grav['plugins']->init();
-            // $Grav['themes']->init();
-            $Grav->fireEvent('onPluginsInitialized');
-            $Grav->fireEvent('onThemeInitialized');
-            $Grav->fireEvent('onAssetsInitialized');
-            $Grav->fireEvent('onTwigTemplatePaths');
-            // $Grav['config']->init();
-            // dump($Grav['setup']->getStreams());
-            // foreach ($Grav['setup']->getStreams() as $key => $value) {
-            //     @stream_wrapper_register($key, $value);
-            // }
-            // $Grav['streams'];
-            // $Grav['streams'];
-            // dump('schemes');
-            // dump($Grav['locator']->getSchemes());
-            // dump('streams');
-            // dump($Grav['streams']->getStreams());
-            // exit();
-            $Grav['pages']->init();
-            // $Grav['twig']->init();
-            // $Grav['config']->init();
-            // $Grav['uri']->init();
-            // $Grav['plugins']->init();
-            // $Grav['themes']->init();
-            // $Grav['assets']->init();
-            $Pages = $Grav['pages']->all();
-            dump(count($Pages));
-            $Page = $Grav['pages']->find('/resources');
-            // dump($Page);
-            dump($Page->template() . '.' . $Page->templateFormat('html') . '.twig');
-            dump($Grav['twig']->twig_paths);
-            exit();
-            unset($this->grav['page']);
-            $this->grav['page'] = $this->grav['pages']->dispatch($this->route);
-            $this->count = $this->count();
-
-            dump('onAdminTaskExecute: StaticGenerator');
-            $this->grav['admin']->grav['uri']->init();
-            $this->grav['admin']->grav['plugins']->init();
-            $this->grav['admin']->grav['themes']->init();
-            $this->grav['admin']->grav['twig']->init();
-            $this->grav['admin']->grav['pages']->init();
-            $this->grav['admin']->grav['streams'];
-            $this->grav['admin']->grav['assets']->init();
-            // $this->grav->fireEvent('onTwigTemplatePaths');
-            dump('onAdminTaskExecute: Twig->init(), twig_paths:');
-            // dump($this->grav['twig']->twig_paths);
-            // dump($this->grav['admin']->grav['twig']->init());
-            foreach ($this->grav['config']->get('themes') as $theme => $config) {
-                $this->grav['twig']->twig_paths = array_merge(
-                    $this->grav['admin']->grav['twig']->twig_paths,
-                    $this->grav['locator']->findResources('themes://' . $theme . '/templates')
-                );
-            }
-            dump($this->grav['admin']->grav['twig']->twig_paths);
-            $Page = $this->grav['admin']->grav['pages']->find('/resources');
-            // $content = $this->grav['admin']->grav['twig']->processTemplate(
-            //     $Page->template() . '.' . $Page->templateFormat('html') . '.twig',
-            //     ['page' => $Page]
-            // );
-            // dump($content);
-            dump($Page);
-            /* $this->grav['config']->init();
-            $this->grav['uri']->init();
-            $this->grav['pages']->init();
-            $this->grav['plugins']->init();
-            $this->grav['themes']->init();
-            $this->grav['streams'];
-            $this->grav['assets']->init();
-            // $this->grav['twig']->twig_paths[] = $this->grav['locator']->findResource(
-            //     'user://themes/bootstrap4-open-matter/templates'
-            // );
-            // dump($this->grav['config']->get('themes'));
-            // dump($this->grav['themes']->all());
-            foreach ($this->grav['config']->get('themes') as $theme => $config) {
-                $this->grav['twig']->twig_paths = array_merge(
-                    $this->grav['twig']->twig_paths,
-                    $this->grav['locator']->findResources('themes://' . $theme . '/templates')
-                );
-            }
-            dump($this->grav['twig']->twig_paths);
-            $this->grav->fireEvent('onTwigTemplatePaths');
-            $this->grav->fireEvent('onTwigInitialized');
-            $this->grav->fireEvent('onTwigExtensions');
-            // $this->grav->fireEvent('onPageContent');
-            // $Page = $this->grav['pages']->find('/resources');
-            
-            unset($this->grav['page']);
-            $page = $this->grav['pages']->dispatch('/resources');
-            $this->grav['page'] = $page;
-            $this->grav['page']->content();
-            // dump($Page);
-            dump($this->grav['page']->content());
-            // dump($Page->rawMarkdown());
-            // exit();
-            // $content = $this->grav['twig']->processTemplate(
-            //     $this->grav['page']->template() . '.' . $this->grav['page']->templateFormat('html') . '.twig',
-            //     ['page' => $this->grav['page']]
-            // );
-            // dump($content);
-            // exit(); */
             if (!$event['controller']->authorizeTask('generateFromPreset', ['admin.maintenance', 'admin.super'])) {
                 header('HTTP/1.0 403 Forbidden');
                 echo '403 Forbidden';
@@ -380,13 +199,13 @@ class StaticGeneratorPlugin extends Plugin
                 'preset',
                 FILTER_SANITIZE_FULL_SPECIAL_CHARS
             );
-            // self::generateFromPreset(
-            //     $preset,
-            //     $this->grav['locator']->findResource(
-            //         $this->grav['config']->get('plugins.static-generator.content')
-            //         . '/presets/' . $preset
-            //     )
-            // );
+            self::generateFromPreset(
+                $preset,
+                $this->grav['locator']->findResource(
+                    $this->grav['config']->get('plugins.static-generator.content')
+                    . '/presets/' . $preset
+                )
+            );
         }
     }
 
@@ -438,27 +257,19 @@ class StaticGeneratorPlugin extends Plugin
         string $location,
         bool $force = true
     ): void {
+        // WIP
+        exit();
         include __DIR__ . '/vendor/autoload.php';
-        // try {
-            // SSEData::headers();
+        try {
+            SSEData::headers();
             $Timer = new Timer();
-            // $Data = new SSEData(true, $config['content_max_length']);
-            // $Data->setup();
-            // $route = $Data->verify($route);
-            // SSECollection::collection();
             $Data = new SSECollection('@root', '/', $location);
             $Data->setup($name);
-            // $Data->buildCollection();
-            // $Data->collection(
-            //     $name,
-            //     $location,
-            //     $Timer,
-            //     $force
-            // );
-            // SSEData::finish();
-        // } catch (\Exception $e) {
-        //     throw new \Exception($e);
-        // }
+            $Data->collection();
+            SSEData::finish();
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 
     /**

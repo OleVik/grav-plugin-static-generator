@@ -25,22 +25,11 @@
 {% endblock %}
 
 {% block content %}
-{# {{ dump(admin.data('config')) }} #}
-{# {{ dump(admin.page(true)) }} #}
-{# {{ dump(admin.data('plugins/' ~ admin.route)) }} #}
-{# {{ dump(admin.blueprints('admin/pages/new')) }} #}
-{# {{ dump(admin.blueprints('admin/pages/presets2')) }} #}
-{# {{ dump(admin.blueprints('admin/pages/presets')) }} #}
-
-{{ dump(preset_slug) }}
 {% if preset_slug != 'presets' %}
     {% set blueprints = admin.blueprints('preset') %}
 {% else %}
     {% set blueprints = admin.blueprints('presets') %}
 {% endif %}
-{{ dump(blueprints) }}
-{{ dump(blueprints.form) }}
-{{ dump(blueprints.fields) }}
 
 <div class="admin-form-wrapper">
 {% include 'partials/blueprints.html.twig' with { blueprints: blueprints } %}

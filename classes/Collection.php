@@ -66,9 +66,6 @@ class Collection
     public function setup(): void
     {
         $this->grav = Grav::instance();
-        // $this->grav->setup();
-        // $this->grav->process();
-
         $this->grav->fireEvent('onPluginsInitialized');
         $this->grav->fireEvent('onThemeInitialized');
         $this->grav->fireEvent('onAssetsInitialized');
@@ -78,26 +75,7 @@ class Collection
         $this->grav['uri']->init();
         $this->grav['plugins']->init();
         $this->grav['themes']->init();
-        // $this->grav['streams'];
         $this->grav['assets']->init();
-        // $this->grav->fireEvent('onTwigTemplatePaths');
-        // $this->grav->fireEvent('onTwigInitialized');
-        // $this->grav->fireEvent('onTwigExtensions');
-        // $this->grav->fireEvent('onPagesInitialized');
-        // $this->grav->fireEvent('onPageInitialized');
-        // $this->grav->fireEvent('onPageContentRaw');
-        // $this->grav->fireEvent('onMarkdownInitialized');
-        // $this->grav->fireEvent('onPageContentProcessed');
-        // $this->grav->fireEvent('onPageContent');
-        // $this->grav->fireEvent('onTwigPageVariables');
-        // $this->grav->fireEvent('onHttpPostFilter');
-        // $this->grav->fireEvent('onTwigSiteVariables');
-        // $this->grav->fireEvent('onCollectionProcessed');
-        // $this->grav->fireEvent('onOutputGenerated');
-        // $this->grav->fireEvent('onOutputRendered');
-        // $this->grav->fireEvent('onShortcodeHandlers');
-        // dump($this->grav['twig']->twig_paths);
-        // exit();
         $this->Filesystem = new Filesystem();
         $this->Timer = new Timer();
         $this->Assets = new Assets($this->handle, $this->Filesystem, $this->Timer);
@@ -179,8 +157,6 @@ class Collection
     public function mirrorImages(): void
     {
         $this->handle->writeln('<white>Processing Images</white>');
-        // $this->handle->writeln('Location: ' . GRAV_ROOT . '/images');
-        // $this->handle->writeln('Target: ' . $this->location);
         $this->Filesystem->mirror(
             GRAV_ROOT . '/images',
             $this->location . '/images',

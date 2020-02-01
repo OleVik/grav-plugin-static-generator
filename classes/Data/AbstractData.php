@@ -33,6 +33,7 @@ abstract class AbstractData implements DataInterface
     public $pages;
     public $progress;
     public $count;
+    public $total;
 
     /**
      * Instantiate class
@@ -49,6 +50,8 @@ abstract class AbstractData implements DataInterface
         $this->maxLength = $maxLength;
         $this->orderBy = $orderBy;
         $this->orderDir = $orderDir;
+        $this->progress = 1;
+        $this->total = 0;
     }
 
     /**

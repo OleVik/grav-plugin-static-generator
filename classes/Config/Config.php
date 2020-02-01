@@ -131,4 +131,36 @@ class Config extends AbstractConfig
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Get and set Preset-parameters
+     *
+     * @param object $config Instance of Grav\Common\Config\Config.
+     * @param string $preset Name of Preset.
+     *
+     * @return void
+     */
+    public static function applyParameters(object $config, string $preset): void
+    {
+        if ($config->get('plugins.static-generator.presets') !== null
+            && !empty($config->get('plugins.static-generator.presets'))
+        ) {
+            $key = array_search(
+                $preset,
+                array_column(
+                    $config->get('plugins.static-generator.presets'),
+                    'name'
+                )
+            );
+            if ($key
+                && isset($config->get('plugins.static-generator.presets')[$key]['parameters'])
+                && !empty($config->get('plugins.static-generator.presets')[$key]['parameters'])
+            ) {
+                $parameters = $config->get('plugins.static-generator.presets')[$key]['parameters'];
+                foreach ($parameters as $parameter => $value) {
+                    $config->set($parameter, $value);
+                }
+            }
+        }
+    }
 }

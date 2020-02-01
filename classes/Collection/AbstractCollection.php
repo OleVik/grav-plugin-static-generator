@@ -73,36 +73,41 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function setup(string $preset): void
     {
+        $this->Filesystem = new Filesystem();
+        $this->Timer = new Timer();
+        $this->Assets = new Assets($this->Filesystem, $this->Timer);
+        $this->Filesystem->mkdir($this->location);
         $this->grav = Grav::instance();
         $this->grav->fireEvent('onPluginsInitialized');
         $this->grav->fireEvent('onThemeInitialized');
         $this->grav->fireEvent('onAssetsInitialized');
-
-        // $this->grav->fireEvent('onShortcodeHandlers');
-        // $this->grav->fireEvent('onTwigTemplatePaths');
-        // $this->grav->fireEvent('onTwigLoader');
-        // $this->grav->fireEvent('onTwigInitialized');
-        // $this->grav->fireEvent('onTwigExtensions');
-        // $this->grav->fireEvent('onPagesInitialized');
-        // $this->grav->fireEvent('onPageInitialized');
-        // $this->grav->fireEvent('onPageContentProcessed');
-
         $this->grav['twig']->init();
         $this->grav['pages']->init();
         $this->grav['config']->init();
         if (!empty($preset)) {
-            $Config = new Config(
-                $this->grav['config'],
-                'user-data://persist/presets',
-                $preset
+            $presetLocation = $this->grav['locator']->findResource(
+                'user-data://persist/presets/' . $preset,
+                true,
+                true
             );
-            $this->grav['config']->merge($Config->config->toArray());
+            if ($this->Filesystem->exists($presetLocation)) {
+                $Config = new Config(
+                    $this->grav['config'],
+                    'user-data://persist/presets',
+                    $preset
+                );
+                $this->grav['config']->merge($Config->config->toArray());
+            }
+            Config::applyParameters($this->grav['config'], $preset);
         }
         $this->grav['uri']->init();
         $this->grav['plugins']->init();
         $this->grav['themes']->init();
         $this->grav['streams'];
         $this->grav['assets']->init();
+        if ($this->route == '/') {
+            $this->collection = '@root.descendants';
+        }
         if (in_array('all', $this->filters)) {
             $this->pages = $this->grav['pages']->all();
         } else {
@@ -112,9 +117,6 @@ abstract class AbstractCollection implements CollectionInterface
         unset($this->grav['page']);
         $this->grav['page'] = $this->grav['pages']->dispatch($this->route);
         $this->count = $this->count();
-        $this->Filesystem = new Filesystem();
-        $this->Timer = new Timer();
-        $this->Assets = new Assets($this->Filesystem, $this->Timer);
     }
 
     /**
@@ -265,13 +267,6 @@ abstract class AbstractCollection implements CollectionInterface
                 '/user/pages',
                 ''
             );
-            // preg_match_all('/<(?:a|iframe) (?:href|src)="(.*)"/miU', $content, $links, PREG_SET_ORDER, 0);
-            // foreach ($links as $link) {
-            //     $Source = new Source($Page, $this->grav['pages']);
-            //     $source = $Source->render($link[1]);
-            //     dump($link[1] . ': ' . $source['src']);
-            //     $content = str_replace($link[1], $source['src'], $content);
-            // }
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
