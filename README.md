@@ -161,7 +161,7 @@ For example, `php bin/plugin static-generator page "@page.descendants" "/blog"` 
         |
         \---the-urban-jungle
                 index.html
-                unsplash-sidney-perry.jpg                                               
+                unsplash-sidney-perry.jpg
 ```
 
 ### Cleanup
@@ -174,4 +174,6 @@ The `php bin/plugin static-generator test` command attempts to iterate Page(s) i
 
 ## TODO
 
-- [ ] Static Generator: Simplify options, add Page button
+- [x] Admin: Text- and Checkbox-options in Preset-tab
+    - [x] Add Name
+- [ ] Pass parameters from CLI to Twig and Config

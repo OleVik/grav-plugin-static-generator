@@ -7,14 +7,21 @@ en:
         IN: in
       SEARCH: Search
       ROUTE: Route
-      GENERATE: Generate
+      GENERATE:
+        TITLE: Generate
+        EXPLANATION: Fill in the fields below and click the Generate-button to create a static copy of the site.
+        CODE_PREVIEW: Code Preview
       PRESETS:
         TITLE: Presets
         SINGULAR: Preset
+        ASSETS: Include Assets
+        STATIC_ASSETS: Include Static Assets
+        IMAGES: Include Images
         PARAMETERS:
           TITLE: Parameters
           VALUE: Value
-        ADDENDUM: Presets are sets of configurations for telling the plugin how Grav should behave when generating the static copy of the Page(s). A preset only requires a name, parameters and a copy of the current settings are optional. When you click the "Copy"-button, Grav's site-, system- and extension-settings are stored, and will be used when generating from the preset.
+        FILTERS: Filters
+        EXPLANATION: Presets are sets of configurations for telling the plugin how Grav should behave when generating the static copy of the Page(s). A preset only requires a name, parameters and a copy of the current settings are optional. When you click the Copy-button, Grav's site-, system- and extension-settings are stored, and will be used when generating from the preset. Click the Generate-button to create a static copy of the site from the preset.
       TITLE: Static Generator Options
       SEARCH_FILE: Search File
       STORAGE:
@@ -39,7 +46,11 @@ en:
         ROUTE: Page Route, excluding initial forward slash
         PRESETS:
           NAME: Name of the Preset
-          PARAMETERS: Parameters to pass to Twig
+          PARAMETERS:
+            DESCRIPTION: Key-value pairs to pass to Config or Twig, in dot-notation format.
+            KEY: Eg. theme.color
+            VALUE: Eg. blue
+          FILTERS: Collection-methods to apply for filtering.
         STORAGE:
           TARGET: Non-default location to store the Preset in
       DESCRIPTION:
@@ -47,7 +58,7 @@ en:
         STORAGE:
           INDEX: Where to store generated index.
           CONTENT: Where to store generated content.
-          ADDENDUM: Must be a valid Stream-wrapper that PHP can resolve and write to.
+          EXPLANATION: Must be a valid Stream-wrapper that PHP can resolve and write to.
         CONTENT_MAX_LENGTH: Maximum characters in Page when generating content. If the Page contains more, it will not be stored.
         ADMIN: Enable plugin in Admin.
         JS: Use plugin's JavaScript in Admin.

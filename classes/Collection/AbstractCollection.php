@@ -98,7 +98,7 @@ abstract class AbstractCollection implements CollectionInterface
                 );
                 $this->grav['config']->merge($Config->config->toArray());
             }
-            Config::applyParameters($this->grav['config'], $preset);
+            Config::applyParameters($this->grav['config'], $this->grav['twig'], $preset);
         }
         $this->grav['uri']->init();
         $this->grav['plugins']->init();

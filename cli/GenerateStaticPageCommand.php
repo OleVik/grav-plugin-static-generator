@@ -71,13 +71,13 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 'assets',
                 'a',
                 InputOption::VALUE_NONE,
-                'Include assets'
+                'Include Assets'
             )
             ->addOption(
                 'static-assets',
                 's',
                 InputOption::VALUE_NONE,
-                'Include static assets'
+                'Include Static Assets'
             )
             ->addOption(
                 'images',
@@ -89,7 +89,13 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 'filter',
                 'f',
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'Parameters for filtering'
+                'Methods for filtering'
+            )
+            ->addOption(
+                'parameters',
+                'd',
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'Key-value pairs to assign to Twig or Config'
             )
             ->addOption(
                 'force',

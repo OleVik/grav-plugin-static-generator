@@ -16,6 +16,7 @@
 namespace Grav\Plugin\StaticGenerator\Config;
 
 use Grav\Common\Grav;
+use Grav\Common\Utils;
 use Grav\Framework\File\YamlFile;
 use Grav\Framework\File\Formatter\YamlFormatter;
 use Grav\Plugin\StaticGenerator\Config\AbstractConfig;
@@ -100,7 +101,9 @@ class Config extends AbstractConfig
             );
             $file->lock();
             $config = $Grav['config']->get('plugins.static-generator');
-            if (!is_array($config['presets']) && !isset($config['presets'])) {
+            if (!isset($config['presets'])
+                && !is_array($config['presets'])
+            ) {
                 $file->unlock();
                 return 2;
             }
@@ -136,11 +139,12 @@ class Config extends AbstractConfig
      * Get and set Preset-parameters
      *
      * @param object $config Instance of Grav\Common\Config\Config.
+     * @param object $twig   Instance of Grav\Common\Twig\Twig.
      * @param string $preset Name of Preset.
      *
      * @return void
      */
-    public static function applyParameters(object $config, string $preset): void
+    public static function applyParameters(object $config, object $twig, string $preset): void
     {
         if ($config->get('plugins.static-generator.presets') !== null
             && !empty($config->get('plugins.static-generator.presets'))
@@ -158,7 +162,11 @@ class Config extends AbstractConfig
             ) {
                 $parameters = $config->get('plugins.static-generator.presets')[$key]['parameters'];
                 foreach ($parameters as $parameter => $value) {
-                    $config->set($parameter, $value);
+                    if (Utils::startsWith('twig.', $parameter, false)) {
+                        $twig->twig_vars[end(explode('.', $parameter))] = $value;
+                    } else {
+                        $config->set($parameter, $value);
+                    }
                 }
             }
         }

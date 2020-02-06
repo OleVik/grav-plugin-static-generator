@@ -136,7 +136,7 @@ class CreatePresetCommand extends ConsoleCommand
                     );
                 } elseif ($preset === 2) {
                     $this->output->writeln(
-                        '<red>In ' . $source . '/plugins/static-generator.yaml, 
+                        '<red>In ' . $source . '/plugins/static-generator.yaml,
                         "presets" is not an array or is not set</red>'
                     );
                 } elseif ($preset === 3) {

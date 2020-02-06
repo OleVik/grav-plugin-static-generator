@@ -1,5 +1,5 @@
 name: Static Generator
-version: 2.0.0-alpha.1
+version: 2.0.0-alpha.2
 description: Static generation of Page(s) and Index.
 icon: bolt
 author:
@@ -25,6 +25,14 @@ form:
             [
               '\Grav\Plugin\StaticGeneratorPlugin::getBlueprintFields',
               "plugin://static-generator/blueprints/partials/basic.yaml",
+            ]
+        generate:
+          type: tab
+          title: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE.TITLE
+          data-fields@:
+            [
+              '\Grav\Plugin\StaticGeneratorPlugin::getBlueprintFields',
+              "plugin://static-generator/blueprints/partials/generate.yaml",
             ]
         presets:
           type: tab

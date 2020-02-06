@@ -1,3 +1,14 @@
+# v2.0.0-alpha.2
+## 06-02-2020
+
+1. [](#improved)
+   - Admin-preview
+   - Configuration
+   - Blueprints
+2. [](#new)
+   - Customizable permissions for Quick Tray, Generation-buttons
+   - Deprecate Preset-page in Admin
+
 # v2.0.0-alpha.1
 ## 01-02-2020
 

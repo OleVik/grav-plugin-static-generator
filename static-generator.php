@@ -108,9 +108,9 @@ class StaticGeneratorPlugin extends Plugin
      */
     public function onAdminMenu()
     {
-        if ($this->config->get('plugins.static-generator.presets_page')) {
+        if ($this->config->get('plugins.static-generator.quick_tray')) {
             $options = [
-                'authorize' => 'taskIndexSearch',
+                'authorize' => $this->config->get('plugins.static-generator.quick_tray_permissions'),
                 'hint' => $this->grav['language']->translate(
                     ['PLUGIN_STATIC_GENERATOR.ADMIN.INDEX.HINT']
                 ),
@@ -123,17 +123,6 @@ class StaticGeneratorPlugin extends Plugin
                 )
             ] = $options;
         }
-        if ($this->config->get('plugins.static-generator.presets_page')) {
-            $this->grav['twig']->plugins_hooked_nav[
-                $this->grav['language']->translate(
-                    ['PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS']
-                )
-            ] = [
-                'route' => $this->route,
-                'icon' => 'fa-th-list',
-                'authorize' => 'admin.configuration'
-            ];
-        }
     }
 
     /**
@@ -145,6 +134,10 @@ class StaticGeneratorPlugin extends Plugin
      */
     public function onAdminTaskExecute(Event $event)
     {
+        // dump($event['method']);
+        // dump($event['controller']);
+        // dump($this->grav['user']);
+        // exit;
         if ($event['method'] == 'taskIndexSearch') {
             if (!$event['controller']->authorizeTask('indexSearch', ['admin.maintenance', 'admin.super'])) {
                 header('HTTP/1.0 403 Forbidden');

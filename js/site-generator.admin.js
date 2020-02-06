@@ -1,3 +1,36 @@
+function throttle(callback, interval) {
+  let enableCall = true;
+  return function(...args) {
+    if (!enableCall) return;
+    enableCall = false;
+    callback.apply(this, args);
+    setTimeout(() => (enableCall = true), interval);
+  };
+}
+
+/**
+ * Limit the rate at which a function can execute
+ * @param {Function} func Function to execute
+ * @param {Integer} wait Fire-rate limit in milliseconds
+ * @param {Boolean} immediate Execute immediately
+ * @see https://davidwalsh.name/javascript-debounce-function
+ */
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this,
+      args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+
 function staticGeneratorUpdateProgress(progress, total, message) {
   const toastMessage = document.querySelector(".toast-message");
   const status = `[${progress}/${total}] ${message}`;
@@ -87,6 +120,127 @@ function staticGeneratorUpdateSelectField(text, value) {
   }
 }
 
+function makeid(length) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+function setCode(element, options) {
+  if (!options.hasOwnProperty("route")) {
+    options.route = "";
+  }
+  let code = `php bin/plugin static-generator page "/${options.route}"`;
+  if (options.hasOwnProperty("target") && options.target !== "") {
+    code += ` "${options.target}"`;
+  }
+  if (options.hasOwnProperty("name") && options.name !== "") {
+    code += ` -p "${options.name}"`;
+  }
+  if (options.hasOwnProperty("assets") && options.assets === true) {
+    code += ` -a`;
+  }
+  if (
+    options.hasOwnProperty("static_assets") &&
+    options.static_assets === true
+  ) {
+    code += ` -s`;
+  }
+  if (options.hasOwnProperty("images") && options.images === true) {
+    code += ` -i`;
+  }
+  if (options.hasOwnProperty("filters") && options.filters.length > 0) {
+    options.filters.forEach(filter => {
+      code += ` -f "${filter}()"`;
+    });
+  }
+  if (
+    options.hasOwnProperty("parameters") &&
+    Object.keys(options.parameters).length > 0
+  ) {
+    for (let [key, value] of Object.entries(options.parameters)) {
+      code += ` -d "${key}:${value}"`;
+    }
+  }
+  element.innerHTML = code;
+}
+
+function monitor(root) {
+  const preElement = document.createElement("pre");
+  preElement.style.margin = "1rem";
+  preElement.style.padding = "0.5rem";
+  preElement.style.whiteSpace = "pre-wrap";
+  root.appendChild(preElement);
+  const codeElement = document.createElement("code");
+  codeElement.setAttribute("id", makeid(16));
+  preElement.appendChild(codeElement);
+  const options = { parameters: {} };
+  root.querySelector("[name*=filters]").selectize.on("change", function(value) {
+    options["filters"] = value.split(",");
+    setCode(codeElement, options);
+  });
+  [
+    root.querySelector("[name*=name]"),
+    root.querySelector("[name*=route]"),
+    root.querySelector("[name*=target]"),
+    root.querySelector("[name*=assets]"),
+    root.querySelector("[name*=static_assets]"),
+    root.querySelector("[name*=images]")
+  ].forEach(item => {
+    if (item !== null) {
+      const name = item.name.match(/\[([^\]]*)\](?!.*])/i)[1];
+      if (item.type == "checkbox") {
+        options[name] = item.checked;
+      } else {
+        options[name] = item.value;
+      }
+      setCode(codeElement, options);
+      item.addEventListener(
+        "input",
+        debounce(function(event) {
+          if (event.srcElement.type == "checkbox") {
+            options[name] = event.target.checked;
+          } else {
+            options[name] = event.target.value;
+          }
+          setCode(codeElement, options);
+        }, 250)
+      );
+    }
+  });
+  [
+    root.querySelector(
+      "[data-grav-array-name*=parameters] [data-grav-array-type*=row] [data-grav-array-type*=key]"
+    ),
+    root.querySelector(
+      "[data-grav-array-name*=parameters] [data-grav-array-type*=row] [data-grav-array-type*=value]"
+    )
+  ].forEach(item => {
+    item.addEventListener(
+      "input",
+      debounce(function(event) {
+        var key, value;
+        if (event.target.dataset.gravArrayType == "key") {
+          key = event.target.value;
+          value = value = event.target.nextElementSibling.value;
+        } else if (event.target.dataset.gravArrayType == "value") {
+          key = event.target.previousElementSibling.value;
+          value = event.target.value;
+        }
+        if (key !== "" && value !== "") {
+          options["parameters"][key] = value;
+        }
+        setCode(codeElement, options);
+      }, 250)
+    );
+  });
+}
+
 window.addEventListener(
   "load",
   function(event) {
@@ -98,7 +252,6 @@ window.addEventListener(
     const staticGeneratorIndexButton = document.querySelector(
       ".static-generator-search-index"
     );
-    const staticGeneratorPageRoute = encodeURIComponent(GravAdmin.config.route);
     if (staticGeneratorIndexButton) {
       const staticGeneratorPageRoute = encodeURIComponent(
         GravAdmin.config.route
@@ -199,6 +352,22 @@ window.addEventListener(
           );
         }
       }
+    }
+    if (
+      window.GravAdmin.config.current_url.includes("plugins/static-generator")
+    ) {
+      const wrappers = document.querySelectorAll(".form-tab");
+      wrappers.forEach(element => {
+        if (element.querySelector('[data-grav-field="list"]')) {
+          element
+            .querySelectorAll('[data-grav-field="list"] [data-collection-item]')
+            .forEach(item => {
+              monitor(item);
+            });
+        } else if (element.querySelector("[name*=route]")) {
+          monitor(element);
+        }
+      });
     }
   },
   false
