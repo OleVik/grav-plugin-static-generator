@@ -1,3 +1,16 @@
+# v2.0.0-alpha.3
+## 11-02-2020
+
+1. [](#new)
+   - Customizable permissions for Quick Tray, Generation-buttons
+   - Parameter-handling for Config and Twig
+   - Deprecate Preset-page in Admin
+2. [](#improved)
+   - Command-preview in Admin
+   - Admin tab-order
+   - README
+   - Blueprints
+
 # v2.0.0-alpha.2
 ## 06-02-2020
 

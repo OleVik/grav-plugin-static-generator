@@ -9,8 +9,8 @@ en:
       ROUTE: Route
       GENERATE:
         TITLE: Generate
-        EXPLANATION: Fill in the fields below and click the Generate-button to create a static copy of the site.
-        CODE_PREVIEW: Code Preview
+        EXPLANATION: Fill in the fields below and run the Command in a terminal to create a static copy of the site. All fields are optional. The Command must be run from the root-folder where Grav is installed.
+        COMMAND: Command
       PRESETS:
         TITLE: Presets
         SINGULAR: Preset
@@ -21,7 +21,7 @@ en:
           TITLE: Parameters
           VALUE: Value
         FILTERS: Filters
-        EXPLANATION: Presets are sets of configurations for telling the plugin how Grav should behave when generating the static copy of the Page(s). A preset only requires a name, parameters and a copy of the current settings are optional. When you click the Copy-button, Grav's site-, system- and extension-settings are stored, and will be used when generating from the preset. Click the Generate-button to create a static copy of the site from the preset.
+        EXPLANATION: Presets are sets of configurations for telling the plugin how Grav should behave when generating the static copy of the Page(s). A preset only requires a name, parameters and a copy of the current settings are optional. When you click the Copy-button, Grav's site-, system- and extension-settings are stored, and will be used when generating from the preset.  Run the Command in a terminal to create a static copy of the site. The Command must be run from the root-folder where Grav is installed.
       TITLE: Static Generator Options
       SEARCH_FILE: Search File
       STORAGE:
@@ -34,8 +34,12 @@ en:
           NATIVE: Native
       EMPTY: Found no lower-level Pages
       CONTENT_MAX_LENGTH: Content Max Length
+      CONTENT_PERMISSIONS: Content Permissions
       ADMIN: Admin
       JS: Admin JS
+      CSS: Admin CSS
+      QUICK_TRAY: Quick Tray
+      QUICK_TRAY_PERMISSIONS: Quick Tray Permissions
       INDEX:
         HINT: Index Search Data
         WAITING: Waiting for Static Generator ...
@@ -56,9 +60,13 @@ en:
       DESCRIPTION:
         SEARCH_FILE: File to use for searching.
         STORAGE:
-          INDEX: Where to store generated index.
-          CONTENT: Where to store generated content.
-          EXPLANATION: Must be a valid Stream-wrapper that PHP can resolve and write to.
+          INDEX: Where to store search-files.
+          CONTENT: Where to store static copies of the site.
+          EXPLANATION: Must be a [valid Stream-wrapper](https://learn.getgrav.org/16/advanced/multisite-setup#streams) that PHP can resolve and write to.
         CONTENT_MAX_LENGTH: Maximum characters in Page when generating content. If the Page contains more, it will not be stored.
+        CONTENT_PERMISSIONS: Permissions to see and use Generate-button from Admin.
         ADMIN: Enable plugin in Admin.
         JS: Use plugin's JavaScript in Admin.
+        CSS: Use plugin's CSS in Admin.
+        QUICK_TRAY: Enable Quick Tray button
+        QUICK_TRAY_PERMISSIONS: Permissions to see and use Index-button from Admin.

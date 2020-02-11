@@ -30,9 +30,10 @@ content:
     transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
   validate:
     required: true
-EXPLANATION:
+explanation:
   type: spacer
   text: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.EXPLANATION
+  markdown: true
 content_max_length:
   type: number
   label: PLUGIN_STATIC_GENERATOR.ADMIN.CONTENT_MAX_LENGTH
@@ -54,6 +55,24 @@ js:
   type: toggle
   label: PLUGIN_STATIC_GENERATOR.ADMIN.JS
   description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.JS
+  options:
+    1: PLUGIN_ADMIN.ENABLED
+    0: PLUGIN_ADMIN.DISABLED
+  validate:
+    type: bool
+css:
+  type: toggle
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.CSS
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CSS
+  options:
+    1: PLUGIN_ADMIN.ENABLED
+    0: PLUGIN_ADMIN.DISABLED
+  validate:
+    type: bool
+quick_tray:
+  type: toggle
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.CSS
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CSS
   options:
     1: PLUGIN_ADMIN.ENABLED
     0: PLUGIN_ADMIN.DISABLED

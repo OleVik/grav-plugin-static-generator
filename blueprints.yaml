@@ -18,14 +18,6 @@ form:
       type: tabs
       active: 1
       fields:
-        options:
-          type: tab
-          title: PLUGIN_ADMIN.OPTIONS
-          data-fields@:
-            [
-              '\Grav\Plugin\StaticGeneratorPlugin::getBlueprintFields',
-              "plugin://static-generator/blueprints/partials/basic.yaml",
-            ]
         generate:
           type: tab
           title: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE.TITLE
@@ -42,3 +34,42 @@ form:
               '\Grav\Plugin\StaticGeneratorPlugin::getBlueprintFields',
               "plugin://static-generator/blueprints/partials/presets.yaml",
             ]
+        options:
+          type: tab
+          title: PLUGIN_ADMIN.OPTIONS
+          fields:
+            basic:
+              type: section
+              data-fields@:
+                [
+                  '\Grav\Plugin\StaticGeneratorPlugin::getBlueprintFields',
+                  "plugin://static-generator/blueprints/partials/options.yaml",
+                ]
+            permissions:
+              type: section
+              title: PLUGIN_ADMIN.PERMISSIONS
+              underline: true
+              security: [admin.super, admin.maintenance]
+              fields:
+                content_permissions:
+                  type: selectize
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.CONTENT_PERMISSIONS
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CONTENT_PERMISSIONS
+                  allowEmptyOption: true
+                  merge_items: true
+                  selectize:
+                    create: false
+                    data-options@: '\Grav\Plugin\StaticGeneratorPlugin::getAdminPermissionsBlueprint'
+                  validate:
+                    type: commalist
+                quick_tray_permissions:
+                  type: selectize
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.QUICK_TRAY_PERMISSIONS
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.QUICK_TRAY_PERMISSIONS
+                  allowEmptyOption: true
+                  merge_items: true
+                  selectize:
+                    create: false
+                    data-options@: '\Grav\Plugin\StaticGeneratorPlugin::getAdminPermissionsBlueprint'
+                  validate:
+                    type: commalist

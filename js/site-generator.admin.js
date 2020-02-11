@@ -172,9 +172,11 @@ function setCode(element, options) {
 
 function monitor(root) {
   const preElement = document.createElement("pre");
-  preElement.style.margin = "1rem";
-  preElement.style.padding = "0.5rem";
-  preElement.style.whiteSpace = "pre-wrap";
+  preElement.classList.add("static-generator-command");
+  preElement.setAttribute(
+    "data-header",
+    StaticGeneratorTranslation.ADMIN.GENERATE.COMMAND
+  );
   root.appendChild(preElement);
   const codeElement = document.createElement("code");
   codeElement.setAttribute("id", makeid(16));
@@ -354,6 +356,8 @@ window.addEventListener(
       }
     }
     if (
+      window.GravAdmin.config !== undefined &&
+      window.GravAdmin.config.current_url !== undefined &&
       window.GravAdmin.config.current_url.includes("plugins/static-generator")
     ) {
       const wrappers = document.querySelectorAll(".form-tab");

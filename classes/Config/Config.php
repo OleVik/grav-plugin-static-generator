@@ -136,15 +136,40 @@ class Config extends AbstractConfig
     }
 
     /**
-     * Get and set Preset-parameters
+     * Apply parameters to Config or Twig
      *
-     * @param object $config Instance of Grav\Common\Config\Config.
-     * @param object $twig   Instance of Grav\Common\Twig\Twig.
-     * @param string $preset Name of Preset.
+     * @param object $config     Instance of Grav\Common\Config\Config.
+     * @param object $twig       Instance of Grav\Common\Twig\Twig.
+     * @param array  $parameters Parameters to apply.
      *
      * @return void
      */
-    public static function applyParameters(object $config, object $twig, string $preset): void
+    public static function applyParameters(
+        object $config,
+        object $twig,
+        array $parameters
+    ): void {
+        if (empty($parameters)) {
+            return;
+        }
+        foreach ($parameters as $parameter => $value) {
+            if (Utils::startsWith('twig.', $parameter, false)) {
+                $twig->twig_vars[end(explode('.', $parameter))] = $value;
+            } else {
+                $config->set($parameter, $value);
+            }
+        }
+    }
+
+    /**
+     * Get Preset-parameters
+     *
+     * @param object $config Instance of Grav\Common\Config\Config.
+     * @param string $preset Name of Preset.
+     *
+     * @return array Preset-parameters
+     */
+    public static function getPresetParameters(object $config, string $preset): array
     {
         if ($config->get('plugins.static-generator.presets') !== null
             && !empty($config->get('plugins.static-generator.presets'))
@@ -160,15 +185,9 @@ class Config extends AbstractConfig
                 && isset($config->get('plugins.static-generator.presets')[$key]['parameters'])
                 && !empty($config->get('plugins.static-generator.presets')[$key]['parameters'])
             ) {
-                $parameters = $config->get('plugins.static-generator.presets')[$key]['parameters'];
-                foreach ($parameters as $parameter => $value) {
-                    if (Utils::startsWith('twig.', $parameter, false)) {
-                        $twig->twig_vars[end(explode('.', $parameter))] = $value;
-                    } else {
-                        $config->set($parameter, $value);
-                    }
-                }
+                return $config->get('plugins.static-generator.presets')[$key]['parameters'];
             }
         }
+        return [];
     }
 }

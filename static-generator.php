@@ -85,6 +85,14 @@ class StaticGeneratorPlugin extends Plugin
 
     public function onTwigAdminTemplatePaths()
     {
+        $data = array();
+        $data['blueprints://'] = $this->grav['locator']->findResource('blueprints://');
+        foreach ($this->grav['locator']->getSchemes() as $stream) {
+            $data['schemes'][$stream] = Utils::url($stream . '://');
+        }
+        foreach ($this->grav['streams']->getStreams() as $name => $stream) {
+            $data['streams'][$name] = Utils::url($name . '://');
+        }
         $this->grav['twig']->twig_paths[] = __DIR__ . '/templates';
     }
 
@@ -134,10 +142,6 @@ class StaticGeneratorPlugin extends Plugin
      */
     public function onAdminTaskExecute(Event $event)
     {
-        // dump($event['method']);
-        // dump($event['controller']);
-        // dump($this->grav['user']);
-        // exit;
         if ($event['method'] == 'taskIndexSearch') {
             if (!$event['controller']->authorizeTask('indexSearch', ['admin.maintenance', 'admin.super'])) {
                 header('HTTP/1.0 403 Forbidden');
@@ -325,6 +329,28 @@ class StaticGeneratorPlugin extends Plugin
                 'plugin://static-generator/js/site-generator.admin.js'
             );
         }
+        if ($this->config->get('plugins.static-generator.css')) {
+            $this->grav['assets']->addInlineCss(
+                'pre.static-generator-command[data-header] {
+                    position: relative;
+                    margin: 1rem 1.5rem 0 1.5rem;
+                    padding: 1.75rem 0.75rem 0.75rem 0.75rem;
+                    white-space: pre-wrap;
+                }
+                pre.static-generator-command[data-header]:before {
+                    content: attr(data-header);
+                    display: block;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    left: 0;
+                    background-color: #666666;
+                    padding: 0 0.5rem;
+                    font: bold 11px/20px Arial,Sans-Serif;
+                    color: #ffffff;
+                }'
+            );
+        }
     }
 
     /**
@@ -390,6 +416,24 @@ class StaticGeneratorPlugin extends Plugin
                 $data['default'] = $config->get('theme.' . $name);
             }
             $return [$prefix . $name] = $data;
+        }
+        return $return;
+    }
+
+    /**
+     * Get available Admin permissions
+     *
+     * @return array Key-value array of permissions
+     */
+    public static function getAdminPermissionsBlueprint(): array
+    {
+        $Grav = Grav::instance();
+        $return = array();
+        foreach (array_keys($Grav['permissions']->getInstances()) as $permission) {
+            $return[] = [
+                'text' => $permission,
+                'value' => $permission
+            ];
         }
         return $return;
     }

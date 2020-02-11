@@ -47,14 +47,14 @@ class GenerateStaticPageCommand extends ConsoleCommand
             ->setDescription("Generates and stores Page(s) as HTML.")
             ->setHelp('The <info>page</info>-command generates and stores Page(s) as HTML.')
             ->addArgument(
-                'collection',
-                InputArgument::REQUIRED,
-                'The Page Collection to store (see https://learn.getgrav.org/16/content/collections#collection-headers)'
-            )
-            ->addArgument(
                 'route',
                 InputArgument::OPTIONAL,
                 'The route to the page'
+            )
+            ->addArgument(
+                'collection',
+                InputArgument::OPTIONAL,
+                'The Page Collection to store (see https://learn.getgrav.org/16/content/collections#collection-headers)'
             )
             ->addArgument(
                 'target',
@@ -116,7 +116,7 @@ class GenerateStaticPageCommand extends ConsoleCommand
         $config = Grav::instance()['config']->get('plugins.static-generator');
         $locator = Grav::instance()['locator'];
         $route = $this->input->getArgument('route') ?? '/';
-        $collection = $this->input->getArgument('collection');
+        $collection = $this->input->getArgument('collection') ?? '@page.self';
         $target = $this->input->getArgument('target');
         if ($target === null) {
             $target = $config['content'];
@@ -126,20 +126,31 @@ class GenerateStaticPageCommand extends ConsoleCommand
         $mirrorAssets = $this->input->getOption('static-assets');
         $mirrorImages = $this->input->getOption('images');
         $filters = $this->input->getOption('filter');
+        $parameters = $this->input->getOption('parameters');
         $force = $this->input->getOption('force');
         $maxLength = $config['content_max_length'];
         try {
             if (Utils::contains($target, '://')) {
                 $scheme = parse_url($target, PHP_URL_SCHEME);
-                $location = $locator->findResource($scheme . '://') . str_replace($scheme . '://', '/', $target);
+                $location = $locator->findResource($scheme . '://') .
+                    str_replace($scheme . '://', '/', $target);
             } else {
-                $this->output->writeln('<error>Target must be a valid stream resource, prefixing one of:</error>');
+                $this->output->writeln(
+                    '<error>Target must be a valid stream resource, prefixing one of:</error>'
+                );
                 foreach ($locator->getSchemes() as $scheme) {
                     $this->output->writeln($scheme . '://');
                 }
                 return;
             }
-            $Collection = new CommandLineCollection($collection, $route, $location, $force, $filters);
+            $Collection = new CommandLineCollection(
+                $route,
+                $collection,
+                $location,
+                $force,
+                $filters,
+                $parameters
+            );
             $Collection->handler($this->output);
             $Collection->setup($preset);
             $Collection->collection();

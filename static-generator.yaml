@@ -7,12 +7,10 @@ content_permissions:
   - admin.maintenance
 admin: true
 js: true
+css: true
 quick_tray: true
 quick_tray_permissions:
   - admin.super
   - admin.maintenance
 presets:
   - name: default
-  - name: two
-    parameters:
-      theme.chromeless.enabled: true

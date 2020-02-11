@@ -47,12 +47,9 @@ filters:
         value: "routable"
       - text: "nonRoutable"
         value: "nonRoutable"
-links:
-  type: preset_buttons
-  fields:
-    - class: static-generator-preset-generate disabled
-      name: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE.TITLE
-      disabled: true
-preview:
-  type: section
-  text: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE.CODE_PREVIEW
+# links:
+#   type: preset_buttons
+#   fields:
+#     - class: static-generator-preset-generate disabled
+#       name: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE.TITLE
+#       disabled: true

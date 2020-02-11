@@ -48,20 +48,25 @@ abstract class AbstractCollection implements CollectionInterface
      * @param string  $location   Where to store output.
      * @param boolean $force      Forcefully save data.
      * @param array   $filters    Methods to filter Collection by.
+     * @param array   $parameters Parameters to pass to Config or Twig.
      */
     public function __construct(
-        string $collection,
         string $route = '',
+        string $collection = '',
         string $location = '',
         bool $force = false,
-        array $filters = []
+        array $filters = [],
+        array $parameters = []
     ) {
         $this->assets = array();
-        $this->collection = $collection;
         $this->route = $route;
+        $this->collection = $collection;
+        dump($this->route);
+        dump($this->collection);
         $this->location = $location;
         $this->force = $force;
         $this->filters = $filters;
+        $this->parameters = $parameters;
     }
 
     /**
@@ -98,8 +103,16 @@ abstract class AbstractCollection implements CollectionInterface
                 );
                 $this->grav['config']->merge($Config->config->toArray());
             }
-            Config::applyParameters($this->grav['config'], $this->grav['twig'], $preset);
+            $this->parameters = Config::getPresetParameters(
+                $this->grav['config'],
+                $preset
+            );
         }
+        Config::applyParameters(
+            $this->grav['config'],
+            $this->grav['twig'],
+            $this->parameters
+        );
         $this->grav['uri']->init();
         $this->grav['plugins']->init();
         $this->grav['themes']->init();
@@ -111,12 +124,16 @@ abstract class AbstractCollection implements CollectionInterface
         if (in_array('all', $this->filters)) {
             $this->pages = $this->grav['pages']->all();
         } else {
-            $this->pages = $this->grav['page']->evaluate([$this->collection => $this->route]);
+            $this->pages = $this->grav['page']->evaluate(
+                [$this->collection => $this->route]
+            );
         }
         $this->pages = $this->filterCollection($this->pages, $this->filters);
         unset($this->grav['page']);
         $this->grav['page'] = $this->grav['pages']->dispatch($this->route);
         $this->count = $this->count();
+        dump($this->count);
+        // exit();
     }
 
     /**
