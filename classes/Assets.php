@@ -50,6 +50,9 @@ class Assets
         foreach ($this->grav['streams']->getStreams() as $name => $stream) {
             $this->streams[$name] = Utils::url($name . '://');
         }
+        // dump($this->schemes);
+        // dump($this->streams);
+        // exit();
     }
 
     /**

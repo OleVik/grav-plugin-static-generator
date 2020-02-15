@@ -83,10 +83,20 @@ abstract class AbstractCollection implements CollectionInterface
         $this->Assets = new Assets($this->Filesystem, $this->Timer);
         $this->Filesystem->mkdir($this->location);
         $this->grav = Grav::instance();
-        $this->grav->fireEvent('onPluginsInitialized');
-        $this->grav->fireEvent('onThemeInitialized');
-        $this->grav->fireEvent('onAssetsInitialized');
+        $this->grav['streams'];
+        $this->grav['uri']->init();
+        $this->grav['plugins']->init();
+        $this->grav['themes']->init();
+        // $this->grav->fireEvent('onPluginsInitialized');
+        // $this->grav->fireEvent('onThemeInitialized');
+        // $this->grav->fireEvent('onAssetsInitialized');
+        // $this->grav->fireEvent('onGetPageTemplates');
+        $this->grav['assets']->init();
         $this->grav['twig']->init();
+        // dump($this->grav['twig']->twig_paths);
+        // dump($this->grav['twig']->loader());
+        // dump($this->grav['twig']->loader()->exists('presentation.html.twig'));
+        // exit();
         $this->grav['pages']->init();
         $this->grav['config']->init();
         if (!empty($preset)) {
@@ -113,11 +123,6 @@ abstract class AbstractCollection implements CollectionInterface
             $this->grav['twig'],
             $this->parameters
         );
-        $this->grav['uri']->init();
-        $this->grav['plugins']->init();
-        $this->grav['themes']->init();
-        $this->grav['streams'];
-        $this->grav['assets']->init();
         if ($this->route == '/') {
             $this->collection = '@root.descendants';
         }
@@ -268,6 +273,22 @@ abstract class AbstractCollection implements CollectionInterface
     public function store(Page $Page): void
     {
         $route = $Page->route() == '/' ? '' : $Page->route();
+        if (!$this->grav['twig']->loader()->exists(
+            $Page->template() . '.' . $Page->templateFormat() . '.twig'
+        )
+        ) {
+            $message = $Page->template() . '.' . $Page->templateFormat() . '.twig not loaded.';
+            $this->reporter(
+                [
+                    'item' => $Page->title(),
+                    'location' => $message,
+                    'time' => Timer::format($this->Timer->getTime())
+                ],
+                'red'
+            );
+            Grav::instance()['log']->info($message);
+            return;
+        }
         try {
             $content = $this->grav['twig']->processTemplate(
                 $Page->template() . '.' . $Page->templateFormat() . '.twig',
