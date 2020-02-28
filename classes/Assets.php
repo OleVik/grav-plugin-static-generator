@@ -16,6 +16,10 @@ use Grav\Common\Grav;
 use Grav\Common\Utils;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+// use Windwalker\Http\HttpClient;
+use GuzzleHttp\Client;
+// use GuzzleHttp\Psr7\Request;
+use Grav\Framework\Psr7\Request;
 
 /**
  * Assets Builder
@@ -50,9 +54,6 @@ class Assets
         foreach ($this->grav['streams']->getStreams() as $name => $stream) {
             $this->streams[$name] = Utils::url($name . '://');
         }
-        // dump($this->schemes);
-        // dump($this->streams);
-        // exit();
     }
 
     /**
@@ -66,6 +67,68 @@ class Assets
      */
     public function copy(string $asset, string $location, bool $force): array
     {
+        // dump($asset);
+        if (Utils::startsWith($asset, '/user')) {
+            // dump('user');
+        } elseif (Utils::startsWith($asset, '/system')) {
+            // dump('system');
+        } else {
+            dump($asset);
+            // dump(basename($asset));
+            // dump(dirname($asset));
+            // dump(parse_url($asset));
+            // dump($location);
+            $url = parse_url($asset);
+            $target = $location . DS . 'assets' . DS . $url['host'] . $url['path'];
+            dump($target);
+            // file_put_contents($target, fopen($asset, 'r'));
+            $this->Filesystem->copy($asset, $target);
+            // new Request(
+            //     'GET',
+            //     $asset,
+            //     [
+            //         'connect_timeout' => 2,
+            //         'sink' => $target,
+            //         'timeout' => 3,
+            //     ]
+            // );
+            /* $Request = new Request('GET', $asset);
+            dump($Request);
+            dump($Request->getBody());
+            dump($Request->getBody()->getContents());
+            // dump($Request->getBody()->read(0));
+            dump($Request->getBody()->__toString());
+            dump($Request->getBody()->message);
+            dump($Request->getBody()->message->getBody()); */
+            
+            // include __DIR__ . '/../vendor/autoload.php';
+            // $file_path = fopen($target, 'w');
+            // dump($file_path);
+            // $client = new Client();
+            // $response = $client->get($asset, ['sink' => $file_path]);
+            // dump($response);
+
+            // $fileHandle = fopen($target, "wb");
+            // dump($fileHandle);
+            // try {
+            //     $client = new Client();
+            //     $response = $client->get($asset, [
+            //         'sink' => $fileHandle
+            //     ]);
+            // } catch (RequestException $e) {
+            //     throw new ReportFileDownloadException(
+            //         "Can't download report file $asset"
+            //     );
+            // } finally {
+            //     @fclose($fileHandle);
+            // }
+
+            // dump('other');
+            // $http = new HttpClient;
+            // $dest = '/path/to/local/file.zip';
+            // $response = $http->download('http://example.com/file.zip', $dest);
+        }
+        return [];
         if (empty($asset)) {
             return [];
         }

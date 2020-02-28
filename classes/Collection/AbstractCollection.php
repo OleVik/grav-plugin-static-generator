@@ -43,8 +43,8 @@ abstract class AbstractCollection implements CollectionInterface
     /**
      * Initialize class
      *
-     * @param string  $collection Collection to evaluate.
      * @param string  $route      Route to page, optional.
+     * @param string  $collection Collection to evaluate.
      * @param string  $location   Where to store output.
      * @param boolean $force      Forcefully save data.
      * @param array   $filters    Methods to filter Collection by.
@@ -61,8 +61,6 @@ abstract class AbstractCollection implements CollectionInterface
         $this->assets = array();
         $this->route = $route;
         $this->collection = $collection;
-        dump($this->route);
-        dump($this->collection);
         $this->location = $location;
         $this->force = $force;
         $this->filters = $filters;
@@ -83,20 +81,10 @@ abstract class AbstractCollection implements CollectionInterface
         $this->Assets = new Assets($this->Filesystem, $this->Timer);
         $this->Filesystem->mkdir($this->location);
         $this->grav = Grav::instance();
-        $this->grav['streams'];
-        $this->grav['uri']->init();
-        $this->grav['plugins']->init();
-        $this->grav['themes']->init();
-        // $this->grav->fireEvent('onPluginsInitialized');
-        // $this->grav->fireEvent('onThemeInitialized');
-        // $this->grav->fireEvent('onAssetsInitialized');
-        // $this->grav->fireEvent('onGetPageTemplates');
-        $this->grav['assets']->init();
+        $this->grav->fireEvent('onPluginsInitialized');
+        $this->grav->fireEvent('onThemeInitialized');
+        $this->grav->fireEvent('onAssetsInitialized');
         $this->grav['twig']->init();
-        // dump($this->grav['twig']->twig_paths);
-        // dump($this->grav['twig']->loader());
-        // dump($this->grav['twig']->loader()->exists('presentation.html.twig'));
-        // exit();
         $this->grav['pages']->init();
         $this->grav['config']->init();
         if (!empty($preset)) {
@@ -123,6 +111,11 @@ abstract class AbstractCollection implements CollectionInterface
             $this->grav['twig'],
             $this->parameters
         );
+        $this->grav['uri']->init();
+        $this->grav['plugins']->init();
+        $this->grav['themes']->init();
+        $this->grav['streams'];
+        $this->grav['assets']->init();
         if ($this->route == '/') {
             $this->collection = '@root.descendants';
         }
@@ -194,6 +187,7 @@ abstract class AbstractCollection implements CollectionInterface
                 $this->assets[] = $Asset['asset'];
             }
         }
+        // dump($this->assets);
         foreach ($this->assets as $asset) {
             $this->reporter(
                 $this->Assets->copy(
@@ -273,14 +267,12 @@ abstract class AbstractCollection implements CollectionInterface
     public function store(Page $Page): void
     {
         $route = $Page->route() == '/' ? '' : $Page->route();
-        if (!$this->grav['twig']->loader()->exists(
-            $Page->template() . '.' . $Page->templateFormat() . '.twig'
-        )
-        ) {
-            $message = $Page->template() . '.' . $Page->templateFormat() . '.twig not loaded.';
+        $template = $Page->template() . '.' . $Page->templateFormat() . '.twig';
+        if (!$this->grav['twig']->loader()->exists($template)) {
+            $message = 'Template not loaded or found.';
             $this->reporter(
                 [
-                    'item' => $Page->title(),
+                    'item' => $Page->title() . ' (' . $template . ')',
                     'location' => $message,
                     'time' => Timer::format($this->Timer->getTime())
                 ],
@@ -291,7 +283,7 @@ abstract class AbstractCollection implements CollectionInterface
         }
         try {
             $content = $this->grav['twig']->processTemplate(
-                $Page->template() . '.' . $Page->templateFormat() . '.twig',
+                $template,
                 ['page' => $Page]
             );
             $content = Source::rewriteAssetURLs($content);
@@ -316,7 +308,7 @@ abstract class AbstractCollection implements CollectionInterface
             $this->Filesystem->dumpFile($this->location . $route . DS . $file, $content);
             $this->reporter(
                 [
-                    'item' => $Page->title(),
+                    'item' => $Page->title() . ' (' . $template . ')',
                     'location' => $this->location . $route . '/' . $file,
                     'time' => Timer::format($this->Timer->getTime())
                 ]
