@@ -187,3 +187,4 @@ If you use the Admin plugin, you can install it directly by browsing the `Plugin
 ## TODO
 
 - [ ] content_max_length not used on Collection?
+- [ ] Option for non-prefixed Asset-path
