@@ -70,23 +70,18 @@ abstract class AbstractCollection implements CollectionInterface
     /**
      * Bootstrap data, events, and helpers
      *
-     * @param string $preset Name of Config Preset to load.
+     * @param string $preset  Name of Config Preset to load.
+     * @param bool   $offline Force offline-mode.
      *
      * @return void
      */
-    public function setup(string $preset): void
+    public function setup(string $preset, $offline): void
     {
         $this->Filesystem = new Filesystem();
         $this->Timer = new Timer();
-        $this->Assets = new Assets($this->Filesystem, $this->Timer);
+        $this->Assets = new Assets($this->Filesystem, $this->Timer, $offline);
         $this->Filesystem->mkdir($this->location);
         $this->grav = Grav::instance();
-        $this->grav->fireEvent('onPluginsInitialized');
-        $this->grav->fireEvent('onThemeInitialized');
-        $this->grav->fireEvent('onAssetsInitialized');
-        $this->grav['twig']->init();
-        $this->grav['pages']->init();
-        $this->grav['config']->init();
         if (!empty($preset)) {
             $presetLocation = $this->grav['locator']->findResource(
                 'user-data://persist/presets/' . $preset,
@@ -111,11 +106,6 @@ abstract class AbstractCollection implements CollectionInterface
             $this->grav['twig'],
             $this->parameters
         );
-        $this->grav['uri']->init();
-        $this->grav['plugins']->init();
-        $this->grav['themes']->init();
-        $this->grav['streams'];
-        $this->grav['assets']->init();
         if ($this->route == '/') {
             $this->collection = '@root.descendants';
         }
@@ -130,8 +120,6 @@ abstract class AbstractCollection implements CollectionInterface
         unset($this->grav['page']);
         $this->grav['page'] = $this->grav['pages']->dispatch($this->route);
         $this->count = $this->count();
-        dump($this->count);
-        // exit();
     }
 
     /**
@@ -187,7 +175,6 @@ abstract class AbstractCollection implements CollectionInterface
                 $this->assets[] = $Asset['asset'];
             }
         }
-        // dump($this->assets);
         foreach ($this->assets as $asset) {
             $this->reporter(
                 $this->Assets->copy(

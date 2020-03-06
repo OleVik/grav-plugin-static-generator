@@ -1,3 +1,17 @@
+# v2.0.0-beta.1
+## 06-03-2020
+
+1. [](#improved)
+   - Grav-initialization
+   - API-cleanup
+   - Asset-parsing and -rewriting
+2. [](#new)
+   - Offline-option to avoid trying to download remote assets
+3. [](#bugfix)
+   - Lock version-dependency to Core v1.6.22
+   - Revert blueprints-logic
+   - Fix permissions-selectize field
+
 # v2.0.0-alpha.3
 ## 11-02-2020
 

@@ -50,9 +50,9 @@ class CommandLineCollection extends AbstractCollection
      *
      * @return void
      */
-    public function setup(string $preset): void
+    public function setup(string $preset, $offline): void
     {
-        parent::setup($preset);
+        parent::setup($preset, $offline);
         $this->progress = new ProgressBar($this->handle, $this->count);
     }
 

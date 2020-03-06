@@ -47,8 +47,13 @@ class Collection
      * @param string  $location   Where to store output.
      * @param boolean $force      Forcefully save data.
      */
-    public function __construct($handle, string $collection, string $route = '', string $location = '', bool $force = false)
-    {
+    public function __construct(
+        $handle,
+        string $collection,
+        string $route = '',
+        string $location = '',
+        bool $force = false
+    ) {
         include __DIR__ . '/../vendor/autoload.php';
         $this->assets = array();
         $this->handle = $handle;
@@ -63,22 +68,12 @@ class Collection
      *
      * @return void
      */
-    public function setup(): void
+    public function setup(bool $offline): void
     {
         $this->grav = Grav::instance();
-        $this->grav->fireEvent('onPluginsInitialized');
-        $this->grav->fireEvent('onThemeInitialized');
-        $this->grav->fireEvent('onAssetsInitialized');
-        $this->grav['twig']->init();
-        $this->grav['pages']->init();
-        $this->grav['config']->init();
-        $this->grav['uri']->init();
-        $this->grav['plugins']->init();
-        $this->grav['themes']->init();
-        $this->grav['assets']->init();
         $this->Filesystem = new Filesystem();
         $this->Timer = new Timer();
-        $this->Assets = new Assets($this->handle, $this->Filesystem, $this->Timer);
+        $this->Assets = new Assets($this->Filesystem, $this->Timer, $offline);
     }
 
     /**

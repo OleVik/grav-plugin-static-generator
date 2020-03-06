@@ -13,7 +13,6 @@
  */
 namespace Grav\Plugin\StaticGenerator\Data;
 
-use Grav\Common\Grav;
 use Grav\Plugin\StaticGenerator\Data\AbstractData;
 
 /**
@@ -37,9 +36,6 @@ class TestData extends AbstractData
      */
     public function setup($route, $handle)
     {
-        parent::setup();
-        $this->grav['pages']->init();
-        $this->grav['twig']->init();
         if ($route == '/') {
             $this->pages = $this->grav['page']->evaluate(['@root.descendants']);
         } else {
@@ -62,7 +58,7 @@ class TestData extends AbstractData
         $depth++;
         $mode = '@page.self';
         if ($route == '/') {
-            $mode = '@root.children';
+            $mode = '@root.descendants';
         }
         if ($depth > 1) {
             $mode = '@page.children';
@@ -103,8 +99,8 @@ class TestData extends AbstractData
             }
             try {
                 $pageContent = $this->content($page) ?? 0;
-            } catch (Exception $error) {
-                throw new Exception($error);
+            } catch (\Exception $error) {
+                throw new \Exception($error);
             }
             echo '[' . $this->progress . '/' . $this->count . '] ' .
                 $item['title'] . ' (' . strlen($pageContent) . ")\n";

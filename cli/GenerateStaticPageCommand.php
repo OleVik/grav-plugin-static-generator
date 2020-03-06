@@ -86,6 +86,12 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 'Include Images'
             )
             ->addOption(
+                'offline',
+                'o',
+                InputOption::VALUE_NONE,
+                'Force offline-mode'
+            )
+            ->addOption(
                 'filter',
                 'f',
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
@@ -125,11 +131,13 @@ class GenerateStaticPageCommand extends ConsoleCommand
         $assets = $this->input->getOption('assets');
         $mirrorAssets = $this->input->getOption('static-assets');
         $mirrorImages = $this->input->getOption('images');
+        $offline = $this->input->getOption('offline');
         $filters = $this->input->getOption('filter');
         $parameters = $this->input->getOption('parameters');
         $force = $this->input->getOption('force');
         $maxLength = $config['content_max_length'];
         try {
+            parent::initializePages();
             if (Utils::contains($target, '://')) {
                 $scheme = parse_url($target, PHP_URL_SCHEME);
                 $location = $locator->findResource($scheme . '://') .
@@ -152,7 +160,7 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 $parameters
             );
             $Collection->handler($this->output);
-            $Collection->setup($preset);
+            $Collection->setup($preset, $offline);
             $Collection->collection();
             if ($assets) {
                 $Collection->assets();

@@ -13,12 +13,10 @@
   "autoload": {
     "psr-4": {
       "Grav\\Plugin\\StaticGenerator\\": "classes/",
-      "Grav\\Framework\\Cache\\Adapter\\": "classes/",
-      "Grav\\Theme\\Scholar\\": "addons/"
+      "Grav\\Framework\\Cache\\Adapter\\": "classes/"
     }
   },
   "require": {
-    "symfony/filesystem": "^4.3",
-    "windwalker/http": "~3.0"
+    "symfony/filesystem": "^4.3"
   }
 }

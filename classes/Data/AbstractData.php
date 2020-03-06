@@ -15,6 +15,7 @@ namespace Grav\Plugin\StaticGenerator\Data;
 
 use Grav\Common\Grav;
 use Grav\Common\Page\Page;
+use Grav\Console\ConsoleCommand;
 use Grav\Plugin\StaticGenerator\Data\DataInterface;
 
 /**
@@ -43,8 +44,13 @@ abstract class AbstractData implements DataInterface
      * @param string $orderBy   Property to order by.
      * @param string $orderDir  Direction to order.
      */
-    public function __construct(bool $content = false, int $maxLength = null, string $orderBy = 'date', string $orderDir = 'desc')
-    {
+    public function __construct(
+        bool $content = false,
+        int $maxLength = null,
+        string $orderBy = 'date',
+        string $orderDir = 'desc'
+    ) {
+        $this->grav = Grav::instance();
         $this->data = array();
         $this->content = $content;
         $this->maxLength = $maxLength;
@@ -66,7 +72,6 @@ abstract class AbstractData implements DataInterface
                 Grav::instance()['admin']->enablePages();
             }
         }
-        $this->grav = Grav::instance();
     }
 
     /**

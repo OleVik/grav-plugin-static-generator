@@ -42,11 +42,12 @@ interface CollectionInterface
     /**
      * Bootstrap data, events, and helpers
      *
-     * @param string $preset Name of Config Preset to load.
+     * @param string $preset  Name of Config Preset to load.
+     * @param bool   $offline Force offline-mode.
      *
      * @return void
      */
-    public function setup(string $preset): void;
+    public function setup(string $preset, $offline): void;
 
     /**
      * Build Page(s)

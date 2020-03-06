@@ -71,7 +71,6 @@ class StaticGeneratorPlugin extends Plugin
      */
     public function onPluginsInitialized()
     {
-        // dump(self::getAdminPermissionsBlueprint());
         if ($this->isAdmin() && $this->config->get('plugins.static-generator.admin')) {
             $this->enable(
                 [
@@ -375,7 +374,6 @@ class StaticGeneratorPlugin extends Plugin
         return $searchFiles;
     }
 
-
     /**
      * Get Blueprint fields
      *
@@ -428,21 +426,20 @@ class StaticGeneratorPlugin extends Plugin
      */
     public static function getAdminPermissionsBlueprint(): array
     {
-        $Grav = Grav::instance();
-        $return = array('' => 'None');
-        // if (method_exists($Grav->grav['admin'], 'getPermissions')) {
-        //     $permissions = $Grav->grav['admin']->getPermissions();
-        // } elseif (method_exists($Grav->grav['permissions'], 'getInstances')) {
-        //     $permissions = $Grav['permissions']->getInstances();
-        // }
-        // if (is_array($permissions) && !empty($permissions)) {
-        //     foreach (array_keys($permissions) as $permission) {
-        //         $return[] = [
-        //             'text' => $permission,
-        //             'value' => $permission
-        //         ];
-        //     }
-        // }
+        $return = array();
+        if (method_exists(Grav::instance()['admin'], 'getPermissions')) {
+            $permissions = Grav::instance()['admin']->getPermissions();
+        } elseif (method_exists(Grav::instance()['permissions'], 'getInstances')) {
+            $permissions = Grav::instance()['permissions']->getInstances();
+        }
+        if (is_array($permissions) && !empty($permissions)) {
+            foreach (array_keys($permissions) as $permission) {
+                $return[] = [
+                    'text' => $permission,
+                    'value' => $permission
+                ];
+            }
+        }
         return $return;
     }
 }

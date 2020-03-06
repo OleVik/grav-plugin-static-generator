@@ -39,8 +39,6 @@ class CommandLineData extends AbstractData
     public function setup($route, $handle)
     {
         parent::setup();
-        $this->grav['pages']->init();
-        $this->grav['twig']->init();
         if ($route == '/') {
             $this->pages = $this->grav['page']->evaluate(['@root.descendants']);
         } else {

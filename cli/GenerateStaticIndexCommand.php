@@ -113,6 +113,7 @@ class GenerateStaticIndexCommand extends ConsoleCommand
         $maxLength = $config['content_max_length'];
         $this->output->writeln('<info>Generating data index</info>');
         try {
+            parent::initializePages();
             if (Utils::contains($target, '://')) {
                 $scheme = parse_url($target, PHP_URL_SCHEME);
                 $location = $locator->findResource($scheme . '://') . str_replace($scheme . '://', '/', $target);

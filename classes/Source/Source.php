@@ -55,7 +55,22 @@ class Source
      */
     public static function rewriteAssetURLs(string $content): string
     {
-        return preg_replace('/(link href|script src)="\//ui', '$1="/assets/', $content);
+        preg_match_all('/<(?:link href|script src)="(?<url>[^"]*)"/ui', $content, $matches, PREG_SET_ORDER, 0);
+        foreach ($matches as $asset) {
+            if (!isset($asset['url'])) {
+                continue;
+            }
+            if (Utils::startsWith($asset['url'], '/user')) {
+                $target = $asset['url'];
+            } elseif (Utils::startsWith($asset['url'], '/system')) {
+                $target = $asset['url'];
+            } else {
+                $url = parse_url($asset['url']);
+                $target = '/' . $url['host'] . $url['path'];
+            }
+            $content = str_replace($asset['url'], '/assets' . $target, $content);
+        }
+        return $content;
     }
 
     /**

@@ -14,7 +14,7 @@ enabled: true
 # Where to store indices
 index: "user://data/persist"
 # Where to store static content
-content: "user://data/persist"
+content: "user://data/persist/static"
 # Maximum character count in each Page
 content_max_length: 100000
 # Permission-levels that can see buttons in plugin options
@@ -25,19 +25,15 @@ content_permissions:
 admin: true
 # Use plugin's JavaScript in Admin-plugin
 js: true
-# Enable quick-index button in Admin Quick Tray
+# Enable index-button in Admin Quick Tray
 quick_tray: true
-# Permission-levels that can see button in Admin Quick Tray
+# Permission-levels that can see index-button in Admin Quick Tray
 quick_tray_permissions:
   - admin.super
   - admin.maintenance
 # Defined sets of presets
 presets:
   - name: default
-  - name: two
-    parameters:
-      theme.chromeless.enabled: true
-
 ```
 
 Note that if you use the Admin plugin, a file with your configuration named `static-generator.yaml` will be saved in the `user/config/plugins/` folder once the configuration is saved in the Admin.
@@ -190,8 +186,4 @@ If you use the Admin plugin, you can install it directly by browsing the `Plugin
 
 ## TODO
 
-- [x] Pass parameters from CLI to Twig and Config
-  - [x] Twig-handler
-  - [x] CLI-handler
-  - [ ] Test
 - [ ] content_max_length not used on Collection?

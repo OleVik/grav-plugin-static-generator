@@ -34,7 +34,12 @@ interface DataInterface
      * @param string $orderBy   Property to order by.
      * @param string $orderDir  Direction to order.
      */
-    public function __construct(bool $content = false, int $maxLength = null, string $orderBy = 'date', string $orderDir = 'desc');
+    public function __construct(
+        bool $content = false,
+        int $maxLength = null,
+        string $orderBy = 'date',
+        string $orderDir = 'desc'
+    );
 
     /**
      * Count items
