@@ -184,6 +184,11 @@ You should now have all the plugin files under
 
 If you use the Admin plugin, you can install it directly by browsing the `Plugins`-tab and clicking on the `Add` button.
 
+## Credits
+
+- Developed by [Ole Vik](https://github.com/OleVik)
+- Version 2.0.0-refactor sponsored by [Paul Hibbitts](https://twitter.com/hibbittsdesign)
+
 ## TODO
 
 - [ ] content_max_length not used on Collection?
