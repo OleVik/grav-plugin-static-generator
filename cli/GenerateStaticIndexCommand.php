@@ -113,13 +113,8 @@ class GenerateStaticIndexCommand extends ConsoleCommand
         $maxLength = $config['content_max_length'];
         $this->output->writeln('<info>Generating data index</info>');
         try {
-            $targets = array(
-                'persist' => $locator->findResource('user://') . '/data/persist',
-                'transient' => $locator->findResource('cache://') . '/transient'
-            );
-            if (array_key_exists($target, $targets)) {
-                $location = $targets[$target];
-            } elseif (Utils::contains($target, '://')) {
+            parent::initializePages();
+            if (Utils::contains($target, '://')) {
                 $scheme = parse_url($target, PHP_URL_SCHEME);
                 $location = $locator->findResource($scheme . '://') . str_replace($scheme . '://', '/', $target);
             } else {

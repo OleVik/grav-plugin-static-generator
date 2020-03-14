@@ -1,0 +1,55 @@
+section:
+  type: section
+  text: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE.EXPLANATION
+  underline: true
+route:
+  type: text
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.ROUTE
+  placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.ROUTE
+target:
+  type: text
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.TARGET
+  placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.STORAGE.TARGET
+assets:
+  type: checkbox
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ASSETS
+static_assets:
+  type: checkbox
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.STATIC_ASSETS
+images:
+  type: checkbox
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.IMAGES
+parameters:
+  type: array
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.PARAMETERS.TITLE
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.PARAMETERS.DESCRIPTION
+  placeholder_key: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.PARAMETERS.KEY
+  placeholder_value: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.PARAMETERS.VALUE
+filters:
+  type: selectize
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.FILTERS
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.FILTERS
+  selectize:
+    options:
+      - text: "visible"
+        value: "visible"
+      - text: "nonVisible"
+        value: "nonVisible"
+      - text: "modular"
+        value: "modular"
+      - text: "nonModular"
+        value: "nonModular"
+      - text: "published"
+        value: "published"
+      - text: "nonPublished"
+        value: "nonPublished"
+      - text: "routable"
+        value: "routable"
+      - text: "nonRoutable"
+        value: "nonRoutable"
+# links:
+#   type: preset_buttons
+#   fields:
+#     - class: static-generator-preset-generate disabled
+#       name: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE.TITLE
+#       disabled: true

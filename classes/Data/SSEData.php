@@ -22,26 +22,54 @@ use Grav\Plugin\StaticGenerator\Data\AbstractData;
  * Server Sent Events Data Builder
  *
  * @category API
- * @package  Grav\Plugin\StaticGeneratorPlugin\Data\ServerSentEventsData
+ * @package  Grav\Plugin\StaticGenerator\Data\SSEData
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
-class ServerSentEventsData extends AbstractData
+class SSEData extends AbstractData
 {
     /**
-     * Check count before progressing
+     * Declare headers
      *
      * @return void
      */
-    public function verify()
+    public static function headers()
     {
-        if ($this->count > 0) {
+        error_reporting(0);
+        set_time_limit(0);
+        header('Content-Type: text/event-stream');
+        header('Access-Control-Allow-Origin: *');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
+    }
+
+    /**
+     * Check count before progressing
+     *
+     * @param string $route Route to page.
+     *
+     * @return string
+     */
+    public function verify(string $route): string
+    {
+        $mode = '@page.descendants';
+        if ($route == '/') {
+            $mode = '@root.descendants';
+        }
+        $this->pages = $this->grav['page']->evaluate([$mode => $route]);
+        if ($this->count() < 1) {
+            $route = '/';
+            $this->pages = $this->grav['page']->evaluate(['@root.descendants' => '/']);
+        }
+        if ($this->count() > 0) {
+            $this->total = $this->count();
             echo 'event: update' . "\n\n";
             echo 'data: ' . json_encode(
                 [
                     'datetime' => date(DATE_ISO8601),
-                    'total' => $this->count
+                    'total' => $this->count()
                 ]
             ) . "\n\n";
         } else {
@@ -61,62 +89,8 @@ class ServerSentEventsData extends AbstractData
                     'content' => 'END-OF-STREAM'
                 ]
             ) . "\n\n";
-            exit();
         }
-    }
-    
-    /**
-     * Finish and cleanup
-     *
-     * @param string $location Stream to storage-folder.
-     * @param string $slug     Hyphenized Page-route.
-     * @param array  $data     Data to store.
-     * @param Timer  $Timer    Instance of Grav\Plugin\StaticGenerator\Timer.
-     *
-     * @return void
-     */
-    public function teardown(string $location, string $slug, array $data, Timer $Timer): void
-    {
-        $file = $slug . '.full.js';
-        $Storage = new FileStorage(
-            Grav::instance()['locator']->findResource($location)
-        );
-        if ($Storage->doHas($file)) {
-            $Storage->doDelete($file);
-        }
-        $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($data) . ';', 0);
-        $message = ucfirst(
-            $this->grav['language']->translate(
-                ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.STORED']
-            )
-        ) . ' ' . $this->count . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.ITEMS']
-        ) . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
-        ) . ' ' . $location . '/' . $file . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
-        ) . ' ' . Timer::format($Timer->getTime()) . '.';
-        echo 'event: update' . "\n\n";
-        echo 'data: ' . json_encode(
-            [
-                'datetime' => date(DATE_ISO8601),
-                'content' => $message,
-                'text' => $file,
-                'value' => $location . '/' . $file
-            ]
-        ) . "\n\n";
-        Grav::instance()['log']->info($message);
-        echo 'event: close' . "\n\n";
-        echo 'data: ' . json_encode(
-            [
-                'datetime' => date(DATE_ISO8601),
-                'content' => 'END-OF-STREAM'
-            ]
-        ) . "\n\n";
-        exit();
+        return $route;
     }
 
     /**
@@ -138,9 +112,9 @@ class ServerSentEventsData extends AbstractData
         if ($depth > 1) {
             $mode = '@page.children';
         }
-        $pages = $this->grav['page']->evaluate([$mode => $route]);
-        $pages = $pages->published()->order($this->orderBy, $this->orderDir);
-        foreach ($pages as $page) {
+        $this->pages = $this->grav['page']->evaluate([$mode => $route]);
+        $this->pages = $this->pages->order($this->orderBy, $this->orderDir);
+        foreach ($this->pages as $page) {
             $route = $page->rawRoute();
             $item = array(
                 'title' => $page->title(),
@@ -182,11 +156,10 @@ class ServerSentEventsData extends AbstractData
                     if (!empty($pageContent) && strlen($pageContent) <= $this->maxLength) {
                         $item['content'] = $pageContent;
                     }
-                } catch (Exception $error) {
-                    throw new Exception($error);
+                } catch (\Exception $error) {
+                    throw new \Exception($error);
                 }
             }
-            $this->progress();
             echo 'event: update' . "\n\n";
             echo 'data: ' . json_encode(
                 [
@@ -195,6 +168,7 @@ class ServerSentEventsData extends AbstractData
                     'content' => $page->title()
                 ]
             ) . "\n\n";
+            $this->progress();
             if (count($page->children()) > 0) {
                 $this->index($route, $mode, $depth);
             }
@@ -204,8 +178,74 @@ class ServerSentEventsData extends AbstractData
             }
             flush();
             if (connection_aborted()) {
-                exit();
+                exit;
             }
         }
+    }
+
+    /**
+     * Cleanup
+     *
+     * @param string $location Stream to storage-folder.
+     * @param string $slug     Hyphenized Page-route.
+     * @param array  $data     Data to store.
+     * @param Timer  $Timer    Instance of Grav\Plugin\StaticGenerator\Timer.
+     *
+     * @return void
+     */
+    public function teardown(string $location, string $slug, array $data, Timer $Timer): void
+    {
+        if (empty($slug)) {
+            $slug = 'index';
+        }
+        $file = $slug . '.full.js';
+        $Storage = new FileStorage(
+            Grav::instance()['locator']->findResource($location)
+        );
+        if ($Storage->doHas($file)) {
+            $Storage->doDelete($file);
+        }
+        $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($data) . ';', 0);
+        $message = ucfirst(
+            $this->grav['language']->translate(
+                ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.STORED']
+            )
+        ) . ' ' . $this->total . ' ' .
+        $this->grav['language']->translate(
+            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.ITEMS']
+        ) . ' ' .
+        $this->grav['language']->translate(
+            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
+        ) . ' ' . $location . '/' . $file . ' ' .
+        $this->grav['language']->translate(
+            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
+        ) . ' ' . Timer::format($Timer->getTime()) . '.';
+        echo 'event: update' . "\n\n";
+        echo 'data: ' . json_encode(
+            [
+                'datetime' => date(DATE_ISO8601),
+                'content' => $message,
+                'text' => $file,
+                'value' => $location . '/' . $file
+            ]
+        ) . "\n\n";
+        Grav::instance()['log']->info($message);
+    }
+
+    /**
+     * Finish stream
+     *
+     * @return void
+     */
+    public static function finish(): void
+    {
+        echo 'event: close' . "\n\n";
+        echo 'data: ' . json_encode(
+            [
+                'datetime' => date(DATE_ISO8601),
+                'content' => 'END-OF-STREAM'
+            ]
+        ) . "\n\n";
+        exit;
     }
 }

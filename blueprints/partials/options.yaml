@@ -1,0 +1,80 @@
+enabled:
+  type: toggle
+  label: PLUGIN_ADMIN.PLUGIN_STATUS
+  options:
+    1: PLUGIN_ADMIN.ENABLED
+    0: PLUGIN_ADMIN.DISABLED
+  validate:
+    type: bool
+index:
+  type: text
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.INDEX
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.INDEX
+  highlight: native
+  default: native
+  options:
+    native: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.NATIVE
+    persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
+    transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
+  validate:
+    required: true
+content:
+  type: text
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.CONTENT
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.CONTENT
+  highlight: native
+  default: native
+  options:
+    native: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.NATIVE
+    persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
+    transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
+  validate:
+    required: true
+explanation:
+  type: spacer
+  text: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.EXPLANATION
+  markdown: true
+content_max_length:
+  type: number
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.CONTENT_MAX_LENGTH
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CONTENT_MAX_LENGTH
+  validate:
+    min: 0
+    step: 10000
+    max: 10000000
+admin:
+  type: toggle
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.ADMIN
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.ADMIN
+  options:
+    1: PLUGIN_ADMIN.ENABLED
+    0: PLUGIN_ADMIN.DISABLED
+  validate:
+    type: bool
+js:
+  type: toggle
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.JS
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.JS
+  options:
+    1: PLUGIN_ADMIN.ENABLED
+    0: PLUGIN_ADMIN.DISABLED
+  validate:
+    type: bool
+css:
+  type: toggle
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.CSS
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CSS
+  options:
+    1: PLUGIN_ADMIN.ENABLED
+    0: PLUGIN_ADMIN.DISABLED
+  validate:
+    type: bool
+quick_tray:
+  type: toggle
+  label: PLUGIN_STATIC_GENERATOR.ADMIN.CSS
+  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CSS
+  options:
+    1: PLUGIN_ADMIN.ENABLED
+    0: PLUGIN_ADMIN.DISABLED
+  validate:
+    type: bool

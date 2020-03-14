@@ -113,7 +113,8 @@ class TestStaticDataCommand extends ConsoleCommand
         $maxLength = $config['content_max_length'];
         $this->output->writeln('<info>Testing data index</info>');
         try {
-            $Data = new TestData($content, $maxLength);
+            parent::initializePages();
+            $Data = new TestData($Grav, $content, $maxLength);
             $Data->setup($route, $this->output);
             $this->output->writeln('<info>Count: ' . $Data->count . '</info>');
             $Data->index($route);

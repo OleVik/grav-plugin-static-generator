@@ -1,6 +1,6 @@
 <?php
 /**
- * Static Generator Plugin, Data Interface
+ * Static Generator Plugin, Data Builder Interface
  *
  * PHP version 7
  *
@@ -16,10 +16,10 @@ namespace Grav\Plugin\StaticGenerator\Data;
 use Grav\Common\Page\Page;
 
 /**
- * Data Interface
+ * Data Builder Interface
  *
  * @category API
- * @package  Grav\Plugin\StaticGeneratorPlugin\Data\DataInterface
+ * @package  Grav\Plugin\StaticGenerator\Data\DataInterface
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
@@ -34,7 +34,12 @@ interface DataInterface
      * @param string $orderBy   Property to order by.
      * @param string $orderDir  Direction to order.
      */
-    public function __construct(bool $content = false, int $maxLength = null, string $orderBy = 'date', string $orderDir = 'desc');
+    public function __construct(
+        bool $content = false,
+        int $maxLength = null,
+        string $orderBy = 'date',
+        string $orderDir = 'desc'
+    );
 
     /**
      * Count items

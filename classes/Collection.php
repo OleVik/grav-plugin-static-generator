@@ -47,8 +47,13 @@ class Collection
      * @param string  $location   Where to store output.
      * @param boolean $force      Forcefully save data.
      */
-    public function __construct($handle, string $collection, string $route = '', string $location = '', bool $force = false)
-    {
+    public function __construct(
+        $handle,
+        string $collection,
+        string $route = '',
+        string $location = '',
+        bool $force = false
+    ) {
         include __DIR__ . '/../vendor/autoload.php';
         $this->assets = array();
         $this->handle = $handle;
@@ -63,18 +68,12 @@ class Collection
      *
      * @return void
      */
-    public function setup(): void
+    public function setup(bool $offline): void
     {
         $this->grav = Grav::instance();
-        $this->grav['twig']->init();
-        $this->grav['themes']->init();
-        $this->grav['assets']->init();
-        $this->grav['pages']->init();
-        $this->grav->fireEvent('onAssetsInitialized');
-        $this->grav->fireEvent('onPageContent');
         $this->Filesystem = new Filesystem();
         $this->Timer = new Timer();
-        $this->Assets = new Assets($this->handle, $this->Filesystem, $this->Timer);
+        $this->Assets = new Assets($this->Filesystem, $this->Timer, $offline);
     }
 
     /**
@@ -150,6 +149,21 @@ class Collection
         );
     }
 
+    public function mirrorImages(): void
+    {
+        $this->handle->writeln('<white>Processing Images</white>');
+        $this->Filesystem->mirror(
+            GRAV_ROOT . '/images',
+            $this->location . '/images',
+            null,
+            [
+                'override' => true,
+                'copy_on_windows' => true,
+                'delete' => true
+            ]
+        );
+    }
+
     /**
      * Store Page
      *
@@ -165,11 +179,11 @@ class Collection
                 $Page->template() . '.' . $Page->templateFormat() . '.twig',
                 ['page' => $Page]
             );
-            $content = $this->Assets->rewriteURL($content);
+            $content = $this->Assets->rewriteURL($content, $this->rootPrefix);
             $content = $this->Assets->rewriteMediaURL(
                 $content,
                 Utils::url($Page->getMediaUri()),
-                $route
+                $this->rootPrefix . $route
             );
         } catch (\Exception $e) {
             throw new \Exception($e);

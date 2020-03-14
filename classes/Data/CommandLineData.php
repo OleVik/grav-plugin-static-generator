@@ -21,7 +21,7 @@ use Grav\Plugin\StaticGenerator\Data\AbstractData;
  * CLI Data Builder
  *
  * @category API
- * @package  Grav\Plugin\StaticGeneratorPlugin\Data\CommandLineData
+ * @package  Grav\Plugin\StaticGenerator\Data\CommandLineData
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
@@ -39,8 +39,6 @@ class CommandLineData extends AbstractData
     public function setup($route, $handle)
     {
         parent::setup();
-        $this->grav['pages']->init();
-        $this->grav['twig']->init();
         if ($route == '/') {
             $this->pages = $this->grav['page']->evaluate(['@root.descendants']);
         } else {
@@ -80,7 +78,7 @@ class CommandLineData extends AbstractData
             $mode = '@page.children';
         }
         $pages = $this->grav['page']->evaluate([$mode => $route]);
-        $pages = $pages->published()->order($this->orderBy, $this->orderDir);
+        $pages = $pages->order($this->orderBy, $this->orderDir);
         foreach ($pages as $page) {
             $route = $page->rawRoute();
             $item = array(

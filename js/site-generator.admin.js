@@ -1,19 +1,61 @@
+function throttle(callback, interval) {
+  let enableCall = true;
+  return function(...args) {
+    if (!enableCall) return;
+    enableCall = false;
+    callback.apply(this, args);
+    setTimeout(() => (enableCall = true), interval);
+  };
+}
+
+/**
+ * Limit the rate at which a function can execute
+ * @param {Function} func Function to execute
+ * @param {Integer} wait Fire-rate limit in milliseconds
+ * @param {Boolean} immediate Execute immediately
+ * @see https://davidwalsh.name/javascript-debounce-function
+ */
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this,
+      args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+
 function staticGeneratorUpdateProgress(progress, total, message) {
   const toastMessage = document.querySelector(".toast-message");
   const status = `[${progress}/${total}] ${message}`;
+  console.debug(status);
   toastMessage.textContent = status;
 }
 
-function staticGeneratorStore(url, indexButton, StateColors, Toastr) {
-  let indexEvent = new window.EventSource(url);
+function staticGeneratorEventHandler(
+  task,
+  url,
+  button,
+  Toastr,
+  StateColors,
+  styleProperty = "color"
+) {
+  button.style[styleProperty] = StateColors.waiting;
+  let EventHandler = new window.EventSource(url);
   const persist = {
     timeOut: 0,
     extendedTimeOut: 0
   };
   Toastr.info(StaticGeneratorTranslation.ADMIN.INDEX.WAITING, null, persist);
-  indexButton.disabled = true;
-  indexEvent.addEventListener("open", event => {
-    console.debug(`Executing task indexSearch: ${url}`);
+  button.disabled = true;
+  EventHandler.addEventListener("open", event => {
+    console.debug(`Executing task ${task}: ${url}`);
     Toastr.clear();
     Toastr.info(
       "[0/0]",
@@ -21,18 +63,18 @@ function staticGeneratorStore(url, indexButton, StateColors, Toastr) {
       persist
     );
   });
-  indexEvent.addEventListener("error", event => {
-    console.error("Failed to execute task indexSearch", event);
-    indexButton.style.color = StateColors.error;
-    indexButton.disabled = false;
+  EventHandler.addEventListener("error", event => {
+    console.error(`Failed to execute task ${task}`, event);
+    button.style[styleProperty] = StateColors.error;
+    button.disabled = false;
     Toastr.error(StaticGeneratorTranslation.ADMIN.INDEX.ERROR, null, persist);
-    indexEvent.close();
+    EventHandler.close();
     setTimeout(function() {
       Toastr.clear();
     }, 2500);
   });
   var total = 0;
-  indexEvent.addEventListener("message", event => {
+  EventHandler.addEventListener("message", event => {
     const data = JSON.parse(event.data);
     if (data.total) {
       total = data.total;
@@ -43,7 +85,7 @@ function staticGeneratorStore(url, indexButton, StateColors, Toastr) {
       }
       if (!data.progress && !data.total) {
         Toastr.clear();
-        indexButton.style.color = StateColors.success;
+        button.style[styleProperty] = StateColors.success;
         Toastr.success(
           data.content,
           StaticGeneratorTranslation.ADMIN.INDEX.SUCCESS,
@@ -53,14 +95,14 @@ function staticGeneratorStore(url, indexButton, StateColors, Toastr) {
           staticGeneratorUpdateSelectField(data.text, data.value);
         }
         setTimeout(function() {
-          indexButton.style.removeProperty("color");
-          indexButton.disabled = false;
+          button.style.removeProperty(styleProperty);
+          button.disabled = false;
           Toastr.clear();
         }, 5000);
       }
     } else {
-      indexEvent.close();
-      console.debug(`Executed task indexSearch: ${total} items stored`);
+      EventHandler.close();
+      console.debug(`Executed task ${task}`);
     }
   });
 }
@@ -78,17 +120,149 @@ function staticGeneratorUpdateSelectField(text, value) {
   }
 }
 
+function makeid(length) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+function setCode(element, options) {
+  if (!options.hasOwnProperty("route")) {
+    options.route = "";
+  }
+  let code = `php bin/plugin static-generator page "/${options.route}"`;
+  if (options.hasOwnProperty("target") && options.target !== "") {
+    code += ` "${options.target}"`;
+  }
+  if (options.hasOwnProperty("root_prefix") && options.root_prefix !== "") {
+    code += ` -r "${options.root_prefix}"`;
+  }
+  if (options.hasOwnProperty("name") && options.name !== "") {
+    code += ` -p "${options.name}"`;
+  }
+  if (options.hasOwnProperty("assets") && options.assets === true) {
+    code += ` -a`;
+  }
+  if (
+    options.hasOwnProperty("static_assets") &&
+    options.static_assets === true
+  ) {
+    code += ` -s`;
+  }
+  if (options.hasOwnProperty("images") && options.images === true) {
+    code += ` -i`;
+  }
+  if (options.hasOwnProperty("filters") && options.filters.length > 0) {
+    options.filters.forEach(filter => {
+      code += ` -f "${filter}()"`;
+    });
+  }
+  if (
+    options.hasOwnProperty("parameters") &&
+    Object.keys(options.parameters).length > 0
+  ) {
+    for (let [key, value] of Object.entries(options.parameters)) {
+      code += ` -d "${key}:${value}"`;
+    }
+  }
+  element.innerHTML = code;
+}
+
+function monitor(root) {
+  const preElement = document.createElement("pre");
+  preElement.classList.add("static-generator-command");
+  preElement.setAttribute(
+    "data-header",
+    StaticGeneratorTranslation.ADMIN.GENERATE.COMMAND
+  );
+  root.appendChild(preElement);
+  const codeElement = document.createElement("code");
+  codeElement.setAttribute("id", makeid(16));
+  preElement.appendChild(codeElement);
+  const options = { parameters: {} };
+  root.querySelector("[name*=filters]").selectize.on("change", function(value) {
+    options["filters"] = value.split(",");
+    setCode(codeElement, options);
+  });
+  [
+    root.querySelector("[name*=name]"),
+    root.querySelector("[name*=route]"),
+    root.querySelector("[name*=root_prefix]"),
+    root.querySelector("[name*=target]"),
+    root.querySelector("[name*=assets]"),
+    root.querySelector("[name*=static_assets]"),
+    root.querySelector("[name*=images]")
+  ].forEach(item => {
+    if (item !== null) {
+      const name = item.name.match(/\[([^\]]*)\](?!.*])/i)[1];
+      if (item.type == "checkbox") {
+        options[name] = item.checked;
+      } else {
+        options[name] = item.value;
+      }
+      setCode(codeElement, options);
+      item.addEventListener(
+        "input",
+        debounce(function(event) {
+          if (event.srcElement.type == "checkbox") {
+            options[name] = event.target.checked;
+          } else {
+            options[name] = event.target.value;
+          }
+          setCode(codeElement, options);
+        }, 250)
+      );
+    }
+  });
+  [
+    root.querySelector(
+      "[data-grav-array-name*=parameters] [data-grav-array-type*=row] [data-grav-array-type*=key]"
+    ),
+    root.querySelector(
+      "[data-grav-array-name*=parameters] [data-grav-array-type*=row] [data-grav-array-type*=value]"
+    )
+  ].forEach(item => {
+    item.addEventListener(
+      "input",
+      debounce(function(event) {
+        var key, value;
+        if (event.target.dataset.gravArrayType == "key") {
+          key = event.target.value;
+          value = value = event.target.nextElementSibling.value;
+        } else if (event.target.dataset.gravArrayType == "value") {
+          key = event.target.previousElementSibling.value;
+          value = event.target.value;
+        }
+        if (key !== "" && value !== "") {
+          options["parameters"][key] = value;
+        }
+        setCode(codeElement, options);
+      }, 250)
+    );
+  });
+}
+
 window.addEventListener(
   "load",
   function(event) {
+    const staticGeneratorStateColors = {
+      waiting: "#df8a13",
+      error: "#b52b27",
+      success: "#3d8b3d"
+    };
     const staticGeneratorIndexButton = document.querySelector(
-      ".grav-plugin-static-generator-search-index"
+      ".static-generator-search-index"
     );
     if (staticGeneratorIndexButton) {
       const staticGeneratorPageRoute = encodeURIComponent(
         GravAdmin.config.route
       );
-      const staticGeneratorindexSearchRoute =
+      const staticGeneratorIndexSearchRoute =
         GravAdmin.config.base_url_relative +
         ".json/task" +
         GravAdmin.config.param_sep +
@@ -98,26 +272,110 @@ window.addEventListener(
         "?mode=content" +
         "&route=" +
         staticGeneratorPageRoute;
-      const staticGeneratorStateColors = {
-        waiting: "#df8a13",
-        error: "#b52b27",
-        success: "#3d8b3d"
-      };
       staticGeneratorIndexButton.addEventListener(
         "click",
         function(event) {
-          staticGeneratorIndexButton.style.color =
-            staticGeneratorStateColors.waiting;
-          staticGeneratorStore(
-            staticGeneratorindexSearchRoute,
+          staticGeneratorEventHandler(
+            "indexSearch",
+            staticGeneratorIndexSearchRoute,
             staticGeneratorIndexButton,
-            staticGeneratorStateColors,
-            Grav.default.Utils.toastr
+            Grav.default.Utils.toastr,
+            staticGeneratorStateColors
           );
           event.preventDefault();
         },
         false
       );
+    }
+    const staticGeneratorPresets = document.querySelectorAll(
+      "#blueprints ul.static-generator-presets li"
+    );
+    if (staticGeneratorPresets) {
+      const staticGeneratorTaskRoute = function(task) {
+        return (
+          GravAdmin.config.base_url_relative +
+          ".json/task" +
+          GravAdmin.config.param_sep +
+          task +
+          "/admin-nonce" +
+          GravAdmin.config.param_sep +
+          GravAdmin.config.admin_nonce
+        );
+      };
+      for (var preset of staticGeneratorPresets) {
+        const copyButton = preset.querySelector(
+          "a.static-generator-copy-preset"
+        );
+        const generateButton = preset.querySelector(
+          "a.static-generator-preset-generate"
+        );
+        if (copyButton) {
+          copyButton.addEventListener(
+            "click",
+            function(event) {
+              const name = preset.querySelector('input[name$="[name]"]').value;
+              console.log(
+                staticGeneratorTaskRoute("copyPreset") + "?preset=" + name
+              );
+              staticGeneratorEventHandler(
+                "copyPreset",
+                staticGeneratorTaskRoute("copyPreset") + "?preset=" + name,
+                copyButton,
+                Grav.default.Utils.toastr,
+                staticGeneratorStateColors,
+                "background"
+              );
+              event.preventDefault();
+            },
+            false
+          );
+        }
+        if (generateButton) {
+          generateButton.addEventListener(
+            "click",
+            function(event) {
+              const name = preset.querySelector('input[name$="[name]"]').value;
+              console.log(
+                event,
+                name,
+                staticGeneratorTaskRoute("generateFromPreset") +
+                  "?preset=" +
+                  name
+              );
+              staticGeneratorEventHandler(
+                "generateFromPreset",
+                staticGeneratorTaskRoute("generateFromPreset") +
+                  "?preset=" +
+                  name,
+                generateButton,
+                Grav.default.Utils.toastr,
+                staticGeneratorStateColors,
+                "background"
+              );
+              event.preventDefault();
+            },
+            false
+          );
+        }
+      }
+    }
+    if (
+      window.GravAdmin.config !== undefined &&
+      window.GravAdmin.config.current_url !== undefined &&
+      window.GravAdmin.config.current_url.includes("plugins/static-generator")
+    ) {
+      const wrappers = document.querySelectorAll(".form-tab");
+      wrappers.forEach(element => {
+        if (element.querySelector('[data-grav-field="list"]')) {
+          element
+            .querySelectorAll('[data-grav-field="list"] [data-collection-item]')
+            .forEach(item => {
+              monitor(item);
+            });
+        } else if (element.querySelector("[name*=route]")) {
+          monitor(element);
+        }
+      });
     }
   },
   false

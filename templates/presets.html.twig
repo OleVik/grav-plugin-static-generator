@@ -1,0 +1,36 @@
+{% extends 'partials/base.html.twig' %}
+
+{% set preset_slug = uri.basename|e %}
+
+{% block titlebar %}
+    <div class="button-bar">
+        <a class="button" href="{{ base_url }}"><i class="fa fa-reply"></i> {{ "PLUGIN_ADMIN.BACK"|tu }}</a>
+        {% if data.file.filename %}
+        <button class="button" type="submit" name="task" value="save" form="blueprints"><i class="fa fa-check"></i> {{ "PLUGIN_ADMIN.SAVE"|tu }}</button>
+        {% endif %}
+    </div>
+    <h1>
+        <i class="fa fa-fw fa-wrench"></i>
+        {% if preset_slug != 'presets' %}
+        {{ "PLUGIN_STATIC_GENERATOR.ADMIN.TITLE"|tu }} - {{ "PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.SINGULAR"|tu }} - {{ preset_slug|capitalize }}
+        {% else %}
+        {{ "PLUGIN_STATIC_GENERATOR.ADMIN.TITLE"|tu }} - {{ "PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.TITLE"|tu }}
+        {% endif %}
+    </h1>
+{% endblock %}
+
+{% block content_top %}
+    <div class="alert notice">{{ "PLUGIN_ADMIN.SAVE_LOCATION"|tu }}: <b>{{ data.file.filename|replace({(base_path):''}) }}</b></div>
+{% endblock %}
+
+{% block content %}
+{% if preset_slug != 'presets' %}
+    {% set blueprints = admin.blueprints('preset') %}
+{% else %}
+    {% set blueprints = admin.blueprints('presets') %}
+{% endif %}
+
+<div class="admin-form-wrapper">
+{% include 'partials/blueprints.html.twig' with { blueprints: blueprints } %}
+</div>
+{% endblock %}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Static Generator Plugin, Data Builder
+ * Static Generator Plugin, Abstract Data Builder
  *
  * PHP version 7
  *
@@ -15,13 +15,14 @@ namespace Grav\Plugin\StaticGenerator\Data;
 
 use Grav\Common\Grav;
 use Grav\Common\Page\Page;
+use Grav\Console\ConsoleCommand;
 use Grav\Plugin\StaticGenerator\Data\DataInterface;
 
 /**
- * Data Builder
+ * Abstract Data Builder
  *
  * @category API
- * @package  Grav\Plugin\StaticGeneratorPlugin\Data\AbstractData
+ * @package  Grav\Plugin\StaticGenerator\Data\AbstractData
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
@@ -33,6 +34,7 @@ abstract class AbstractData implements DataInterface
     public $pages;
     public $progress;
     public $count;
+    public $total;
 
     /**
      * Instantiate class
@@ -42,29 +44,20 @@ abstract class AbstractData implements DataInterface
      * @param string $orderBy   Property to order by.
      * @param string $orderDir  Direction to order.
      */
-    public function __construct(bool $content = false, int $maxLength = null, string $orderBy = 'date', string $orderDir = 'desc')
-    {
+    public function __construct(
+        bool $content = false,
+        int $maxLength = null,
+        string $orderBy = 'date',
+        string $orderDir = 'desc'
+    ) {
+        $this->grav = Grav::instance();
         $this->data = array();
         $this->content = $content;
         $this->maxLength = $maxLength;
         $this->orderBy = $orderBy;
         $this->orderDir = $orderDir;
-    }
-
-    /**
-     * Declare headers
-     *
-     * @return void
-     */
-    public function headers()
-    {
-        error_reporting(0);
-        set_time_limit(0);
-        header('Content-Type: text/event-stream');
-        header('Access-Control-Allow-Origin: *');
-        header('Cache-Control: no-store, no-cache, must-revalidate');
-        header('Cache-Control: post-check=0, pre-check=0', false);
-        header('Pragma: no-cache');
+        $this->progress = 1;
+        $this->total = 0;
     }
 
     /**
@@ -79,7 +72,6 @@ abstract class AbstractData implements DataInterface
                 Grav::instance()['admin']->enablePages();
             }
         }
-        $this->grav = Grav::instance();
     }
 
     /**

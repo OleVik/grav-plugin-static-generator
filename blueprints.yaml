@@ -1,5 +1,5 @@
 name: Static Generator
-version: 1.0.1
+version: 2.0.0
 description: Static generation of Page(s) and Index.
 icon: bolt
 author:
@@ -10,10 +10,266 @@ keywords: grav, plugin, static, index, search, data, json, html
 bugs: https://github.com/OleVik/grav-plugin-static-generator/issues
 docs: https://github.com/OleVik/grav-plugin-static-generator/blob/develop/README.md
 license: MIT
+dependencies:
+  - { name: grav, version: "1.6.22" }
 
 form:
   validation: strict
   fields:
+    tabs:
+      type: tabs
+      active: 1
+      fields:
+        generate:
+          type: tab
+          title: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE.TITLE
+          fields:
+            section:
+              type: section
+              text: PLUGIN_STATIC_GENERATOR.ADMIN.GENERATE.EXPLANATION
+              underline: true
+            route:
+              type: text
+              label: PLUGIN_STATIC_GENERATOR.ADMIN.ROUTE
+              placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.ROUTE
+            target:
+              type: text
+              label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.TARGET
+              placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.STORAGE.TARGET
+            root_prefix:
+              type: text
+              label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ROOT_PREFIX
+              placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.STORAGE.ROOT_PREFIX
+            assets:
+              type: checkbox
+              label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ASSETS
+            static_assets:
+              type: checkbox
+              label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.STATIC_ASSETS
+            images:
+              type: checkbox
+              label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.IMAGES
+            parameters:
+              type: array
+              label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.PARAMETERS.TITLE
+              description: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.PARAMETERS.DESCRIPTION
+              placeholder_key: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.PARAMETERS.KEY
+              placeholder_value: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.PARAMETERS.VALUE
+            filters:
+              type: selectize
+              label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.FILTERS
+              description: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.FILTERS
+              selectize:
+                options:
+                  - text: "visible"
+                    value: "visible"
+                  - text: "nonVisible"
+                    value: "nonVisible"
+                  - text: "modular"
+                    value: "modular"
+                  - text: "nonModular"
+                    value: "nonModular"
+                  - text: "published"
+                    value: "published"
+                  - text: "nonPublished"
+                    value: "nonPublished"
+                  - text: "routable"
+                    value: "routable"
+                  - text: "nonRoutable"
+                    value: "nonRoutable"
+        presets:
+          type: tab
+          title: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.TITLE
+          fields:
+            section:
+              type: section
+              text: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.EXPLANATION
+              underline: true
+              markdown: true
+            presets:
+              type: list
+              description: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.EXPLANATION
+              style: vertical
+              classes: static-generator-presets
+              fields:
+                .name:
+                  type: text
+                  label: PLUGIN_ADMIN.NAME
+                  placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.NAME
+                  validate:
+                    required: true
+                .route:
+                  type: text
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.ROUTE
+                  placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.ROUTE
+                .target:
+                  type: text
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.TARGET
+                  placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.STORAGE.TARGET
+                .root_prefix:
+                  type: text
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ROOT_PREFIX
+                  placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.STORAGE.ROOT_PREFIX
+                .assets:
+                  type: checkbox
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ASSETS
+                .static_assets:
+                  type: checkbox
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.STATIC_ASSETS
+                .images:
+                  type: checkbox
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.IMAGES
+                .parameters:
+                  type: array
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.PARAMETERS.TITLE
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.PARAMETERS.DESCRIPTION
+                  placeholder_key: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.PARAMETERS.KEY
+                  placeholder_value: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.PARAMETERS.VALUE
+                .filters:
+                  type: selectize
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.FILTERS
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.PRESETS.FILTERS
+                  selectize:
+                    options:
+                      - text: "visible"
+                        value: "visible"
+                      - text: "nonVisible"
+                        value: "nonVisible"
+                      - text: "modular"
+                        value: "modular"
+                      - text: "nonModular"
+                        value: "nonModular"
+                      - text: "published"
+                        value: "published"
+                      - text: "nonPublished"
+                        value: "nonPublished"
+                      - text: "routable"
+                        value: "routable"
+                      - text: "nonRoutable"
+                        value: "nonRoutable"
+                .links:
+                  type: preset_buttons
+                  fields:
+                    - class: static-generator-copy-preset
+                      name: PLUGIN_ADMIN.COPY
+        options:
+          type: tab
+          title: PLUGIN_ADMIN.OPTIONS
+          fields:
+            basic:
+              type: section
+              title: PLUGIN_ADMIN.OPTIONS
+              underline: true
+              security: [admin.super, admin.maintenance]
+              fields:
+                enabled:
+                  type: toggle
+                  label: PLUGIN_ADMIN.PLUGIN_STATUS
+                  options:
+                    1: PLUGIN_ADMIN.ENABLED
+                    0: PLUGIN_ADMIN.DISABLED
+                  validate:
+                    type: bool
+                index:
+                  type: text
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.INDEX
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.INDEX
+                  highlight: native
+                  default: native
+                  options:
+                    native: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.NATIVE
+                    persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
+                    transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
+                  validate:
+                    required: true
+                content:
+                  type: text
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.CONTENT
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.CONTENT
+                  highlight: native
+                  default: native
+                  options:
+                    native: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.NATIVE
+                    persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
+                    transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
+                  validate:
+                    required: true
+                explanation:
+                  type: spacer
+                  text: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.EXPLANATION
+                  markdown: true
+                content_max_length:
+                  type: number
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.CONTENT_MAX_LENGTH
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CONTENT_MAX_LENGTH
+                  validate:
+                    min: 0
+                    step: 10000
+                    max: 10000000
+                admin:
+                  type: toggle
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.ADMIN
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.ADMIN
+                  options:
+                    1: PLUGIN_ADMIN.ENABLED
+                    0: PLUGIN_ADMIN.DISABLED
+                  validate:
+                    type: bool
+                js:
+                  type: toggle
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.JS
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.JS
+                  options:
+                    1: PLUGIN_ADMIN.ENABLED
+                    0: PLUGIN_ADMIN.DISABLED
+                  validate:
+                    type: bool
+                css:
+                  type: toggle
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.CSS
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CSS
+                  options:
+                    1: PLUGIN_ADMIN.ENABLED
+                    0: PLUGIN_ADMIN.DISABLED
+                  validate:
+                    type: bool
+                quick_tray:
+                  type: toggle
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.CSS
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CSS
+                  options:
+                    1: PLUGIN_ADMIN.ENABLED
+                    0: PLUGIN_ADMIN.DISABLED
+                  validate:
+                    type: bool
+            permissions:
+              type: section
+              title: PLUGIN_ADMIN.PERMISSIONS
+              underline: true
+              security: [admin.super, admin.maintenance]
+              fields:
+                content_permissions:
+                  type: selectize
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.CONTENT_PERMISSIONS
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CONTENT_PERMISSIONS
+                  allowEmptyOption: true
+                  merge_items: true
+                  selectize:
+                    create: false
+                    data-options@: '\Grav\Plugin\StaticGeneratorPlugin::getAdminPermissionsBlueprint'
+                  validate:
+                    type: commalist
+                quick_tray_permissions:
+                  type: selectize
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.QUICK_TRAY_PERMISSIONS
+                  description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.QUICK_TRAY_PERMISSIONS
+                  allowEmptyOption: true
+                  merge_items: true
+                  selectize:
+                    create: false
+                    data-options@: '\Grav\Plugin\StaticGeneratorPlugin::getAdminPermissionsBlueprint'
+                  validate:
+                    type: commalist
     enabled:
       type: toggle
       label: PLUGIN_ADMIN.PLUGIN_STATUS

@@ -1,6 +1,16 @@
 enabled: true
-index: "persist"
-content: "persist"
+index: "user://data/persist"
+content: "user://data/persist/static"
 content_max_length: 100000
+content_permissions:
+  - admin.super
+  - admin.maintenance
 admin: true
 js: true
+css: true
+quick_tray: true
+quick_tray_permissions:
+  - admin.super
+  - admin.maintenance
+presets:
+  - name: default
