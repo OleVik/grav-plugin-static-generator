@@ -187,5 +187,3 @@ If you use the Admin plugin, you can install it directly by browsing the `Plugin
 ## TODO
 
 - [ ] content_max_length not used on Collection?
-- [x] Option for non-prefixed and specific prefix for Asset-path
-  - [ ] Change to general root-prefix (equivalent of rewritebase)
