@@ -178,7 +178,7 @@ class SSEData extends AbstractData
             }
             flush();
             if (connection_aborted()) {
-                exit();
+                exit;
             }
         }
     }
@@ -246,6 +246,6 @@ class SSEData extends AbstractData
                 'content' => 'END-OF-STREAM'
             ]
         ) . "\n\n";
-        exit();
+        exit;
     }
 }

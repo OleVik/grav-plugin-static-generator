@@ -1,3 +1,13 @@
+# v2.0.0
+## 14-03-2020
+
+1. [](#new)
+   - Assets-prefix option
+2. [](#bugfix)
+   - CommandLineCollection-initialization
+3. [](#improved)
+   - Version-constraint
+
 # v2.0.0-beta.1
 ## 06-03-2020
 

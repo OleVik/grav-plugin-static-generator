@@ -74,6 +74,12 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 'Include Assets'
             )
             ->addOption(
+                'root-prefix',
+                'r',
+                InputArgument::OPTIONAL,
+                'Root prefix for assets and images'
+            )
+            ->addOption(
                 'static-assets',
                 's',
                 InputOption::VALUE_NONE,
@@ -129,6 +135,7 @@ class GenerateStaticPageCommand extends ConsoleCommand
         }
         $preset = $this->input->getOption('preset') ?? '';
         $assets = $this->input->getOption('assets');
+        $rootPrefix = $this->input->getOption('root-prefix') ?? '/';
         $mirrorAssets = $this->input->getOption('static-assets');
         $mirrorImages = $this->input->getOption('images');
         $offline = $this->input->getOption('offline');
@@ -152,10 +159,11 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 return;
             }
             $Collection = new CommandLineCollection(
-                $route,
                 $collection,
+                $route,
                 $location,
                 $force,
+                $rootPrefix,
                 $filters,
                 $parameters
             );
@@ -166,10 +174,10 @@ class GenerateStaticPageCommand extends ConsoleCommand
                 $Collection->assets();
             }
             if ($mirrorAssets) {
-                $Collection->staticAssets();
+                $Collection->staticAssets($force);
             }
             if ($mirrorImages) {
-                $Collection->images();
+                $Collection->images($force);
             }
         } catch (\Exception $e) {
             throw new \Exception($e);

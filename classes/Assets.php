@@ -62,25 +62,35 @@ class Assets
      *
      * @return array Result
      */
-    public function copy(string $asset, string $location, bool $force): array
-    {
+    public function copy(
+        string $asset,
+        string $location,
+        bool $force
+    ): array {
         if (empty($asset)) {
             return [];
         }
         $location = $location . DS . 'assets';
         if (Utils::startsWith($asset, '/user')) {
-            $source = GRAV_ROOT . $asset;
             $target = $location . $asset;
+            $source = GRAV_ROOT . $asset;
         } elseif (Utils::startsWith($asset, '/system')) {
-            $source = GRAV_ROOT . $asset;
             $target = $location . $asset;
+            $source = GRAV_ROOT . $asset;
+        } elseif (Utils::startsWith($asset, '//')) {
+            if ($this->offline === true) {
+                return [];
+            }
+            $url = parse_url($asset);
+            $target = $location . DS . $url['host'] . $url['path'];
+            $source = 'https://' . $url['host'] . $url['path'];
         } else {
             if ($this->offline === true) {
                 return [];
             }
-            $source = $asset;
             $url = parse_url($asset);
             $target = $location . DS . $url['host'] . $url['path'];
+            $source = $asset;
         }
         try {
             if ($force) {

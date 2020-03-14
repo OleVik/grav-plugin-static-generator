@@ -122,15 +122,15 @@ class CommandLineCollection extends AbstractCollection
      */
     public function assets(): void
     {
-        $assetsCount = count($this->grav['assets']['assets_css']) + count($this->grav['assets']['assets_js']);
+        $count = count($this->grav['assets']['assets_css']) + count($this->grav['assets']['assets_js']);
         $this->handle->writeln('');
-        $this->handle->writeln('<white>Processing Asset(s): ' . $assetsCount . '</white>');
+        $this->handle->writeln('<white>Processing Asset(s): ' . $count . '</white>');
         $this->progressBar = new ProgressBar(
             $this->handle,
-            $assetsCount
+            $count
         );
         $this->buildAssets();
-        $this->teardown('Finished ' . $assetsCount . ' Asset(s)');
+        $this->teardown('Finished ' . $count . ' Asset(s)');
     }
 
     /**
@@ -138,6 +138,7 @@ class CommandLineCollection extends AbstractCollection
      *
      * @return void
      */
+    /** */
     public function staticAssets(): void
     {
         $this->handle->writeln('');
@@ -149,13 +150,15 @@ class CommandLineCollection extends AbstractCollection
     /**
      * Mirror images
      *
+     * @param boolean $force Forcefully save data.
+     *
      * @return void
      */
-    public function images(): void
+    public function images(bool $force): void
     {
         $this->handle->writeln('');
         $this->handle->writeln('<white>Mirroring generated Images</white>');
-        $this->mirrorImages();
+        $this->mirrorImages($force);
         $this->teardown('Finished mirroring generated Images');
     }
 }

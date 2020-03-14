@@ -35,9 +35,19 @@ interface CollectionInterface
      * @param string  $route      Route to page, optional.
      * @param string  $location   Where to store output.
      * @param boolean $force      Forcefully save data.
+     * @param string  $rootPrefix Root prefix.
      * @param array   $filters    Methods to filter Collection by.
+     * @param array   $parameters Parameters to pass to Config or Twig.
      */
-    public function __construct(string $collection, string $route = '', string $location = '', bool $force = false, array $filters = []);
+    public function __construct(
+        string $collection,
+        string $route = '',
+        string $location = '',
+        bool $force = false,
+        string $rootPrefix = '',
+        array $filters = [],
+        array $parameters = []
+    );
 
     /**
      * Bootstrap data, events, and helpers
@@ -66,9 +76,11 @@ interface CollectionInterface
     /**
      * Mirror images
      *
+     * @param boolean $force Forcefully save data.
+     *
      * @return void
      */
-    public function mirrorImages(): void;
+    public function mirrorImages(bool $force): void;
 
     /**
      * Store Page

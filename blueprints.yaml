@@ -1,5 +1,5 @@
 name: Static Generator
-version: 2.0.0-beta.1
+version: 2.0.0
 description: Static generation of Page(s) and Index.
 icon: bolt
 author:
@@ -36,6 +36,10 @@ form:
               type: text
               label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.TARGET
               placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.STORAGE.TARGET
+            root_prefix:
+              type: text
+              label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ROOT_PREFIX
+              placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.STORAGE.ROOT_PREFIX
             assets:
               type: checkbox
               label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ASSETS
@@ -102,6 +106,10 @@ form:
                   type: text
                   label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.TARGET
                   placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.STORAGE.TARGET
+                .root_prefix:
+                  type: text
+                  label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ROOT_PREFIX
+                  placeholder: PLUGIN_STATIC_GENERATOR.ADMIN.HELP.STORAGE.ROOT_PREFIX
                 .assets:
                   type: checkbox
                   label: PLUGIN_STATIC_GENERATOR.ADMIN.PRESETS.ASSETS

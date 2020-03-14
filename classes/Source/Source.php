@@ -30,31 +30,17 @@ use Grav\Common\Page\Media;
 class Source
 {
     /**
-     * Rewrite Page routes
-     *
-     * @param string $content Page HTML.
-     * @param string $old     Original route.
-     * @param string $new     New route.
-     *
-     * @return string Processed HTML
-     */
-    public static function rewritePageURLs(string $content, string $old, string $new): string
-    {
-        if ($old !== '/') {
-            return str_replace($old, $new, $content);
-        }
-        return $content;
-    }
-
-    /**
      * Rewrite asset-paths
      *
-     * @param string $content Page HTML.
+     * @param string $content    Page HTML.
+     * @param string $rootPrefix Root prefix.
      *
      * @return string Processed HTML
      */
-    public static function rewriteAssetURLs(string $content): string
-    {
+    public static function rewriteAssetURLs(
+        string $content,
+        string $rootPrefix
+    ): string {
         preg_match_all('/<(?:link href|script src)="(?<url>[^"]*)"/ui', $content, $matches, PREG_SET_ORDER, 0);
         foreach ($matches as $asset) {
             if (!isset($asset['url'])) {
@@ -68,7 +54,11 @@ class Source
                 $url = parse_url($asset['url']);
                 $target = '/' . $url['host'] . $url['path'];
             }
-            $content = str_replace($asset['url'], '/assets' . $target, $content);
+            $content = str_replace(
+                $asset['url'],
+                $rootPrefix . 'assets' . $target,
+                $content
+            );
         }
         return $content;
     }
@@ -82,8 +72,31 @@ class Source
      *
      * @return string Processed HTML
      */
-    public static function rewriteMediaURLs(string $content, string $old, string $new): string
-    {
+    public static function rewritePath(
+        string $content,
+        string $old,
+        string $new
+    ): string {
         return str_replace($old, $new, $content);
+    }
+
+    /**
+     * Rewrite Page-routes
+     *
+     * @param string $content Page HTML.
+     * @param string $routes  Page routes.
+     *
+     * @return string Processed HTML
+     */
+    public static function rewriteRoutes(
+        string $content,
+        array $routes
+    ): string {
+        foreach ($routes as $route) {
+            if ($route !== '/') {
+                $content = str_replace($route, \ltrim($route, '/'), $content);
+            }
+        }
+        return $content;
     }
 }

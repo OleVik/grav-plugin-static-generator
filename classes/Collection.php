@@ -179,11 +179,11 @@ class Collection
                 $Page->template() . '.' . $Page->templateFormat() . '.twig',
                 ['page' => $Page]
             );
-            $content = $this->Assets->rewriteURL($content);
+            $content = $this->Assets->rewriteURL($content, $this->rootPrefix);
             $content = $this->Assets->rewriteMediaURL(
                 $content,
                 Utils::url($Page->getMediaUri()),
-                $route
+                $this->rootPrefix . $route
             );
         } catch (\Exception $e) {
             throw new \Exception($e);

@@ -39,22 +39,25 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 abstract class AbstractCollection implements CollectionInterface
 {
     public $assets;
+    public $routes;
 
     /**
      * Initialize class
      *
-     * @param string  $route      Route to page, optional.
      * @param string  $collection Collection to evaluate.
+     * @param string  $route      Route to page, optional.
      * @param string  $location   Where to store output.
      * @param boolean $force      Forcefully save data.
+     * @param string  $rootPrefix Root prefix.
      * @param array   $filters    Methods to filter Collection by.
      * @param array   $parameters Parameters to pass to Config or Twig.
      */
     public function __construct(
+        string $collection,
         string $route = '',
-        string $collection = '',
         string $location = '',
         bool $force = false,
+        string $rootPrefix = '',
         array $filters = [],
         array $parameters = []
     ) {
@@ -63,6 +66,7 @@ abstract class AbstractCollection implements CollectionInterface
         $this->collection = $collection;
         $this->location = $location;
         $this->force = $force;
+        $this->rootPrefix = $rootPrefix;
         $this->filters = $filters;
         $this->parameters = $parameters;
     }
@@ -143,12 +147,15 @@ abstract class AbstractCollection implements CollectionInterface
     }
 
     /**
-     * Build Page(s)
+     * Store routes and Build Page(s)
      *
      * @return void
      */
     public function buildCollection(): void
     {
+        foreach ($this->pages as $Page) {
+            $this->routes[] = $Page->route();
+        }
         foreach ($this->pages as $Page) {
             try {
                 $this->store($Page);
@@ -224,9 +231,11 @@ abstract class AbstractCollection implements CollectionInterface
     /**
      * Mirror Images
      *
+     * @param boolean $force Forcefully save data.
+     *
      * @return void
      */
-    public function mirrorImages(): void
+    public function mirrorImages(bool $force): void
     {
         try {
             $this->Filesystem->mirror(
@@ -273,16 +282,25 @@ abstract class AbstractCollection implements CollectionInterface
                 $template,
                 ['page' => $Page]
             );
-            $content = Source::rewriteAssetURLs($content);
-            $content = Source::rewriteMediaURLs(
+            $content = Source::rewriteRoutes(
+                $content,
+                $this->routes
+            );
+            $content = Source::rewriteAssetURLs($content, $this->rootPrefix);
+            $content = Source::rewritePath(
                 $content,
                 Utils::url($Page->getMediaUri()),
-                $route
+                $this->rootPrefix . $route
             );
-            $content = Source::rewriteMediaURLs(
+            $content = Source::rewritePath(
                 $content,
                 '/user/pages',
-                ''
+                $this->rootPrefix . ''
+            );
+            $content = Source::rewritePath(
+                $content,
+                '/images/',
+                $this->rootPrefix . 'images/'
             );
         } catch (\Exception $e) {
             throw new \Exception($e);

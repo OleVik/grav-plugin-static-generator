@@ -139,6 +139,9 @@ function setCode(element, options) {
   if (options.hasOwnProperty("target") && options.target !== "") {
     code += ` "${options.target}"`;
   }
+  if (options.hasOwnProperty("root_prefix") && options.root_prefix !== "") {
+    code += ` -r "${options.root_prefix}"`;
+  }
   if (options.hasOwnProperty("name") && options.name !== "") {
     code += ` -p "${options.name}"`;
   }
@@ -189,6 +192,7 @@ function monitor(root) {
   [
     root.querySelector("[name*=name]"),
     root.querySelector("[name*=route]"),
+    root.querySelector("[name*=root_prefix]"),
     root.querySelector("[name*=target]"),
     root.querySelector("[name*=assets]"),
     root.querySelector("[name*=static_assets]"),

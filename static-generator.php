@@ -252,7 +252,7 @@ class StaticGeneratorPlugin extends Plugin
         bool $force = true
     ): void {
         // WIP
-        exit();
+        exit;
         include __DIR__ . '/vendor/autoload.php';
         try {
             SSEData::headers();
@@ -427,9 +427,12 @@ class StaticGeneratorPlugin extends Plugin
     public static function getAdminPermissionsBlueprint(): array
     {
         $return = array();
-        if (method_exists(Grav::instance()['admin'], 'getPermissions')) {
+        if (!isset(Grav::instance()['admin'])) {
+            return $return;
+        }
+        if (\method_exists(Grav::instance()['admin'], 'getPermissions')) {
             $permissions = Grav::instance()['admin']->getPermissions();
-        } elseif (method_exists(Grav::instance()['permissions'], 'getInstances')) {
+        } elseif (\method_exists(Grav::instance()['permissions'], 'getInstances')) {
             $permissions = Grav::instance()['permissions']->getInstances();
         }
         if (is_array($permissions) && !empty($permissions)) {
