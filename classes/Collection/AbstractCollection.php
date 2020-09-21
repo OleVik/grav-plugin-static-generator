@@ -207,7 +207,7 @@ abstract class AbstractCollection implements CollectionInterface
         array $extensions = ['ttf', 'eot', 'otf', 'woff', 'woff2']
     ): void {
         foreach ($folders as $folder) {
-            $iterator  = new \RecursiveIteratorIterator(
+            $iterator = new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(GRAV_ROOT . '/user' . $folder)
             );
             $fileIterator = new \RegexIterator($iterator, '/\.' . implode('|', $extensions) . '$/imu');
@@ -219,7 +219,7 @@ abstract class AbstractCollection implements CollectionInterface
                     [
                         'override' => true,
                         'copy_on_windows' => true,
-                        'delete' => false
+                        'delete' => false,
                     ]
                 );
             } catch (\Exception $e) {
@@ -245,7 +245,7 @@ abstract class AbstractCollection implements CollectionInterface
                 [
                     'override' => true,
                     'copy_on_windows' => true,
-                    'delete' => false
+                    'delete' => false,
                 ]
             );
         } catch (\Exception $e) {
@@ -270,7 +270,7 @@ abstract class AbstractCollection implements CollectionInterface
                 [
                     'item' => $Page->title() . ' (' . $template . ')',
                     'location' => $message,
-                    'time' => Timer::format($this->Timer->getTime())
+                    'time' => Timer::format($this->Timer->getTime()),
                 ],
                 'red'
             );
@@ -302,6 +302,7 @@ abstract class AbstractCollection implements CollectionInterface
                 '/images/',
                 $this->rootPrefix . 'images/'
             );
+            $content = Source::rewritePath($content, '/' . $route, $route);
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -315,17 +316,20 @@ abstract class AbstractCollection implements CollectionInterface
                 [
                     'item' => $Page->title() . ' (' . $template . ')',
                     'location' => $this->location . $route . '/' . $file,
-                    'time' => Timer::format($this->Timer->getTime())
+                    'time' => Timer::format($this->Timer->getTime()),
                 ]
             );
-            $this->reporter(
-                $this->Assets->copyMedia(
-                    $Page->media()->all(),
-                    $this->location . $Page->route(),
-                    $this->force
-                ),
-                'yellow'
-            );
+            foreach ($Page->media()->all() as $filename => $data) {
+                $this->reporter(
+                    $this->Assets->copyMedia(
+                        $filename,
+                        $data->path,
+                        $this->location . $Page->route(),
+                        $this->force
+                    ),
+                    'yellow'
+                );
+            }
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

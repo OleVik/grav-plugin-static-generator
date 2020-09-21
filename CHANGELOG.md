@@ -1,3 +1,10 @@
+# v2.1.0
+## 22-09-2020
+
+1. [](#bugfix)
+   - Do not end copyMedia() prematurely
+   - Avoid double-slash prefix
+
 # v2.0.0
 ## 14-03-2020
 

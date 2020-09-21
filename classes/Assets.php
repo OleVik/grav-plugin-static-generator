@@ -100,7 +100,7 @@ class Assets
             return [
                 'item' => basename($asset),
                 'location' => $target,
-                'time' => Timer::format($this->Timer->getTime())
+                'time' => Timer::format($this->Timer->getTime()),
             ];
         } catch (\Exception $e) {
             throw new \Exception($e);
@@ -108,34 +108,33 @@ class Assets
     }
 
     /**
-     * Copy Page Media
+     * Copy Media
      *
-     * @param array   $media    List of media to copy.
+     * @param string  $filename Name of file to copy.
+     * @param string  $path     Path of file to copy.
      * @param string  $location Location to storage media in.
      * @param boolean $force    Forcefully save data.
      *
      * @return array Result
      */
-    public function copyMedia(array $media, string $location, bool $force): array
+    public function copyMedia(string $filename, string $path, string $location, bool $force): array
     {
-        if (empty($media)) {
+        if (empty($filename) || empty($path)) {
             return [];
         }
         $location = rtrim($location, '//') . DS;
-        foreach ($media as $filename => $data) {
-            try {
-                if ($force) {
-                    $this->Filesystem->remove($location . $filename);
-                }
-                $this->Filesystem->copy($data->path(), $location . $filename);
-                return [
-                    'item' => $filename,
-                    'location' => $location . $filename,
-                    'time' => Timer::format($this->Timer->getTime())
-                ];
-            } catch (\Exception $e) {
-                throw new \Exception($e);
+        try {
+            if ($force) {
+                $this->Filesystem->remove($location . $filename);
             }
+            $this->Filesystem->copy($path . DS . $filename, $location . $filename);
+            return [
+                'item' => $filename,
+                'location' => $location . $filename,
+                'time' => Timer::format($this->Timer->getTime()),
+            ];
+        } catch (\Exception $e) {
+            throw new \Exception($e);
         }
     }
 }

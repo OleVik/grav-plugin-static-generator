@@ -83,11 +83,67 @@ If you're using the Admin plugin, an icon will be available in the quick navigat
 
 It will be wrapped for use in JavaScript, like `const GravDataIndex = [...];`. This makes it apt for use with search engines, like [FlexSearch](https://github.com/nextapps-de/flexsearch/). You can include the resulting `.js`-file and use `GravDataIndex` for searching Pages. If viewing a specific Page in Admin, for example at `http://localhost:8000/en/admin/pages/blog`, it will index the descendants of this Page in a specific-file named `blog.full.js`.
 
-The same can be achieved through the command-line, with the command `php bin/plugin static-generator index`. See `php bin/plugin static-generator help index` for options, a normal `php bin/plugin static-generator index "/" -c` will index all Pages including content.
+The same can be achieved through the command-line, with the command `php bin/plugin static-generator index`. **See `php bin/plugin static-generator help index` for options**, a normal `php bin/plugin static-generator index "/" -c` will index all Pages including content.
+
+#### Usage
+
+```bash
+php bin/plugin static-generator index [options] [--] <route> [<target>]
+```
+
+#### Arguments
+
+```bash
+route  The route to the page
+target Override target-option or set a custom destination
+```
+
+#### Available options
+
+```bash
+-b, --basename[=BASENAME]  Index basename [default: "index"]
+-c, --content              Include Page content
+-e, --echo                 Outputs result directly
+-w, --wrap                 Wraps JSON as a JavaScript global
+-f, --force                Forcefully save data
+-h, --help                 Display this help message
+-q, --quiet                Do not output any message
+-V, --version              Display this application version
+    --ansi                 Force ANSI output
+    --no-ansi              Disable ANSI output
+-n, --no-interaction       Do not ask any interactive question
+-v|vv|vvv, --verbose       Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+```
 
 ### Static Generation
 
 If you want to generate static versions of the Page(s), use the `php bin/plugin static-generator page`-command. This will create a `index.html`-file for each Page, located in your preset `content`-location, like `/user/data/persist/static`. The folder-structure of `/user/pages` will remain intact, and assets output alongside, for example to `/user/data/persist/static/assets`. Asset-paths will be rewritten, also for media which will remain alongside each Page's `index.html`-file.
+
+#### Usage
+
+```bash
+php bin/plugin static-generator page [options] [--] [<route> [<collection> [<target>]]]
+```
+
+#### Available options
+
+```bash
+route      The route to the page
+collection The Page Collection to store (see https://learn.getgrav.org/16/content/collections#collection-headers)
+target     Override target-option or set a custom destination
+```
+
+#### Available options
+
+```bash
+-p, --preset[=PRESET]          Name of Config preset
+-a, --assets                   Include Assets
+-r, --root-prefix=ROOT-PREFIX  Root prefix for assets and images
+-s, --static-assets            Include Static Assets
+-i, --images                   Include Images
+-o, --offline                  Force offline-mode
+-f, --filter[=FILTER]          Methods for filtering (multiple values allowed)
+```
 
 For example, `php bin/plugin static-generator page "@page.descendants" "/blog"` results in:
 
