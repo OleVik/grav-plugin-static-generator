@@ -1,3 +1,11 @@
+# v2.1.1
+## 24-09-2020
+
+1. [](#improved)
+   - Media routes sanitizing
+2. [](#bugfix)
+   - Canonical URLs
+
 # v2.1.0
 ## 22-09-2020
 

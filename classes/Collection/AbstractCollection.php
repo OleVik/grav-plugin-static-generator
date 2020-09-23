@@ -302,7 +302,7 @@ abstract class AbstractCollection implements CollectionInterface
                 '/images/',
                 $this->rootPrefix . 'images/'
             );
-            $content = Source::rewritePath($content, '/' . $route, $route);
+            $content = Source::rewriteMediaRoutes($content);
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

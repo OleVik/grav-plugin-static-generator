@@ -99,4 +99,16 @@ class Source
         }
         return $content;
     }
+
+    /**
+     * Rewrite Media-routes, in src-attribute
+     *
+     * @param string $content
+     *
+     * @return string Processed HTML
+     */
+    public static function rewriteMediaRoutes(string $content): string
+    {
+        return preg_replace('/src="\/\/[0-9]*\.*/mi', 'src="/', $content);
+    }
 }
