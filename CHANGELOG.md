@@ -1,3 +1,9 @@
+# v2.1.2
+## 24-09-2020
+
+1. [](#bugfix)
+   - Do not strip route-prefix
+
 # v2.1.1
 ## 24-09-2020
 
