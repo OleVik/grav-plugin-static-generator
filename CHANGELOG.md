@@ -1,3 +1,9 @@
+# v2.1.3
+## 26-09-2020
+
+1. [](#bugfix)
+   - Handle route-prefix more gracefully
+
 # v2.1.2
 ## 24-09-2020
 

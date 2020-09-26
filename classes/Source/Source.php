@@ -94,7 +94,8 @@ class Source
     ): string {
         foreach ($routes as $route) {
             if ($route !== '/') {
-                $content = preg_replace('/\/\//m', '/', $content);
+                $route = \ltrim($route, '/');
+                $content = str_replace('//' . $route, '/' . $route, $content);
             }
         }
         return $content;
