@@ -117,19 +117,24 @@ class StaticGeneratorPlugin extends Plugin
     public function onAdminMenu()
     {
         if ($this->config->get('plugins.static-generator.quick_tray')) {
-            $options = [
+            $index = [
                 'authorize' => $this->config->get('plugins.static-generator.quick_tray_permissions'),
                 'hint' => $this->grav['language']->translate(
                     ['PLUGIN_STATIC_GENERATOR.ADMIN.INDEX.HINT']
                 ),
-                'class' => 'static-generator-search-index',
+                'class' => 'static-generator-index',
                 'icon' => 'fa-bolt'
             ];
-            $this->grav['twig']->plugins_quick_tray[
-                $this->grav['language']->translate(
-                    ['PLUGIN_STATIC_GENERATOR.ADMIN.SEARCH']
-                )
-            ] = $options;
+            $this->grav['twig']->plugins_quick_tray['static-generator-index'] = $index;
+            $content = [
+                'authorize' => $this->config->get('plugins.static-generator.quick_tray_permissions'),
+                'hint' => $this->grav['language']->translate(
+                    ['PLUGIN_STATIC_GENERATOR.ADMIN.CONTENT.HINT']
+                ),
+                'class' => 'static-generator-content',
+                'icon' => 'fa-archive'
+            ];
+            $this->grav['twig']->plugins_quick_tray['static-generator-content'] = $content;
         }
     }
 
@@ -142,8 +147,11 @@ class StaticGeneratorPlugin extends Plugin
      */
     public function onAdminTaskExecute(Event $event)
     {
-        if ($event['method'] == 'taskIndexSearch') {
-            if (!$event['controller']->authorizeTask('indexSearch', ['admin.maintenance', 'admin.super'])) {
+        if (
+            $event['method'] == 'taskStaticGeneratorIndex' ||
+            $event['method'] == 'taskStaticGeneratorContent'
+        ) {
+            if (!$event['controller']->authorizeTask($event['method'], ['admin.maintenance', 'admin.super'])) {
                 header('HTTP/1.0 403 Forbidden');
                 echo '403 Forbidden';
                 exit;
@@ -197,7 +205,7 @@ class StaticGeneratorPlugin extends Plugin
                 $preset,
                 $this->grav['locator']->findResource(
                     $this->grav['config']->get('plugins.static-generator.content')
-                    . '/presets/' . $preset
+                        . '/presets/' . $preset
                 )
             );
         }
@@ -219,7 +227,6 @@ class StaticGeneratorPlugin extends Plugin
         string $source,
         bool $force = true
     ): void {
-        include __DIR__ . '/vendor/autoload.php';
         try {
             SSEData::headers();
             $Timer = new Timer();
@@ -253,7 +260,6 @@ class StaticGeneratorPlugin extends Plugin
     ): void {
         // WIP
         exit;
-        include __DIR__ . '/vendor/autoload.php';
         try {
             SSEData::headers();
             $Timer = new Timer();
@@ -276,13 +282,15 @@ class StaticGeneratorPlugin extends Plugin
      */
     public static function storeIndex(string $mode, string $route)
     {
-        include __DIR__ . '/vendor/autoload.php';
         $config = Grav::instance()['config']->get('plugins.static-generator');
         $location = $config[$mode];
         try {
             SSEData::headers();
             $Timer = new Timer();
-            $Data = new SSEData(true, $config['content_max_length']);
+            $Data = new SSEData(
+                $mode == 'content' ? true : false,
+                $config['content_max_length']
+            );
             $Data->setup();
             $route = $Data->verify($route);
             $Data->index($route);
@@ -362,7 +370,6 @@ class StaticGeneratorPlugin extends Plugin
      */
     public static function getSearchFiles(string $mode): array
     {
-        include __DIR__ . '/vendor/autoload.php';
         $config = Grav::instance()['config']->get('plugins.static-generator');
         $target = $config[$mode];
         $files = Utilities::filesFinder($target, ['js']);
@@ -402,7 +409,7 @@ class StaticGeneratorPlugin extends Plugin
                         } elseif (is_array($property)) {
                             $data[$key] = call_user_func_array(
                                 $property[0],
-                                array_slice($property, 1, count($property)-1, true)
+                                array_slice($property, 1, count($property) - 1, true)
                             );
                         }
                     }
@@ -414,7 +421,7 @@ class StaticGeneratorPlugin extends Plugin
             if (!isset($data['default']) && $config->get('theme.' . $name)) {
                 $data['default'] = $config->get('theme.' . $name);
             }
-            $return [$prefix . $name] = $data;
+            $return[$prefix . $name] = $data;
         }
         return $return;
     }
@@ -444,5 +451,15 @@ class StaticGeneratorPlugin extends Plugin
             }
         }
         return $return;
+    }
+
+    /**
+     * Composer autoload.
+     *
+     * @return \Composer\Autoload\ClassLoader
+     */
+    public function autoload(): \Composer\Autoload\ClassLoader
+    {
+        return require __DIR__ . '/vendor/autoload.php';
     }
 }

@@ -36,7 +36,7 @@ presets:
   - name: default
 ```
 
-Note that if you use the Admin plugin, a file with your configuration named `static-generator.yaml` will be saved in the `user/config/plugins/` folder once the configuration is saved in the Admin.
+Note that if you use the Admin plugin, a file with your configuration named `static-generator.yaml` will be saved in the `user/config/plugins/` folder once changed and saved in the Admin.
 
 ## Usage
 
@@ -44,7 +44,9 @@ The Static Generator Plugin does two things: Index Page(s) metadata and content,
 
 ### Indexing
 
-If you're using the Admin plugin, an icon will be available in the quick navigation tray, in the shape of a bolt. If clicked, the plugin will start indexing the content in `/user/pages`, and each Page will have an entry. By default, all content is indexed, resulting in something like this:
+If you're using the Admin plugin, two icons will be available in the quick navigation tray: A bolt and an archive-box. When clicked, the plugin will start indexing the content in `/user/pages`, and each Page will have an entry. By default, all content is indexed, resulting in something like the code below.
+
+**The bolt stores index data, which does not include the Page(s) content, whilst the archive-box does.** The time to do this for the plugin is negligible, but if you're loading this data for searching in your theme, know that loading and searching content is more resource-intensive.
 
 ```json
 [

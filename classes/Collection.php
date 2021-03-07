@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, Collection Builder
  *
@@ -10,6 +11,7 @@
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
  */
+
 namespace Grav\Plugin\StaticGenerator;
 
 use Grav\Common\Grav;
@@ -54,7 +56,6 @@ class Collection
         string $location = '',
         bool $force = false
     ) {
-        include __DIR__ . '/../vendor/autoload.php';
         $this->assets = array();
         $this->handle = $handle;
         $this->collection = $collection;
@@ -107,8 +108,8 @@ class Collection
         foreach ($pages as $Page) {
             try {
                 $this->store($Page);
-            } catch (Exception $error) {
-                throw new Exception($error);
+            } catch (\Exception $error) {
+                throw new \Exception($error);
             }
             $this->store($Page);
             $this->progressBar->advance();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, CLI Data Builder
  *
@@ -11,6 +12,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @link       https://github.com/OleVik/grav-plugin-static-generator
  */
+
 namespace Grav\Plugin\StaticGenerator\Data;
 
 use Grav\Common\Grav;
@@ -32,11 +34,11 @@ class CommandLineData extends AbstractData
      * Initialize
      *
      * @param string $route  Route to page.
-     * @param string $handle Instance of Symfony\Component\Console\Output.
+     * @param \Symfony\Component\Console\Output $handle Console-wrapper.
      *
      * @return void
      */
-    public function setup($route, $handle)
+    public function bootstrap($route, $handle)
     {
         parent::setup();
         if ($route == '/') {
@@ -114,7 +116,9 @@ class CommandLineData extends AbstractData
             if (!$this->content) {
                 $item['taxonomy']['categories'] = implode(' ', $item['taxonomy']['categories']);
                 $item['taxonomy']['tags'] = implode(' ', $item['taxonomy']['tags']);
-                $item['media'] = implode(' ', $item['media']);
+                if (isset($item['media']) && is_array($item['media'])) {
+                    $item['media'] = implode(' ', $item['media']);
+                }
             } else {
                 try {
                     $pageContent = $this->content($page);

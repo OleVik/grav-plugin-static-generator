@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, CLI Data Tester
  *
@@ -11,6 +12,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @link       https://github.com/OleVik/grav-plugin-static-generator
  */
+
 namespace Grav\Plugin\StaticGenerator\Data;
 
 use Grav\Plugin\StaticGenerator\Data\AbstractData;
@@ -29,12 +31,11 @@ class TestData extends AbstractData
     /**
      * Initialize
      *
-     * @param string $route  Route to page.
-     * @param string $handle Instance of Symfony\Component\Console\Output.
+     * @param string $route Route to page.
      *
      * @return void
      */
-    public function setup($route, $handle)
+    public function bootstrap($route)
     {
         if ($route == '/') {
             $this->pages = $this->grav['page']->evaluate(['@root.descendants']);
@@ -103,10 +104,7 @@ class TestData extends AbstractData
                 throw new \Exception($error);
             }
             echo '[' . $this->progress . '/' . $this->count . '] ' .
-                $item['title'] . ' (' . strlen($pageContent) . ")\n";
-            if (count($page->children()) > 0) {
-                $this->index($route, $mode, $depth);
-            }
+                $item['title'] . ' (' . strlen($pageContent) . " characters)\n";
             $this->data[] = (object) $item;
             $this->progress();
         }

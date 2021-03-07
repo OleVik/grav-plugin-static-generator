@@ -42,11 +42,13 @@ en:
       QUICK_TRAY: Quick Tray
       QUICK_TRAY_PERMISSIONS: Quick Tray Permissions
       INDEX:
-        HINT: Index Search Data
+        HINT: Store Index Data
         WAITING: Waiting for Static Generator ...
         ONGOING: Creating Data ...
         SUCCESS: Saved Data
         ERROR: Failed to Create or Save Data
+      CONTENT:
+        HINT: Store Content Data
       HELP:
         ROUTE: Page Route, excluding initial forward slash
         PRESETS:

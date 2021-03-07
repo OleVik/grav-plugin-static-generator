@@ -34,11 +34,11 @@ class CommandLineCollection extends AbstractCollection
     /**
      * Bootstrap processor
      *
-     * @param string $handle Instance of Symfony\Component\Console\Output.
+     * @param \Symfony\Component\Console\Output\OutputInterface $handle Console-wrapper.
      *
      * @return void
      */
-    public function handler(ConsoleOutput $handle)
+    public function handler(\Symfony\Component\Console\Output\OutputInterface $handle)
     {
         $this->handle = $handle;
     }

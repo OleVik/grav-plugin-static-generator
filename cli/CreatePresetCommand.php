@@ -1,4 +1,5 @@
 <?php
+
 /**
  * StaticGenerator Plugin, Create Preset
  *
@@ -92,7 +93,6 @@ class CreatePresetCommand extends ConsoleCommand
      */
     protected function serve()
     {
-        include __DIR__ . '/../vendor/autoload.php';
         $timer = new Timer();
         $config = Grav::instance()['config']->get('plugins.static-generator');
         $locator = Grav::instance()['locator'];
@@ -132,7 +132,7 @@ class CreatePresetCommand extends ConsoleCommand
                 if ($preset === 1) {
                     $this->output->writeln(
                         '<cyan>Added "' . $name . '" to ' . $source .
-                        '/plugins/static-generator.yaml</cyan>'
+                            '/plugins/static-generator.yaml</cyan>'
                     );
                 } elseif ($preset === 2) {
                     $this->output->writeln(
@@ -142,17 +142,17 @@ class CreatePresetCommand extends ConsoleCommand
                 } elseif ($preset === 3) {
                     $this->output->writeln(
                         '<cyan>Updated "' . $name . '" in ' . $source .
-                        '/plugins/static-generator.yaml</cyan>'
+                            '/plugins/static-generator.yaml</cyan>'
                     );
                 } elseif ($preset === 4) {
                     $this->output->writeln(
                         '<red>"' . $name . '" is already set, in ' . $source .
-                        '/plugins/static-generator.yaml</red>'
+                            '/plugins/static-generator.yaml</red>'
                     );
                 } else {
                     $this->output->writeln(
                         '<red>Failed adding "' . $name . '" to ' . $source .
-                        '/plugins/static-generator.yaml</red>'
+                            '/plugins/static-generator.yaml</red>'
                     );
                 }
             }
@@ -164,6 +164,7 @@ class CreatePresetCommand extends ConsoleCommand
                     $this->output->writeln('<red>Could not mirror ' . $source . ' to ' . $location . '</red>');
                 }
             }
+            $this->output->writeln('Finished in <magenta>' . Timer::format($timer->getTime()) . '</magenta>');
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

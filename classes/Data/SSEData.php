@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, Server Sent Events Data Builder
  *
@@ -11,6 +12,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @link       https://github.com/OleVik/grav-plugin-static-generator
  */
+
 namespace Grav\Plugin\StaticGenerator\Data;
 
 use Grav\Common\Grav;
@@ -149,7 +151,9 @@ class SSEData extends AbstractData
             if (!$this->content) {
                 $item['taxonomy']['categories'] = implode(' ', $item['taxonomy']['categories']);
                 $item['taxonomy']['tags'] = implode(' ', $item['taxonomy']['tags']);
-                $item['media'] = implode(' ', $item['media']);
+                if (isset($item['media']) && is_array($item['media'])) {
+                    $item['media'] = implode(' ', $item['media']);
+                }
             } else {
                 try {
                     $pageContent = $this->content($page);
@@ -198,10 +202,13 @@ class SSEData extends AbstractData
         if (empty($slug)) {
             $slug = 'index';
         }
-        $file = $slug . '.full.js';
-        $Storage = new FileStorage(
-            Grav::instance()['locator']->findResource($location)
-        );
+        $file = $slug . '.js';
+        if ($this->content) {
+            $file = $slug . '.full.js';
+        }
+        $location = (string) (Grav::instance()['locator']->findResource($location) ?:
+            Grav::instance()['locator']->findResource($location, true, true));
+        $Storage = new FileStorage($location);
         if ($Storage->doHas($file)) {
             $Storage->doDelete($file);
         }
@@ -211,15 +218,15 @@ class SSEData extends AbstractData
                 ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.STORED']
             )
         ) . ' ' . $this->total . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.ITEMS']
-        ) . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
-        ) . ' ' . $location . '/' . $file . ' ' .
-        $this->grav['language']->translate(
-            ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
-        ) . ' ' . Timer::format($Timer->getTime()) . '.';
+            $this->grav['language']->translate(
+                ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.ITEMS']
+            ) . ' ' .
+            $this->grav['language']->translate(
+                ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
+            ) . ' ' . $location . '/' . $file . ' ' .
+            $this->grav['language']->translate(
+                ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.IN']
+            ) . ' ' . Timer::format($Timer->getTime()) . '.';
         echo 'event: update' . "\n\n";
         echo 'data: ' . json_encode(
             [

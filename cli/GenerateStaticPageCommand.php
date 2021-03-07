@@ -124,7 +124,6 @@ class GenerateStaticPageCommand extends ConsoleCommand
      */
     protected function serve(): void
     {
-        include __DIR__ . '/../vendor/autoload.php';
         $config = Grav::instance()['config']->get('plugins.static-generator');
         $locator = Grav::instance()['locator'];
         $route = $this->input->getArgument('route') ?? '/';

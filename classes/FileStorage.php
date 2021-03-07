@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, FileStorage Adapter
  *
@@ -17,11 +18,10 @@ namespace Grav\Framework\Cache\Adapter;
 use Grav\Framework\Cache\AbstractCache;
 use Grav\Framework\Cache\Exception\CacheException;
 use Grav\Framework\Cache\Exception\InvalidArgumentException;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 /**
- * FileStorage Adapter
+ * FileStorage Adapter, PSR-16 compatible
  *
  * @category API
  * @package  Grav\Framework\Cache\Adapter
@@ -56,6 +56,7 @@ class FileStorage extends AbstractCache
     {
         parent::__construct($namespace, $defaultLifetime ?: 31557600);
         $this->directory = $directory;
+        $this->mkdir($directory);
     }
 
     /**
@@ -65,10 +66,10 @@ class FileStorage extends AbstractCache
      * @param mixed  $miss Value to return if the key does not exist.
      *
      * @return mixed The value of the item from storage, or $miss if non-existant.
-     * 
+     *
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function doGet($key, $miss = false)
+    public function doGet($key, $miss)
     {
         parent::validateKey($key);
         $now = time();
@@ -100,12 +101,13 @@ class FileStorage extends AbstractCache
      * @param mixed                  $value The value of the item to store.
      * @param null|int|\DateInterval $ttl   The Time To Live value of this item.
      *
-     * @return bool True on success and false on failure.
+     * @return bool True on success, false on failure
      *
+     * @throws \Grav\Framework\Cache\Exception\CacheException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Symfony\Component\Filesystem\Exception\IOExceptionInterface
      */
-    public function doSet($key, $value, $ttl = 31556926)
+    public function doSet($key, $value, $ttl)
     {
         parent::validateKey($key);
         $expiresAt = time() + (int) $ttl;
@@ -126,8 +128,12 @@ class FileStorage extends AbstractCache
                 }
 
                 return rename($this->tmp, $file);
-            } catch (\CacheException $e) {
-                throw new \CacheException($e);
+            } catch (CacheException $e) {
+                throw new CacheException($e);
+            } catch (InvalidArgumentException $e) {
+                throw new InvalidArgumentException($e);
+            } catch (IOExceptionInterface $e) {
+                throw new IOExceptionInterface($e);
             } finally {
                 restore_error_handler();
             }
@@ -185,5 +191,27 @@ class FileStorage extends AbstractCache
         parent::validateKey($key);
         $file = $this->directory . DIRECTORY_SEPARATOR . $key;
         return file_exists($file) && (@filemtime($file) > time() || $this->doGet($key, null));
+    }
+
+    /**
+     * Make directory
+     *
+     * @param string $dir Directory to create
+     * @throws RuntimeException
+     *
+     * @return void
+     */
+    private function mkdir($dir)
+    {
+        if (@is_dir($dir)) {
+            return;
+        }
+        $success = @mkdir($dir, 0777, true);
+        if (!$success) {
+            clearstatcache(true, $dir);
+            if (!@is_dir($dir)) {
+                throw new \RuntimeException(sprintf('Unable to create directory: %s', $dir));
+            }
+        }
     }
 }

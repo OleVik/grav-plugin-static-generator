@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, Data Index Builder
  *
@@ -14,11 +15,9 @@
 namespace Grav\Plugin\Console;
 
 use Grav\Common\Grav;
-use Grav\Common\Utils;
 use Grav\Console\ConsoleCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Grav\Framework\Cache\Adapter\FileStorage;
 use Grav\Plugin\StaticGenerator\Data\TestData;
 use Grav\Plugin\StaticGenerator\Timer;
 
@@ -55,37 +54,6 @@ class TestStaticDataCommand extends ConsoleCommand
                 'target',
                 InputArgument::OPTIONAL,
                 'Override target-option or set a custom destination'
-            )
-            ->addOption(
-                'basename',
-                'b',
-                InputOption::VALUE_OPTIONAL,
-                'Index basename',
-                'index'
-            )
-            ->addOption(
-                'content',
-                'c',
-                InputOption::VALUE_NONE,
-                'Include Page content'
-            )
-            ->addOption(
-                'echo',
-                'e',
-                InputOption::VALUE_NONE,
-                'Outputs result directly'
-            )
-            ->addOption(
-                'wrap',
-                'w',
-                InputOption::VALUE_NONE,
-                'Wraps JSON as a JavaScript global'
-            )
-            ->addOption(
-                'force',
-                'f',
-                InputOption::VALUE_NONE,
-                'Forcefully save data'
             );
     }
 
@@ -96,28 +64,18 @@ class TestStaticDataCommand extends ConsoleCommand
      */
     protected function serve()
     {
-        include __DIR__ . '/../vendor/autoload.php';
         $timer = new Timer();
         $config = Grav::instance()['config']->get('plugins.static-generator');
-        $locator = Grav::instance()['locator'];
         $route = $this->input->getArgument('route');
-        $target = $this->input->getArgument('target');
-        if ($target === null) {
-            $target = $config['index'];
-        }
-        $basename = $this->input->getOption('basename');
-        $content = $this->input->getOption('content');
-        $echo = $this->input->getOption('echo');
-        $wrap = $this->input->getOption('wrap');
-        $force = $this->input->getOption('force');
         $maxLength = $config['content_max_length'];
         $this->output->writeln('<info>Testing data index</info>');
         try {
             parent::initializePages();
-            $Data = new TestData($Grav, $content, $maxLength);
-            $Data->setup($route, $this->output);
+            $Data = new TestData(true, $maxLength);
+            $Data->bootstrap($route);
             $this->output->writeln('<info>Count: ' . $Data->count . '</info>');
             $Data->index($route);
+            $this->output->writeln('Finished in <magenta>' . Timer::format($timer->getTime()) . '</magenta>');
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

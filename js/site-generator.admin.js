@@ -1,6 +1,11 @@
+/**
+ * Throttle the rate at which a function can execute
+ * @param {function} callback Function to execute
+ * @param {number} interval Fire-rate limit in milliseconds
+ */
 function throttle(callback, interval) {
   let enableCall = true;
-  return function(...args) {
+  return function (...args) {
     if (!enableCall) return;
     enableCall = false;
     callback.apply(this, args);
@@ -10,17 +15,17 @@ function throttle(callback, interval) {
 
 /**
  * Limit the rate at which a function can execute
- * @param {Function} func Function to execute
- * @param {Integer} wait Fire-rate limit in milliseconds
- * @param {Boolean} immediate Execute immediately
+ * @param {function} func Function to execute
+ * @param {number} wait Fire-rate limit in milliseconds
+ * @param {boolean} immediate Execute immediately
  * @see https://davidwalsh.name/javascript-debounce-function
  */
 function debounce(func, wait, immediate) {
   var timeout;
-  return function() {
+  return function () {
     var context = this,
       args = arguments;
-    var later = function() {
+    var later = function () {
       timeout = null;
       if (!immediate) func.apply(context, args);
     };
@@ -31,6 +36,12 @@ function debounce(func, wait, immediate) {
   };
 }
 
+/**
+ * Update status-message
+ * @param {number} progress i of n
+ * @param {number} total n
+ * @param {string} message Status
+ */
 function staticGeneratorUpdateProgress(progress, total, message) {
   const toastMessage = document.querySelector(".toast-message");
   const status = `[${progress}/${total}] ${message}`;
@@ -38,6 +49,15 @@ function staticGeneratorUpdateProgress(progress, total, message) {
   toastMessage.textContent = status;
 }
 
+/**
+ *
+ * @param {string} task Task to execute
+ * @param {string} url URL for EventSource
+ * @param {object} button DOM-element
+ * @param {object} Toastr Toastr-instance
+ * @param {object} StateColors Hash of colors
+ * @param {string} styleProperty Property to stylize
+ */
 function staticGeneratorEventHandler(
   task,
   url,
@@ -50,11 +70,11 @@ function staticGeneratorEventHandler(
   let EventHandler = new window.EventSource(url);
   const persist = {
     timeOut: 0,
-    extendedTimeOut: 0
+    extendedTimeOut: 0,
   };
   Toastr.info(StaticGeneratorTranslation.ADMIN.INDEX.WAITING, null, persist);
   button.disabled = true;
-  EventHandler.addEventListener("open", event => {
+  EventHandler.addEventListener("open", (event) => {
     console.debug(`Executing task ${task}: ${url}`);
     Toastr.clear();
     Toastr.info(
@@ -63,18 +83,18 @@ function staticGeneratorEventHandler(
       persist
     );
   });
-  EventHandler.addEventListener("error", event => {
+  EventHandler.addEventListener("error", (event) => {
     console.error(`Failed to execute task ${task}`, event);
     button.style[styleProperty] = StateColors.error;
     button.disabled = false;
     Toastr.error(StaticGeneratorTranslation.ADMIN.INDEX.ERROR, null, persist);
     EventHandler.close();
-    setTimeout(function() {
+    setTimeout(function () {
       Toastr.clear();
     }, 2500);
   });
   var total = 0;
-  EventHandler.addEventListener("message", event => {
+  EventHandler.addEventListener("message", (event) => {
     const data = JSON.parse(event.data);
     if (data.total) {
       total = data.total;
@@ -94,7 +114,7 @@ function staticGeneratorEventHandler(
         if (data.text && data.value) {
           staticGeneratorUpdateSelectField(data.text, data.value);
         }
-        setTimeout(function() {
+        setTimeout(function () {
           button.style.removeProperty(styleProperty);
           button.disabled = false;
           Toastr.clear();
@@ -107,6 +127,11 @@ function staticGeneratorEventHandler(
   });
 }
 
+/**
+ * Add and set option to select-field
+ * @param {string} text Text for option
+ * @param {string} value Value for option
+ */
 function staticGeneratorUpdateSelectField(text, value) {
   const staticGeneratorSelectField = document.querySelector(
     "#static-generator-search-files-select"
@@ -114,12 +139,16 @@ function staticGeneratorUpdateSelectField(text, value) {
   if (staticGeneratorSelectField) {
     staticGeneratorSelectField.selectize.addOption({
       text: text,
-      value: value
+      value: value,
     });
     staticGeneratorSelectField.selectize.setValue(value);
   }
 }
 
+/**
+ * Generate a unique identifier
+ * @param {number} length Length of identifier
+ */
 function makeid(length) {
   var result = "";
   var characters =
@@ -131,6 +160,11 @@ function makeid(length) {
   return result;
 }
 
+/**
+ * Create CLI-code
+ * @param {object} element DOM-element
+ * @param {object} options Settings
+ */
 function setCode(element, options) {
   if (!options.hasOwnProperty("route")) {
     options.route = "";
@@ -158,7 +192,7 @@ function setCode(element, options) {
     code += ` -i`;
   }
   if (options.hasOwnProperty("filters") && options.filters.length > 0) {
-    options.filters.forEach(filter => {
+    options.filters.forEach((filter) => {
       code += ` -f "${filter}()"`;
     });
   }
@@ -173,6 +207,10 @@ function setCode(element, options) {
   element.innerHTML = code;
 }
 
+/**
+ * Respond to changes in fields
+ * @param {object} root DOM-element
+ */
 function monitor(root) {
   const preElement = document.createElement("pre");
   preElement.classList.add("static-generator-command");
@@ -185,10 +223,12 @@ function monitor(root) {
   codeElement.setAttribute("id", makeid(16));
   preElement.appendChild(codeElement);
   const options = { parameters: {} };
-  root.querySelector("[name*=filters]").selectize.on("change", function(value) {
-    options["filters"] = value.split(",");
-    setCode(codeElement, options);
-  });
+  root
+    .querySelector("[name*=filters]")
+    .selectize.on("change", function (value) {
+      options["filters"] = value.split(",");
+      setCode(codeElement, options);
+    });
   [
     root.querySelector("[name*=name]"),
     root.querySelector("[name*=route]"),
@@ -196,8 +236,8 @@ function monitor(root) {
     root.querySelector("[name*=target]"),
     root.querySelector("[name*=assets]"),
     root.querySelector("[name*=static_assets]"),
-    root.querySelector("[name*=images]")
-  ].forEach(item => {
+    root.querySelector("[name*=images]"),
+  ].forEach((item) => {
     if (item !== null) {
       const name = item.name.match(/\[([^\]]*)\](?!.*])/i)[1];
       if (item.type == "checkbox") {
@@ -208,7 +248,7 @@ function monitor(root) {
       setCode(codeElement, options);
       item.addEventListener(
         "input",
-        debounce(function(event) {
+        debounce(function (event) {
           if (event.srcElement.type == "checkbox") {
             options[name] = event.target.checked;
           } else {
@@ -225,11 +265,11 @@ function monitor(root) {
     ),
     root.querySelector(
       "[data-grav-array-name*=parameters] [data-grav-array-type*=row] [data-grav-array-type*=value]"
-    )
-  ].forEach(item => {
+    ),
+  ].forEach((item) => {
     item.addEventListener(
       "input",
-      debounce(function(event) {
+      debounce(function (event) {
         var key, value;
         if (event.target.dataset.gravArrayType == "key") {
           key = event.target.value;
@@ -249,36 +289,63 @@ function monitor(root) {
 
 window.addEventListener(
   "load",
-  function(event) {
+  function (event) {
     const staticGeneratorStateColors = {
       waiting: "#df8a13",
       error: "#b52b27",
-      success: "#3d8b3d"
+      success: "#3d8b3d",
     };
     const staticGeneratorIndexButton = document.querySelector(
-      ".static-generator-search-index"
+      ".static-generator-index"
     );
+    const staticGeneratorContentButton = document.querySelector(
+      ".static-generator-content"
+    );
+    const staticGeneratorPageRoute = encodeURIComponent(GravAdmin.config.route);
     if (staticGeneratorIndexButton) {
-      const staticGeneratorPageRoute = encodeURIComponent(
-        GravAdmin.config.route
-      );
-      const staticGeneratorIndexSearchRoute =
+      let route =
         GravAdmin.config.base_url_relative +
         ".json/task" +
         GravAdmin.config.param_sep +
-        "indexSearch/admin-nonce" +
+        "staticGeneratorIndex/admin-nonce" +
+        GravAdmin.config.param_sep +
+        GravAdmin.config.admin_nonce +
+        "?mode=index" +
+        "&route=" +
+        staticGeneratorPageRoute;
+      staticGeneratorIndexButton.addEventListener(
+        "click",
+        function (event) {
+          staticGeneratorEventHandler(
+            "staticGeneratorIndex",
+            route,
+            staticGeneratorIndexButton,
+            Grav.default.Utils.toastr,
+            staticGeneratorStateColors
+          );
+          event.preventDefault();
+        },
+        false
+      );
+    }
+    if (staticGeneratorContentButton) {
+      let route =
+        GravAdmin.config.base_url_relative +
+        ".json/task" +
+        GravAdmin.config.param_sep +
+        "staticGeneratorContent/admin-nonce" +
         GravAdmin.config.param_sep +
         GravAdmin.config.admin_nonce +
         "?mode=content" +
         "&route=" +
         staticGeneratorPageRoute;
-      staticGeneratorIndexButton.addEventListener(
+      staticGeneratorContentButton.addEventListener(
         "click",
-        function(event) {
+        function (event) {
           staticGeneratorEventHandler(
-            "indexSearch",
-            staticGeneratorIndexSearchRoute,
-            staticGeneratorIndexButton,
+            "staticGeneratorContent",
+            route,
+            staticGeneratorContentButton,
             Grav.default.Utils.toastr,
             staticGeneratorStateColors
           );
@@ -291,7 +358,7 @@ window.addEventListener(
       "#blueprints ul.static-generator-presets li"
     );
     if (staticGeneratorPresets) {
-      const staticGeneratorTaskRoute = function(task) {
+      const staticGeneratorTaskRoute = function (task) {
         return (
           GravAdmin.config.base_url_relative +
           ".json/task" +
@@ -312,7 +379,7 @@ window.addEventListener(
         if (copyButton) {
           copyButton.addEventListener(
             "click",
-            function(event) {
+            function (event) {
               const name = preset.querySelector('input[name$="[name]"]').value;
               console.log(
                 staticGeneratorTaskRoute("copyPreset") + "?preset=" + name
@@ -333,7 +400,7 @@ window.addEventListener(
         if (generateButton) {
           generateButton.addEventListener(
             "click",
-            function(event) {
+            function (event) {
               const name = preset.querySelector('input[name$="[name]"]').value;
               console.log(
                 event,
@@ -365,11 +432,11 @@ window.addEventListener(
       window.GravAdmin.config.current_url.includes("plugins/static-generator")
     ) {
       const wrappers = document.querySelectorAll(".form-tab");
-      wrappers.forEach(element => {
+      wrappers.forEach((element) => {
         if (element.querySelector('[data-grav-field="list"]')) {
           element
             .querySelectorAll('[data-grav-field="list"] [data-collection-item]')
-            .forEach(item => {
+            .forEach((item) => {
               monitor(item);
             });
         } else if (element.querySelector("[name*=route]")) {
