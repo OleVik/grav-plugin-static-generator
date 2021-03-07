@@ -1,5 +1,7 @@
 name: Static Generator
 version: 3.0.0
+slug: static-generator
+type: plugin
 description: Static generation of Page(s) and Index.
 icon: bolt
 author:
