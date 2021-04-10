@@ -212,7 +212,11 @@ class SSEData extends AbstractData
         if ($Storage->doHas($file)) {
             $Storage->doDelete($file);
         }
-        $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($data) . ';', 0);
+        if ($this->content) {
+            $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($data) . ';', 0);
+        } else {
+            $Storage->doSet($file, 'const GravMetadataIndex = ' . json_encode($data) . ';', 0);
+        }
         $message = ucfirst(
             $this->grav['language']->translate(
                 ['PLUGIN_STATIC_GENERATOR.ADMIN.GENERIC.STORED']

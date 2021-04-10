@@ -1,6 +1,6 @@
 enabled: true
 index: "user://data/persist"
-content: "user://data/persist/static"
+content: "user://data/persist"
 content_max_length: 100000
 content_permissions:
   - admin.super

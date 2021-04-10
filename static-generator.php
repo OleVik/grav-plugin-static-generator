@@ -19,8 +19,6 @@ use Grav\Common\Grav;
 use Grav\Common\Plugin;
 use Grav\Common\Utils;
 use Grav\Common\Inflector;
-use Grav\Common\Page\Pages;
-use Grav\Common\Page\Page;
 use Grav\Framework\File\YamlFile;
 use Grav\Framework\File\Formatter\YamlFormatter;
 use RocketTheme\Toolbox\Event\Event;

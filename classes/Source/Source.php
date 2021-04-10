@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, Source Manipulator
  *
@@ -11,12 +12,10 @@
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @link       https://github.com/OleVik/grav-plugin-static-generator
  */
+
 namespace Grav\Plugin\StaticGenerator\Source;
 
 use Grav\Common\Utils;
-use Grav\Common\Page\Page;
-use Grav\Common\Page\Pages;
-use Grav\Common\Page\Media;
 
 /**
  * Source Manipulator

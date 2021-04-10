@@ -1,3 +1,14 @@
+# v3.1.0
+## 10-04-2021
+
+1. [](#improved)
+    * API-alignment to use `Grav\Common\Page\Interfaces\PageInterface`, transparently
+    * Code cleanup
+2. [](#new)
+    * Revert content index-location to `user://data/persist`
+3. [](#bugfix)
+    * Correct key in indexed metadata
+
 # v3.0.0
 ## 07-03-2021
 

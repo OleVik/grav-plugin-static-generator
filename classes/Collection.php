@@ -15,15 +15,10 @@
 namespace Grav\Plugin\StaticGenerator;
 
 use Grav\Common\Grav;
-use Grav\Common\Plugin;
 use Grav\Common\Utils;
-use Grav\Common\Page\Page;
-use Grav\Common\Page\Media;
-use Grav\Common\Page\Header;
-use RocketTheme\Toolbox\Event\Event;
+use Grav\Common\Page\Interfaces\PageInterface as Page;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 

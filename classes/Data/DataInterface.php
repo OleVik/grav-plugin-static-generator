@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, Data Builder Interface
  *
@@ -11,9 +12,10 @@
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @link       https://github.com/OleVik/grav-plugin-static-generator
  */
+
 namespace Grav\Plugin\StaticGenerator\Data;
 
-use Grav\Common\Page\Page;
+use Grav\Common\Page\Interfaces\PageInterface as Page;
 
 /**
  * Data Builder Interface

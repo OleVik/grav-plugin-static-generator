@@ -17,7 +17,7 @@ namespace Grav\Plugin\StaticGenerator\Collection;
 
 use Grav\Common\Grav;
 use Grav\Common\Utils;
-use Grav\Common\Page\Page;
+use Grav\Common\Page\Interfaces\PageInterface as Page;
 use Grav\Common\Page\Collection;
 use Grav\Plugin\StaticGenerator\Collection\CollectionInterface;
 use Grav\Plugin\StaticGenerator\Config\Config;
