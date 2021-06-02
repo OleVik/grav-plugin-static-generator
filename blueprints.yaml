@@ -1,5 +1,5 @@
 name: Static Generator
-version: 3.1.0
+version: 3.1.1
 slug: static-generator
 type: plugin
 description: Static generation of Page(s) and Index.
@@ -10,7 +10,7 @@ author:
 homepage: https://github.com/OleVik/grav-plugin-static-generator
 keywords: grav, plugin, static, index, search, data, json, html
 bugs: https://github.com/OleVik/grav-plugin-static-generator/issues
-docs: https://github.com/OleVik/grav-plugin-static-generator/blob/develop/README.md
+docs: https://github.com/OleVik/grav-plugin-static-generator
 license: MIT
 dependencies:
   - { name: grav, version: ">=1.7" }
