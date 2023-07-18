@@ -1,3 +1,9 @@
+# v4.0.1
+## 18-07-2023
+
+1. [](#bugfix)
+    * `DataInterface`-compliance
+
 # v4.0.0
 ## 18-07-2023
 

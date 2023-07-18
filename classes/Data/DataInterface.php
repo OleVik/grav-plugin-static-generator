@@ -31,12 +31,14 @@ interface DataInterface
     /**
      * Instantiate class
      *
+     * @param string $url       Custom Base URL.
      * @param bool   $content   Whether to include content.
      * @param int    $maxLength Maximum character-length of content.
      * @param string $orderBy   Property to order by.
      * @param string $orderDir  Direction to order.
      */
     public function __construct(
+        string $url = '',
         bool $content = false,
         int $maxLength = null,
         string $orderBy = 'date',
