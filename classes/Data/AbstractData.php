@@ -40,18 +40,24 @@ abstract class AbstractData implements DataInterface
     /**
      * Instantiate class
      *
+     * @param string $url       Custom Base URL.
      * @param bool   $content   Whether to include content.
      * @param int    $maxLength Maximum character-length of content.
      * @param string $orderBy   Property to order by.
      * @param string $orderDir  Direction to order.
      */
     public function __construct(
+        string $url = '',
         bool $content = false,
         int $maxLength = null,
         string $orderBy = 'date',
         string $orderDir = 'desc'
     ) {
         $this->grav = Grav::instance();
+        if ($url && !empty($url) && filter_var($url, FILTER_VALIDATE_URL)) {
+            $this->grav['config']->set('system.custom_base_url', $url);
+        }
+        $this->grav['uri']->init();
         $this->data = array();
         $this->content = $content;
         $this->maxLength = $maxLength;
@@ -68,9 +74,9 @@ abstract class AbstractData implements DataInterface
      */
     public function setup()
     {
-        if (isset(Grav::instance()['admin'])) {
-            if (method_exists(Grav::instance()['admin'], 'enablePages')) {
-                Grav::instance()['admin']->enablePages();
+        if (isset($this->grav['admin'])) {
+            if (method_exists($this->grav['admin'], 'enablePages')) {
+                $this->grav['admin']->enablePages();
             }
         }
     }

@@ -1,3 +1,13 @@
+# v4.0.0
+## 18-07-2023
+
+1. [](#new)
+    * URL-parameter to pass `custom_base_url` to CLI
+2. [](#improved)
+    * Initialize URI when constructring `AbstractData`
+3. [](#bugfix)
+    * Refer to own instance on `AbstractData->setup()`
+
 # v3.1.1
 ## 02-06-2021
 

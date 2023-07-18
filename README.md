@@ -55,14 +55,10 @@ If you're using the Admin plugin, two icons will be available in the quick navig
     "date": "2017-08-11T12:55:00+00:00",
     "url": "http://localhost:8000/blog/hero-classes",
     "taxonomy": {
-      "categories": [
-        "blog"
-      ],
+      "categories": ["blog"],
       "tags": []
     },
-    "media": [
-      "unsplash-overcast-mountains.jpg"
-    ],
+    "media": ["unsplash-overcast-mountains.jpg"],
     "content": "The [Quark theme](https://getgrav.org/downloads/themes) ...\n"
   },
   {
@@ -70,14 +66,10 @@ If you're using the Admin plugin, two icons will be available in the quick navig
     "date": "2017-07-19T11:34:00+00:00",
     "url": "http://localhost:8000/blog/text-typography",
     "taxonomy": {
-      "categories": [
-        "blog"
-      ],
+      "categories": ["blog"],
       "tags": []
     },
-    "media": [
-      "unsplash-text.jpg"
-    ],
+    "media": ["unsplash-text.jpg"],
     "content": "The [Quark theme](https://github.com/getgrav/grav-theme-quark) ...\n"
   }
 ]
@@ -103,6 +95,7 @@ target Override target-option or set a custom destination
 #### Available options
 
 ```bash
+-u, --url                  FQDN passed as `system.custom_base_url`
 -b, --basename[=BASENAME]  Index basename [default: "index"]
 -c, --content              Include Page content
 -e, --echo                 Outputs result directly
@@ -116,6 +109,8 @@ target Override target-option or set a custom destination
 -n, --no-interaction       Do not ask any interactive question
 -v|vv|vvv, --verbose       Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
+
+**New in v4**: Pass `--url "https://domain.tld/` to set or override `system.yaml`'s `custom_base_url`, for processing out of context, and yielding absolute URL's in the index.
 
 ### Static Generation
 

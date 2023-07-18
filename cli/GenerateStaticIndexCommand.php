@@ -58,6 +58,13 @@ class GenerateStaticIndexCommand extends ConsoleCommand
                 'Override target-option or set a custom destination'
             )
             ->addOption(
+                'url',
+                'u',
+                InputOption::VALUE_OPTIONAL,
+                'Base URL override',
+                ''
+            )
+            ->addOption(
                 'basename',
                 'b',
                 InputOption::VALUE_OPTIONAL,
@@ -105,6 +112,7 @@ class GenerateStaticIndexCommand extends ConsoleCommand
         if ($target === null) {
             $target = $config['index'];
         }
+        $url = $this->input->getOption('url');
         $basename = $this->input->getOption('basename');
         $content = $this->input->getOption('content');
         $echo = $this->input->getOption('echo');
@@ -124,7 +132,7 @@ class GenerateStaticIndexCommand extends ConsoleCommand
                 }
                 return;
             }
-            $Data = new CommandLineData($content, $maxLength);
+            $Data = new CommandLineData($url, $content, $maxLength);
             $Data->bootstrap($route, $this->output);
             $Data->index($route);
             if ($echo) {
