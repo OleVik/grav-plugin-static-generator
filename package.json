@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/OleVik/grav-plugin-static-generator#readme",
   "dependencies": {
-    "eventsource": "^1.0.7"
+    "eventsource": "^1.1.1"
   }
 }
