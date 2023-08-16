@@ -122,7 +122,7 @@ If you want to generate static versions of the Page(s), use the `php bin/plugin 
 php bin/plugin static-generator page [options] [--] [<route> [<collection> [<target>]]]
 ```
 
-#### Available options
+#### Parameters
 
 ```bash
 route      The route to the page
@@ -204,6 +204,10 @@ For example, `php bin/plugin static-generator page "@page.descendants" "/blog"` 
                 index.html
                 unsplash-sidney-perry.jpg
 ```
+
+### Integration with search-engines
+
+See explanation in [issue 14](https://github.com/OleVik/grav-plugin-static-generator/issues/14#issuecomment-812124118).
 
 ### Cleanup
 
